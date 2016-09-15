@@ -1,0 +1,55 @@
+\documentclass{article}
+\usepackage{marvosym,listings,etoolbox}
+% THIS REPLACES 0 with \0 IN lstings
+\lstset{literate={0}{\0}1{0\ }{\0\ }2}
+% THIS REPLACES 0 WITH \0 IN verb
+\patchcmd{\verb}{\dospecials}{\dospecials\atspecial}{}{}
+\def\atspecial{\begingroup\lccode`~=`0%
+  \lowercase{\endgroup\let~}\0%
+  \catcode`0=\active}
+%
+\renewcommand*\ttdefault{txtt}
+% COMMENT THE NEXT LINE TO TURN OFF texttt AS DEFAULT FONT FAMILY
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+% DEFINE \0 AS MIRROR OF 0
+\newcommand\0{\scalebox{-1}[1]{0}}
+% FIX FOR \texttt AND \ttfamily
+\let\svttfamily\ttfamily
+\let\svtexttt\texttt
+\catcode`0=\active
+\def0{\0}
+\renewcommand\ttfamily{\svttfamily\catcode`0=\active }
+\renewcommand\texttt{\bgroup\ttfamily\texttthelp}
+\def\texttthelp#1{#1\egroup}
+\catcode`0=12 %
+%
+\begin{document}
+Here is the font's normal 0 (which is reverse sense)\par
+But it is fixed (un-reversed) in lstlisting:
+\begin{lstlisting}[framexleftmargin=0mm,
+                   basicstyle=\ttfamily\small,
+                   breaklines,
+                   columns=fullflexible]
+' 0000 having 1=1--
+' or 1 in (select @@version)--
+' union all select @@version 0.0--
+' OR 'unusual' = 'unusual'
+\end{lstlisting}\par
+as well as in verb:~\verb|declare @s0 varchar(8000)|
+
+\noindent\hrulefill
+
+%Now we try it in texttt: \texttt{foo0bar} or this {\ttfamily foo0bar},
+texttt: \texttt{foo0bar}
+
+or back to 0
+
+ttfamily: {\ttfamily foo0bar}
+
+or back to 0 again
+
+\noindent\hrulefill
+
+I didn't break verb, did I? \verb|declare @s0 varchar(8000)|
+\end{document}

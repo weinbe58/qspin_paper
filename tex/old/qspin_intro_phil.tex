@@ -1,0 +1,585 @@
+% =========================================================================
+% SciPost LaTeX template
+% Version 1a (2016/06/14)
+%
+% Submissions to SciPost Journals should make use of this template.
+%
+% INSTRUCTIONS: simply look for the `TODO:' tokens and adapt your file.
+%
+% - please enable line numbers (package: lineno)
+% - you should run LaTeX twice in order for the line numbers to appear
+% =========================================================================
+
+
+% TODO: uncommente ONE of the class declarations below
+% If you are submitting a paper to SciPost Physics: uncomment next line
+\documentclass{SciPost}
+% If you are submitting a paper to SciPost Physics Lecture Notes: uncomment next line
+%\documentclass[LectureNotes]{SciPost}
+
+\usepackage{amsmath,amssymb,graphicx,bm,color,mathrsfs,verbatim,epstopdf,dcolumn,cancel}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%hyperrefs
+\usepackage{hyperref}
+\hypersetup{ 
+	colorlinks=true,
+}
+
+
+%define path for figs
+\graphicspath{{../figs/}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%% python code %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\usepackage{listings}
+% the following lines make sure the pdf code is copy-pastable
+\usepackage{textcomp}
+\usepackage[space=true]{accsupp}
+
+\newcommand{\pdfactualhex}[3]{\newcommand{#1}{%
+		\BeginAccSupp{method=hex,ActualText=#2}#3\EndAccSupp{}}}
+
+\pdfactualhex{\pdfactualdspace}{2020}{\textperiodcentered\textperiodcentered}
+\pdfactualhex{\pdfactualsquote}{27}{'}
+\pdfactualhex{\pdfactualbtick}{60}{`}
+
+% define colours 
+\definecolor{deepblue}{rgb}{0,0,0.8}
+\definecolor{deepred}{rgb}{1.0,0,0}
+\definecolor{deepgreen}{rgb}{0,0.7,0}
+\definecolor{blueviolet}{RGB}{138,43,226}
+\definecolor{darkyellow}{RGB}{204,204,0}
+\definecolor{codegray}{rgb}{0.6,0.6,0.6}
+\definecolor{weborange}{RGB}{255,165,0}
+\definecolor{gold}{RGB}{255,205,0}
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+
+%\definecolor{backcolour}{rgb}{0.0,0.0,0.0}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{sublime}{
+	backgroundcolor=\color{backcolour},   
+	commentstyle=\color{deepgreen},
+	keywordstyle=\color{deepred},
+	numberstyle=\tiny,
+	stringstyle=\color{weborange},
+	basicstyle=\small\ttfamily, %\footnotesize,
+	breakatwhitespace=false,         
+	breaklines=true,                 
+	captionpos=t,                    
+	keepspaces=true,                 
+	numbers=left,                    
+	numbersep=5pt,                  
+	showspaces=false,                
+	showstringspaces=false,
+	showtabs=false,                  
+	tabsize=4,
+	columns=flexible,
+	emptylines=10000,
+	literate={'}{\pdfactualsquote}1{`}{\pdfactualbtick}1{\ \ }{\pdfactualdspace}2
+}
+\lstset{style=sublime,language=python,inputpath=../scripts/,morekeywords={lambda,xrange,abs}}
+
+% change default listings caption title
+\renewcommand{\lstlistingname}{\qspin\ \emph{Example Code}}% Listing -> q\spin\ Example Code
+
+
+%%%%%% the following lines put the slashed zero in the code environtmnet listings
+
+\usepackage{marvosym,etoolbox}
+% this replaces 0 with \0 in lstings
+\lstset{literate={0}{\0}1{0\ }{\0\ }2}
+
+\renewcommand*\ttdefault{txtt}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+% defines \0 as mirro of 0
+\newcommand\0{\scalebox{-1}[1]{0}}
+% fix for \texttt and \ttfamily
+\let\svttfamily\ttfamily
+\let\svtexttt\texttt
+\catcode`0=\active
+\def0{\0}
+\renewcommand\ttfamily{\svttfamily\catcode`0=\active }
+\renewcommand\texttt{\bgroup\ttfamily\texttthelp}
+\def\texttthelp#1{#1\egroup}
+\catcode`0=12 %
+
+%%%%%%%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%% qspin logo %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+
+\usepackage{upgreek}
+\newcommand{\qspin}{$\mathcal{Q}^{\mathrm{u}}\!\mathcal{S}\uprho\mathrm{\text{\textexclamdown}}\mathcal{N}$}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%  vertical text on the right %%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{background}
+\usepackage{geometry}
+
+\definecolor{textcolor}{HTML}{0A75A8}
+\newcommand\Text{ \emph{to report a bug pls send a concise script to weinbe58@bu.edu} }
+
+\SetBgColor{textcolor}
+\SetBgOpacity{0.5}
+\SetBgAngle{-90}
+\SetBgPosition{current page.center}
+\SetBgVshift{0.35\textwidth}
+\SetBgScale{1.8}
+\SetBgContents{\sffamily\Text}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+
+%\usepackage{ulem}
+
+\newcommand*{\red}{\textcolor{red}}
+\newcommand*{\blue}{\textcolor{blue}}
+\newcommand*{\cyan}{\textcolor{cyan}}
+\newcommand*{\green}{\textcolor{green}}
+
+
+
+\begin{document}
+% TODO: write your article's title here. 
+% The article title is centered, Large boldface, and should fit in two lines
+\begin{center}{\Large \textbf{
+\qspin: a python Package for Dynamics and Exact Diagonalisation of Quantum Many Body Systems\\
+\large part I: spin chains
+}}\end{center}
+
+% TODO: write the author list here. Use initials + surname format.
+% Separate subsequent authors by a comma, omit comma at the end of the list.
+% Mark the corresponding author with a superscript *. 
+\begin{center}
+Phillip Weinberg\textsuperscript{*} and Marin Bukov
+\end{center}
+
+% TODO: write all affiliations here. 
+% Format: institute, city, country
+\begin{center}
+Department of Physics, Boston University, \\
+590 Commonwealth Ave., Boston, MA 02215, USA
+\\
+% TODO: provide email address of corresponding author
+* weinbe58@bu.edu
+\end{center}
+
+\begin{center}
+\today
+\end{center}
+
+% For convenience during refereeing: line numbers
+%\linenumbers
+
+\section*{Abstract}
+{\bf 
+% TODO: write your abstract here.
+We present a new open-source python package for quantum dynamics of spin chains based on exact diagonalisation, called \qspin. The package is well suited to study quantum quenches at finite and infinite times, the Eigenstate Thermalisation hypothesis, many-body localisation and other dynamical phase transitions, periodically-driven (Floquet) systems, adiabatic and counter-diabatic ramps, spin-photon interactions, etc. Moreover, \qspin's user-friendly interface can easily be used in combination with other python packages which makes it highly amenable to customisation. We explain how to use \qspin\ using three detailed examples: (i) adiabatic ramping of parameters in the many-body localised Heisenberg model, (ii) heating in the periodically-driven transverse-field Ising model in a parallel field, and (iii) quantised light-atom interactions: recovering the periodically-driven atom in the semi-classical limit of a static Hamiltonian.
+}
+
+
+% TODO: include a table of contents (optional)
+% Guideline: if your paper is longer that 6 pages, include a TOC
+% To remove the TOC, simply cut the following block
+\vspace{10pt}
+\noindent\rule{\textwidth}{1pt}
+\tableofcontents\thispagestyle{fancy}
+\noindent\rule{\textwidth}{1pt}
+\vspace{10pt}
+
+
+\section{What Problems can I Solve with \qspin?}
+\label{sec:intro}
+
+\cyan{copy-check the examples codes}
+
+During the last several decades, interacting quantum systems have been the primary focus of research in the condensed matter community. Prominent examples include (high-$T_c$) superconductors, superfluids, spin liquids, fractional topological insulators, and various other strongly-correlated systems. With respect to their mathematical description, these systems can be divided into two categories: \emph{integrable} systems typically possess an extensive number of local conserved quantities (integrals of motion) and, therefore, their properties can be described in a closed, exact mathematical form with the help of ingenious techniques, such as the celebrated Bethe ansatz, the Jordan-Wigner transformation, transfer matrices, conformal field theory, etc. The analytical understanding of \emph{non-integrable} systems, on the other hand, is usually feasible only in limited parameter regimes, and relies predominantly on the development of sophisticated approximation schemes based on perturbation theory; notable examples include Landau's Fermi liquid theory, Bogoliubov's theory of superfluidity, the BCS theory of superconductivity, numerous other mean-field theories, the Renormalisation group, the Schrieffer-Wolff transformation, and may more. 
+
+It is widely accepted that generic quantum systems in dimensions $d>1$ are non-integrable and, thus, their theoretical study poses a formidable challenge. To tackle these hard problems, various highly-sophisticated numerical techniques, of different applicability regimes, have been developed: Quantum Monte Carlo methods, Density Matrix Renormalisation Group, Matrix Product States, Dynamical Mean-Field Theory, Tensor Networks \cyan{waht else?}, just to name a few. Although all of these methods are known to suffer from some sort of limitations of their own, when considered as a whole they allow one to successfully investigate the low-energy physics of many condensed matter systems. The \href{http://alps.comp-phys.org/mediawiki/index.php/Main_Page}{Algorithms and Libraries for Physics Simulations} (ALPS), the C\texttt{++} library \href{http://itensor.org/}{ITensor}, as well as the \href{http://qutip.org/}{Quantum Toolbox in python} (QuTiP) provide open source, freely accessible packages which contribute to widespread the use of such numerical techniques among the physics community.
+
+Often times, when it comes to the study of dynamical problems, e.g.~dynamical phase transitions (e.g.~many-body localisation), thermalising time evolution, long-time dynamics, and in general calculations which involve quantum states with high amounts of entanglement, most numerical methods originally developed to study low-energy physics fail and, thus, become unreliable. \sout{At the same time, in the dawn of scientific computing, a numerical technique based on linear algebra was developed, robust enough, to safely deal with such studies -- Exact Diagonalisation (ED)} In these cases only the full quantum description of the model can provide a relible description of the problem, and so one must turn to exact diagonalization (ED) calculations. Although ED can also be applied to study low-energy phenomena, it is largely outperformed by the aforementioned much more sophisticated numerical algorithms. This comes mainly due to the limited computational resources available as of today, which imposes an upper limit on the Hilbert space size of the quantum model under consideration. In turn, for many-body systems, this typically sets an upper bound on the manageable system sizes, and gives rise to (sometimes unwanted and challenging to analyse) finite-size effects. However, when it comes to the study of dynamical problems at long times, ED still represents a cutting-edge investigation technique for `driven' quantum many-body problems.  
+
+\cyan{
+Technical Features
+\begin{itemize}
+	\item memory efficient
+	\item fast
+	\item user friendly (no programming background required)
+	\item flexible (can easily be interfaced with other programs/packages)
+	\item uses mature python packages (constantly updated and improved, reliable)
+	\item all standard ED routines available in python packages
+\end{itemize} 
+}
+\cyan{this paragraph should incorporate the most important technical features} In this paper, we report on a newly developed optimised python package for dynamics and Exact Diagonalisation of quantum many-body spin systems in 1 dimension, which we called \qspin. The computation of the quantum operator matrices is done through costum code written by the authors in Cython. Cython is an optimizing static compiler which takes code written with a syntax similar Python and compiles it into efficient C/C\texttt{++} code which easily interfaces with Python and can run orders of magnitude faster then a pure Python code. The quantum operators are stored as memory efficient Scipy sparse matrices. This allows \qspin\ to easily  iterface with mature python packages Numpy and Scipy as well as other Python packages. These packages provide reliable state-of-the-art tools for scientific computation as well as support from the Python community  to improve and update these Python packages. Moreover, we have included specific functionality in \qspin\ which uses Numpy and Scipy to do all of the standard ED calculations one mught want to do while making sure the user only has to make use of a few Numpy or Scipy functions directly. Last but not least, \qspin\ has been designed such that  the amount of code needed do an ED calculations is very short (typically less than $200$ lines). This greatly reducing the amount of time to start a new ED study as well as allowing users with little to no programming experience to do state of the art ED calculations. 
+
+Let us describe in more detail some of the features that make \qspin\ interesting and useful and which, we believe, can serve a countless number of different studies. 
+\begin{itemize}
+	\item A major representative feature of \qspin\ is the construction of spin Hamiltonians containing arbitrary (possibly non-local in space) many-body operators. One example is the four-spin operator $\mathcal{O}= \sum_j \sigma^z_{j}\sigma^+_{j+1}\sigma^-_{j+2}\sigma^z_{j+3} + \mathrm{h.c.}$. Such multi-spin operators are often times used to study engineered integrable systems designed to feature particular topological properties [CITE], like \cyan{???}. They are also generated by the nested commutators typically appearing in higher-order terms of perturbative expansions, such as the Schrieffer-Wolff transformation[CITE] and the inverse-frequency expansion[CITE]. 
+	%
+	\item Another important feature is the availability to use symmetries which, if present in a given model, induce conservation laws leading to selection rules between the many-body states. As a result, the Hilbert space reduces to a tensor product of the Hilbert spaces corresponding to the underlying symmetry blocks. Consequently, the presence of symmetries effectively reduces the relevant Hilbert space dimension which, in turn, allows one to study larger systems. Currently, \qspin\ supports the following spin chain symmetries:
+	\begin{itemize}
+		\item[--] total magnetisation
+		\item[--] parity (i.e.~reflection w.r.t.~the middle of the chain)
+		\item[--] spin inversion (on the entire chain but also individually for sublattices $A$ and $B$)
+		\item[--] the joint application of parity and spin inversion (present e.g.~when studying staggered or linear external potentials)
+		\item[--] translation symmetry
+		\item[--] all physically meaningful combinations of the above
+	\end{itemize}
+	 As we shall see in Sec.~\ref{sec:examples}, constructing Hamiltonians with given symmetries is done by specifying the desired symmetry block. By default \qspin\ performs a check on the compatibility of the requested symmetry with the Hamiltonian: if the user tries to specify a symmetry which is not present in their model, it will raise an error message\footnote{This automatic check can also be disabled, see the documentation under Sec.~\ref{app:doc}.}.
+	% 
+	\item As alluded to above, as of present date ED methods represent the most reliable way to safely study quantum dynamics in a generic way. In this respect, with \qspin\ the user can build arbitrary time-dependent Hamiltonians. The package contains built-in routines to calculate the real (or imaginary) time evolution of any quantum state under a user-defined time-dependent Hamiltonian based on scipy's integration tool for ordinary differential equations.
+	%
+	\item Besides spin chains, \qspin\ also allows the user to couple an arbitrary spin chain to a single photon mode (i.e.~quantum harmonic oscillator). In this case, the total magnetisation symmetry is replaced by the combined total photon and spin number conservation.  
+\end{itemize}
+ 
+We close this brief introduction by mentioning a short list of `hot' topics that can be successfully studied with the help of \qspin:
+\begin{itemize}
+	\item[$\ast$] quantum quenches and quantum dynamics at finite and infinite times
+	\item[$\ast$] adiabatic and counter-diabatic ramps 
+	\item[$\ast$] periodically driven (Floquet) systems
+	\item[$\ast$] many-body localisation, Eigenstate Thermalisation hypothesis
+	\item[$\ast$] quantum information
+	\item[$\ast$] quantised photon-spin interactions and similar cavity QED related models
+	\item[$\ast$] dynamical phase transitions and critical phenomena
+	\item[$\ast$] machine learning with quantum many-body systems
+\end{itemize}
+This list is far from being complete, but it can serve as a useful guideline to the interested user. Let us now illustrate in detail how to use \qspin, addressing three exciting problems, which we believe cover a wide range of interesting topics, to exemplify some of the most common \qspin\ tools. 
+
+\section{How do I use \qspin?}
+\label{sec:examples}
+
+One of the main advantages of \qspin\ is its user-friendly interface. To demonstrate how the package works, we shall guide the reader step by step through a short python code, explaining all details of a proper use of the package. In case the reader is unfamiliar with python, we kindly invite them to accept the challenge of learning the python basics, while enjoying the study of quantum many-body dynamics. \\
+
+\emph{Installing \qspin\ is quick and efficient; just follow the steps outlined in App.~\ref{app:install}.}\\
+
+\noindent Below, we stick to the following general guidelines: first, we define the problem containing the physical quantities of interest and show their behaviour in a few figures. After that, we present the \qspin\ code used to generate them, broken up into its building blocks. We explain each step in great detail. The complete contiguous code, including the lines used to generate the figures shown below, is available in App.~\ref{app:scripts}. It is not our purpose in this paper to discuss in detail the interesting underlying physics of these systems; instead, we focus on setting up the python code to study them with the help of \qspin.
+
+\subsection{Adiabatic Control of Parameters in Many-Body Localised Phases}
+\label{subsec:MBL}
+
+\emph{Physics Setup---}Strongly  disordered many-body models have recently enjoyed a lot of attention in the theoretical condensed matter community. It has been shown that, beyond a critical disorder strength, these models undergo a dynamical phase transition from an delocalised ergodic (thermalising) phase to a many-body localised (MBL), i.e.~non-conducting, non-thermalising phase, in which the system does not obey the Eigenstate Thermalisation hypothesis. 
+
+In our first \qspin\ example, we show how one can study the adiabatic control of model parameters in many-body localised phases. It was recently argued that the adiabatic theorem does not apply to disordered systems [CITE]. On the other hand, controlling the system parameters in MBL phases is of crucial experimental[CITE] significance. Thus, the question as to whether there exists an adiabatic window for some, possibly intermediate, ramp speeds (as is the case for periodically-driven systems[CITE]), is of particular and increasing importance. 
+
+Let us consider the Heisenberg $XXZ$ open chain in a disordered $z$-field with the Hamiltonian
+\begin{equation}
+H(t) = \sum_{j=0}^{L-1}J_{xy}\left(S^+_{j+1}S^-_{j} + \mathrm{h.c.}\right) + J_{zz}(t)S^z_{j+1}S^z_{j} + h_jS^z_{j},
+\label{eq:H_XXZ}
+\end{equation}
+where $J_{xy}$ is the spin-spin interaction in the $xy$-plane, disorder is modelled by a uniformly distributed random field $h_j\in[-h_0,h_0]$ of strength $h_0$ along the $z$-direction, and the spin-spin interaction along the $z$-direction, $J_{zz}(t)$ is the adiabatically-modulated parameter. Note that we enumerate the $L$ sites of the chain by $j = 0,1,\dots, L-1$ to conform with python's array indexing convention. It has been demonstrated that this model exhibits a transition to an MBL phase at the critical disorder \cyan{strength $h_{0}^\ast=???$|}. In particular, for $h_0=h_{MBL}=3.9$ the system is in a many-body localised phase, while for $h_0=h_{ETH}=0.1$ the system is in the ergodic (ETH) delocalised phase. We now choose the ramp protocol $J_{zz}(t)=(1/2 + vt)J_{zz}(0)$ with the ramp speed $v$, and evolve the system with the Hamiltonian $H(t)$ from $t_i=0$ to\footnote{Notice that $t_f\to\infty$ as $v\to 0$ and thus, the total evolution time increases with decreasing the ramp speed $v$.} $t_f=(2v)^{-1}$. We choose the initial state $|\psi_i\rangle=|\psi(t_i)\rangle$ from the middle of the spectrum of $H(t_i)$ to ensure typicality; more specifically we choose $|\psi_i\rangle$ to be that eigenstate of $H(t_i)$ whose energy is closest to the rum of middle of the spectrum of $H(t_i)$, where the density of states, and thus the thermodynamic entropy, is largest.  
+
+To measure whether the system can adiabatically follow the ramp, we use two different indicators: (i) we evolve the state up to time $t_f$ and project it onto the eigenstates of $H(t_f)$. The corresponding diagonal entropy
+\begin{equation}
+S_d = -\mathrm{tr}\left[\rho_d\log\rho_d\right], \qquad \rho_d=\sum_n |\langle n|\psi(t_f)\rangle|^2 |n\rangle\langle n|
+\end{equation}
+in the basis $\{|n\rangle\}$ of $H(t_f)$ at small enough ramp speeds $v$ is a measure of the delocalisation of the time-evolved state $\psi(t_f)\rangle$ onto the energy eigenstates of $H(t_f)$. If, for instance, after the ramp the system still occupies a single eigenstate $|\tilde n\rangle$, then $S_d=0$.
+
+The second measure of adiabaticity we use is (ii) the entanglement entropy
+\begin{equation}
+S_\mathrm{ent}(t_f) = -\frac{1}{|\mathrm{A}|}\mathrm{tr}_{\mathrm{A}}\left[\rho_\mathrm{A}(t_f)\log\rho_\mathrm{A}(t_f)\right], \qquad \rho_\mathrm{A}(t_f) = \mathrm{tr}_{\mathrm{A^c}} |\psi(t_f)\rangle\langle\psi(t_f)|
+\end{equation}
+of subsystem A, defined to contain the left half of the chain and $|\mathrm{A}|=L/2$. We denoted the reduced density matrix of subsystem A by $\rho_\mathrm{A}$, and $\mathrm{A^c}$ is the complement of A. \cyan{Phil, do we see area vs volume law in Sent for ETH vs MBL? Note that Sent in the code comes out normalised by the volume of subsystem A, unless the `densities=False' flag is passed}.
+
+\begin{comment}
+If, once the ramp is over, the system has been excited, the entanglement entropy will exhibit a non-trivial post-ramp time evolution. Thus, it also is interesting to quantify the growth of entanglement after the ramp. To do this, we define (iii) the entanglement entropy of the infinite-time reduced density matrix of subsystem A as:
+\begin{equation}
+\overline{S}_\mathrm{rdm} = -\frac{1}{|\mathrm{A}|}\mathrm{tr}_{\mathrm{A}}\left[\overline{\rho}_\mathrm{A}\log\overline{\rho}_\mathrm{A}\right], \qquad \overline{\rho}_\mathrm{A} = \lim_{T\to\infty}\frac{1}{T}\int_{t_f}^T\mathrm{d}t\rho_\mathrm{A}(t).
+\end{equation}
+Since the dynamics after the ramp is generated by the Hamiltonian $H(t_f)$, calculating $\overline{\rho}_\mathrm{A}$ is equivalent to reducing the diagonal density matrix $\rho_d$ to subsystem A.
+\end{comment}
+\emph{Code Analysis---}Let us now explain how one can study this problem numerically using \qspin. First, we load the required python packages.
+\lstinputlisting[firstline=1, lastline=7]{example1.py}
+Since we want to produce many realisations of the date and average over disorder, we specify the simulations parameters: \texttt{n\_real} is the number of disorder realisations, while \texttt{n\_jobs} is the \texttt{joblib} parallelisation parameter which determines how many CPU cores can be used simultaneously.
+\lstinputlisting[firstline=9, lastline=11, firstnumber=9]{example1.py}
+Next, we define the physical model parameters:
+\lstinputlisting[firstline=12, lastline=16, firstnumber=12]{example1.py}
+The time-dependent disordered Hamiltonian consists of two parts: the time-dependent $XXZ$ model which is disorder-free, and the disorder field whose values differ from one realisation to another. We focus on the $XXZ$ part first. First, we define the driving protocol $J_{zz}(t)$, which we call \texttt{ramp}. As already explained, our goal is to obtain the disorder-averaged entropies as a function of the ramp speed. Hence, for each disorder realisation, we need to evolve the initial state many times, each corresponding to a different ramp speed $v$. However, defining the Hamiltonian from scratch every single time is not particularly efficient from the point of view of runtime. We thus want to set up a family of Hamiltonians $H_v(t)$ at once. This can be achieved by using the fact that, in python, re-assigning an already declared variable does not change its memory address; instead it records the new value to the same old address. To use this, notice that the drive speed \texttt{v} is \emph{not} a parameter of the function \texttt{ramp}, but is declared beforehand. Once, \texttt{ramp} has been defined, reassigning \texttt{v} dynamically induces a change of \texttt{ramp} without directly modifying the latter. We shall comment on how this works later on in the code.   
+\lstinputlisting[firstline=19, lastline=22, firstnumber=19]{example1.py}
+To set up any Hamiltonian, we need to calculate the basis of the Hilbert space it lives in. Since the Hamiltonian~\eqref{eq:H_XXZ} conserves the total magnetisation, we can reach larger system sizes by working in a fixed magnetisation sector. A natural choice is the zero-magnetisation sector which contains the ground state. All symmetries in \qspin\ can be declared when the \texttt{basis} is being created. As shown below, the \texttt{basis} class has one required argument \texttt{L} -- the system size. The user can declare a symmetry with the help of optional arguments: for instance, \texttt{Nup=L/2} defines the zero magnetisation sector. In general, the magnetisation symmetry is defined by specifying the number of up spins in the chain. In Sec.~\ref{subsec:Floquet} we shall show how to use two other symmetries -- translation and parity (reflection). Last, since we work with spin operators here, it is required to pass the flag \texttt{pauli=False}; failure to do so will result in a Hamiltonian defined in terms of the Pauli spin matrices. 
+\lstinputlisting[firstline=23, lastline=24, firstnumber=23]{example1.py} 
+Setting up the spin-spin operators goes as follows. First, we need to define the operator lists \texttt{J\_zz} and \texttt{J\_xy}. To uniquely specify a two-spin interaction, we need (i) the coupling, and (ii) --  the labels of the sites the two operators act on. For example, for the $zz$-interaction, the coupling is \texttt{1.0}, while the two sites are the nearest neighbours \texttt{i,i+1}. Hence, the tuple \texttt{[1.0,i,i+1]} defines the bond operator $1\times S^\mu_{i}S^\mu_{i+1}$.  
+
+
+The complete code is available in Fig.~\ref{code:ex1}.
+
+\subsection{Heating in Periodically Driven Spin Chains}
+\label{subsec:Floquet} 
+
+\emph{Physics Setup---}As a second example, we now show how one can easily study heating in the periodically-driven transverse-field Ising model with a parallel field[CITE David, Tomaz]. This model is non-integrable even without the time-dependent driving protocol. The time-periodic Hamiltonian is defined as a two-step protocol as follows:  
+\begin{eqnarray}
+\label{eq:Floquet_H}
+H(t) &=& \left\{ \begin{array}{cl}
+J\sum_{j=0}^{L-1} \sigma^z_j\sigma^z_{j+1} + h\sum_{j=0}^{L-1}\sigma^z, &  t\in[-T/4,\phantom{3}T/4] \\
+\kern-8em g\sum_{j=0}^{L-1} \sigma^x_j, &  t\in[\phantom{-} T/4,3T/4]
+\end{array} \right\}  \mathrm{mod}\ T,\nonumber\\
+&=& \sum_{j=0}^{L-1} \frac{1}{2}\left(J \sigma^z_j\sigma^z_{j+1} + h\sigma^z + g\sigma^x_j\right)
++ \frac{1}{2}\text{sgn}\left[\cos\Omega t\right]\left( J \sigma^z_j\sigma^z_{j+1} + h\sigma^z - g\sigma^x_j \right).
+\end{eqnarray}
+We assume that the spin chain is closed with a periodic boundary (i.e.~a ring). The spin-spin interaction strength is denoted by $J$, the transverse field -- by $g$, and the parallel field -- by $h$. The period of the drive is $T$ and, although the periodic step protocol contains infinitely many Fourier harmonics, we shall refer to $\Omega=2\pi/T$ as \emph{the} frequency of the drive.
+
+Since the Hamiltonian is periodic, $H(t+T)=H(t)$, Floquet's theorem applies and postulates that the dynamics of the system at times $lT$, integer multiple of the driving period (a.k.a.~stroboscopic times), is governed by the time-independent Floquet Hamiltonian\footnote{One has to be careful when using the term `Hamiltonian', as $H_F$ need not be a local operator. In such cases there does not exist a static physically meaningful system described by $H_F$.} $H_F$. In other words, the evolution operator is stroboscopically given by
+\begin{equation}
+U(lT) = \mathcal{T}_t\exp\left(-i\int^{lT}_0H(t)\mathrm{d}t\right) = \exp(-ilT H_F).
+\end{equation}
+While the Floquet Hamiltonian for this system cannot be calculated analytically, a suitable approximation can be found at high drive frequencies by means of the van Vleck inverse-frequency expansion[CITE]. However, this expansion is known to calculate the effective Floquet Hamiltonian $H_\mathrm{eff}$ in a different basis than the original stroboscopic one: $H_F = \exp[-i K_\mathrm{eff}(0)] H_\mathrm{eff}\exp[i K_\mathrm{eff}(0)]$, which requires the additional calculation of the so-called Kick operator $K_\mathrm{eff}(0)$ to `rotate' to the original basis. 
+
+In the inverse-frequency expansion, we expand both $H_\mathrm{eff}$ and $K_\mathrm{eff}(0)$ in powers of the inverse frequency. Let us label these approximate objects by the superscript $^{(n)}$, suggesting that the corresponding object is of order $\mathcal{O}(\Omega^{-n})$:
+\begin{eqnarray*}
+H_F &=& H_F^{(0)} + H_F^{(1)} + H_F^{(2)} + H_F^{(3)} + \mathcal{O}(\Omega^{-4}) = H_F^{(0+1+2+3)} + \mathcal{O}(\Omega^{-4}), \nonumber\\ 
+H_\mathrm{eff} &=& H_\mathrm{eff}^{(0)} + H_\mathrm{eff}^{(1)} + H_\mathrm{eff}^{(2)} + H_\mathrm{eff}^{(3)} + \mathcal{O}(\Omega^{-4}), \nonumber\\ 
+K_\mathrm{eff} &=& K_\mathrm{eff}^{(0)} + K_\mathrm{eff}^{(1)} + K_\mathrm{eff}^{(2)} + K_\mathrm{eff}^{(3)} + \mathcal{O}(\Omega^{-4}), \nonumber\\ 
+\end{eqnarray*}
+Using the short-hand notation one can show that, for this problem, all odd-order terms in the van Vleck expansion vanish [see App.~G of Ref.[CITE thesis]]
+\begin{eqnarray}
+H_F^{(0+1+2+3)} = H_F^{(0+2)}\approx \mathrm e^{-iK_\mathrm{eff}^{(2)}(0)}\left( H_\mathrm{eff}^{(0)} + H_\mathrm{eff}^{(2)} \right)\mathrm e^{+iK_\mathrm{eff}^{(2)}(0)}, 
+\end{eqnarray}
+while the first few even-order ones are given by
+\begin{eqnarray}
+\label{eq:vV_corrs}
+H_\mathrm{eff}^{(0)} &=& \frac{1}{2}\sum_j J\sigma^z_j\sigma^z_{j+1} + h\sigma^z_j + g\sigma^x_j,\nonumber\\
+H_\mathrm{eff}^{(2)} &=& -\frac{\pi^2}{12\Omega^2}\sum_j J^2g\sigma^z_{j-1}\sigma^x_j\sigma^z_{j+1} + Jgh(\sigma^x_j\sigma^z_{j+1} + \sigma^z_j\sigma^x_{j+1}) + Jg^2(\sigma^y_j\sigma^y_{j+1}-\sigma^z_j\sigma^z_{j+1}) \nonumber\\
+&& \quad \qquad\qquad + \left(J^2g + \frac{1}{2}h^2g\right)\sigma^x_j + \frac{1}{2}hg^2\sigma^z_j,\nonumber\\
+K_\mathrm{eff}^{(0)} &=& {\bf 0},\nonumber\\
+K_\mathrm{eff}^{(2)}(0) &=& -\frac{\pi^2}{8\Omega^2}\sum_j Jg\left(\sigma^z_j\sigma^y_{j+1} + \sigma^y_j\sigma^z_{j+1}\right) +hg\sigma^y_j,
+\end{eqnarray}
+
+It was recently argued based on the aforementioned Floquet theorem[CITE] that, in a closed periodically driven system, stroboscopic dynamics is sufficient to completely quantify heating, and we shall make use of this fact in our little study here. We choose as the initial state the ground state of the approximate Hamiltonian $H_F^{(0+1+2+3)}$ and denote it by $|\psi_i\rangle$. Regimes of slow and fast heating can then be easily detected by looking at the energy density $\mathcal{E}$ absorbed by the system from the drive
+\begin{eqnarray}
+\mathcal{E}(lT) = \frac{1}{L}\langle\psi_i|\mathrm e^{ilT H_F}H_F^{(0+1+2)}\mathrm e^{-ilT H_F}|\psi_i\rangle, 
+\label{eq:Floquet_E}
+\end{eqnarray}
+and the entanglement entropy of a subsystem. We call this subsystem A and define it to contain $L/2$ consecutive chain sites\footnote{Since we use periodic boundaries, it does not matter which consecutive sites we choose. In fact, in \qspin\ the user can choose any (possibly disconnected) subsystem to calculate the entanglement entropy and the reduced DM, see Sec.~\ref{app:doc}.}:
+\begin{eqnarray}
+S_\mathrm{ent}(lT) = -\frac{1}{L_\mathrm{A}}\mathrm{tr}_\mathrm{A}\left[ \rho_\mathrm{A}(lT)\log\rho_\mathrm{A}(lT) \right], \ \ \mathrm{with}\ \ \rho_\mathrm{A}(lT) = \mathrm{tr}_\mathrm{A^c}\left[ \mathrm e^{-ilT H_F}|\psi_i\rangle\langle\psi_i|\mathrm e^{ilT H_F}\right],
+\label{eq:Floquet_S}
+\end{eqnarray}
+where the partial trace in the definition of the reduced density matrix (DM) $\rho_\mathrm{A}$ is over the complement of A, denoted $\mathrm{A^c}$, and $L_\mathrm{A}=L/2$ denotes the length of subsystem A.
+
+Since heating can be exponentially slow at high frequencies[CITE], one might be interested in calculating also the infinite-time quantities
+\begin{eqnarray}
+\overline{\mathcal{E}} = \lim_{N\to\infty}\frac{1}{N}\sum_{l=0}^{N}\mathcal{E}(lT), \qquad
+\overline{S}_\mathrm{rdm} = -\frac{1}{L_\mathrm{A}}\mathrm{tr}_\mathrm{A}\left[ \overline{\rho}_\mathrm{A}\log\overline{\rho}_\mathrm{A} \right], \qquad
+S_d^F = -\frac{1}{L}\mathrm{tr} \left[ \rho^F_d\log\rho^F_d \right], 
+\end{eqnarray}   
+where $\overline{\rho}_\mathrm{A}$ is the infinite-time reduced DM of subsystem A, and $\rho^F_d$ is the DM of the Diagonal ensemble in the exact Floquet basis $\{ |n_F\rangle\!\!: H_F|n_F\rangle=E_F|n_F\rangle \}$ [CITE TD review]:
+\begin{equation*}
+\overline{\rho}_\mathrm{A} = \lim_{N\to\infty}\frac{1}{N}\sum_{l=0}^{N}\rho_\mathrm{A}(lT)= \mathrm{tr}_\mathrm{A^c}\left[\rho_d^F\right], \qquad
+\rho_d^F = \sum_{n} |\langle \psi_i|n_F\rangle |^2 |n_F\rangle\langle n_F|
+\end{equation*}
+We note in passing that in general $\overline{S}_\mathrm{rdm}\neq \lim_{N\to\infty}N^{-1}\sum_{l=0}^{N}S_\mathrm{ent}(lT)$ due to interference terms, although the two may happen to be close.
+
+In Fig.??? we show the time evolution of $\mathcal{E}(lT)$ and $S_\mathrm{ent}(lT)$ as a function of the number of driving cycle for a given drive frequency, together with their infinite-time values.
+
+\emph{Code Analysis---}Let us now discuss the \qspin\ code for this problem in detail. First we load the required classes, methods and functions required for the computation:
+\lstinputlisting[firstline=1,lastline=5]{example2.py}
+%
+After that, we define the model parameters as
+\lstinputlisting[firstline=8,lastline=12,firstnumber=8]{example2.py}
+%
+The time-periodic step drive can easily be incorporated through the following function: 
+\lstinputlisting[firstline=15,lastline=18,firstnumber=15]{example2.py}
+Next, we define the basis, similar to the example in Sec.~\ref{subsec:MBL}. One can convince oneself that the Hamiltonian in Eq.~\eqref{eq:Floquet_H} possesses two symmetries at all times $t$ which are, therefore, also inherited by the Floquet Hamiltonian. These are translation invariance and parity (i.e.~reflection w.r.t.~the centre of the chain). To incorporate them, one needs to specify the desired block for each symmetry: \texttt{kblock=int} selects the many-body states of total momentum $2\pi/L$\texttt{*int}, while \texttt{pblock=$\pm 1$} sets the parity sector. For all total momenta different from $0$ and $\pi$, the translation operator does not commute with parity, in which case semi-momentum states resulting in a \emph{real} Hamiltonian have been programmed [CITE Anders].
+%
+\lstinputlisting[firstline=19,lastline=20,firstnumber=19]{example2.py}
+The definition of the operator lists proceeds similarly to the MBL example above. It is interesting to note how the periodic boundary condition is put in \texttt{line 25} using the modulo operator \texttt{\%}. Compared to open boundaries, the PBC \texttt{J\_nn} list now also has a total of \texttt{L} elements, as many as there are sites and bonds on the ring.
+% 
+\lstinputlisting[firstline=21,lastline=25,firstnumber=21]{example2.py}
+To program the full Hamiltonian $H(t)$, we use the second line of Eq.~\eqref{eq:Floquet_H}. The time-independent part is defined using the static operator list. For the time-dependent part, we need to pass the function \texttt{drive} and its arguments \texttt{drive\_args}, defined in \texttt{line 15}, to all operators the drive couples to. In fact, \qspin\ is smart enough to automatically sum up all operators multiplied by the same time-dependent function in any dynamic list created. Note that since we are dealing with a Hamiltonian defined by Pauli matrices and not the spin-$1/2$ operators, we drop the optional argument \texttt{pauli} for the \texttt{hamiltonian} class, since by default it is set to \texttt{pauli=True}.
+%
+\lstinputlisting[firstline=26,lastline=31,firstnumber=26]{example2.py}
+The following lines define the approximate van Vleck Floquet Hamiltonian, cf.~Eq.~\eqref{eq:vV_corrs}. Of particular interest is \texttt{line 37} where we define the operator list for the three-spin operator \texttt{"zxz"}. Apart from the coupling \texttt{J**2*g}, we now need to specify the \emph{three} site indices \texttt{i,(i+1)\%L,(i+2)\%L} for each of the operators \texttt{"zxz"}, respectively. In a similar fashion, one can define any multi-spin operator. 
+%
+\lstinputlisting[firstline=33,lastline=52,firstnumber=33]{example2.py}
+In order to rotate the state from the van Vleck to the stroboscopic (Floquet-Magnus) picture, we also have to calculate the kick operator at time $t=0$. While the procedure is the same as above, note that $K_\mathrm{eff}(0)$ has imaginary matrix elements, whence the variable \texttt{dtype=np.complex128} is used (in fact this is the default \texttt{dtype} optional argument that the \texttt{hamiltonian} class assumes if one does not pass this argument explicitly).
+If the user tries to force define a real-valued Hamiltonian which, however, has complex matrix elements, \qspin\ will raise an error. 
+\lstinputlisting[firstline=54,lastline=60,firstnumber=54]{example2.py}
+%
+Next, we need to find $H_F^{(0+2)} = \exp[-i K^{(2)}_\mathrm{eff}(0)] H^{(0+2)}_\mathrm{eff}\exp[i K^{(2)}_\mathrm{eff}(0)]$. To this end, we make use of the \texttt{hamiltonian} class method \texttt{rotate\_by} which conveniently provides a function for this purpose. In general, it uses a generator $B$ to define a linear transformation `rotate' a \texttt{hamiltonian} object $A$ via $\exp(a^*B^\dagger)A\exp(aB)$ \cyan{So where exactly is the $\dagger$ in \texttt{rotate\_by}?} for any complex-valued number $a$. To rotate using a generator, we set \texttt{generate=True}. Although we do not use it directly here, it is also useful for the user to become familiar with the  \texttt{exp\_op} class which provides the matrix exponential. This class has a variety of useful methods and we invite the user to check out the complete documentation, cf.~App.~\ref{app:doc}. For instance, $\exp(zB)A$ can be obtained using \texttt{exp\_op(B,a=z).dot(A)}, while $A\exp(zB)$ is \texttt{A.dot(exp\_op(B,a=z)}\footnote{One can also use the syntax \texttt{exp\_op(z*B).dot(A)} and \texttt{A.dot(exp\_op(a*B)}, respectively.}.
+\lstinputlisting[firstline=62,lastline=64,firstnumber=62]{example2.py}
+%
+Now that we have concluded the initialisation of the approximate Floquet Hamiltonian, it is time to discuss how to study the dynamics of the system. We start by defining a vector of times \texttt{t}, particularly suitable for the study of periodically driven systems. We initialise this time vector as an object of the \texttt{Floquet\_t\_vec} class. The arguments we need are the drive frequency \texttt{Omega}, the number of periods (here \texttt{100}), and the number of time points per period \texttt{len\_T} (here set to \texttt{1}). Once initialised, \texttt{t} has many useful attributes, such as the time values \texttt{t.vals}, the drive period \texttt{t.T}, the stroboscopic times \texttt{t.strobo.vals}, or their indices \texttt{t.strobo.inds}. The \texttt{Floquet\_t\_vec} class has further useful properties, described in the documentation in App.~\ref{app:doc}.
+\lstinputlisting[firstline=66,lastline=67,firstnumber=66]{example2.py}
+%
+To calculate the exact stroboscopic Floquet Hamiltonian $H_F$, one can conveniently make use of the \texttt{Floquet} class. Currently, it supports three different ways of obtaining the Floquet Hamiltonian: (i) passing an arbitrary time-periodic \texttt{hamiltonian} object it will evolve each basis eigenstate for one period to obtain the evolution operator $U(T)$. This calculation can be parallelised using the python module \texttt{joblib}, activated by setting the optional argument \texttt{n\_jobs}. (ii) one can pass a list of static \texttt{hamiltonian} objects, accompanied by a list of time steps to apply each of these Hamiltonians for. In this case, the \texttt{Floquet} class will make use of the matrix exponential to find $U(T)$. Instead, here we choose, (iii), to use a single dynamic \texttt{hamiltonian} object $H(t)$, accompanied a list of times $\{t_i\}$ to evaluate it at, and a list of time steps $\{\delta t_i\}$ to compute the time-ordered matrix exponential as $\prod_i \exp(-iH(t_i)\delta t_i)$. The \texttt{Floquet} class calculates the quasienergies \texttt{EF} folded in the interval $[-\Omega/2,\Omega/2]$ by default. If required, the user may further request the set of Floquet states by setting \texttt{VF=True}, the Floquet Hamiltonian, \texttt{HF=True}, and Floquet phases -- \texttt{thetaF=True}.
+\lstinputlisting[firstline=69,lastline=74,firstnumber=69]{example2.py}
+%
+As discussed in the main text, we choose for the initial state the ground state\footnote{The approximate Floquet Hamiltonian is unfolded[CITE FAPT review] and, thus, the ground state is well-defined.} of the approximate Hamiltonian $H_F^{(0+2)}$. Here, we demonstrate how to fully diagonalise a \texttt{hamiltonian} object using the function \texttt{eigh}. Note that to find only the ground state it is, in fact, much more efficient to use the sparse matrix Lanczos-based function \texttt{eigsh}, as in the MBL example.
+\lstinputlisting[firstline=76,lastline=78,firstnumber=76]{example2.py}
+%
+Finally, we can calculate the time-dependence of the energy density $\mathcal{E}(t)$ and the entanglement entropy density $S_\mathrm{ent}(t)$. This is done using the \texttt{measurements} function \texttt{obs\_vs\_time}. If one evolves with a constant Hamiltonian (which is effectively the case for stroboscopic time evolution), \qspin\ offers one two different options, that we now show. (i) As a first required argument of \texttt{obs\_vs\_time} one passes a tuple \texttt{(psi\_i,E,V)} with the initial state, the spectrum and the eigenbasis of the Hamiltonian to do the evolution with. The second argument is the time vector (here \texttt{t.vals}), and the third one -- the operator one would like to measure (here the approximate energy density \texttt{1.0/L*HF\_02}. If the observable is time-dependent, \texttt{obs\_vs\_time} will evaluate it at the appropriate times: $\langle\psi(t)|\mathcal{O}(t)|\psi(t)\rangle$. To obtain the entanglement entropy, \texttt{obs\_vs\_time} calls the \texttt{measurements} function \texttt{ent\_entropy}, whose arguments are passed using the variable \texttt{Sent\_args}. \texttt{ent\_entropy} requires to pass the \texttt{basis}, and optionally -- the subsystem \texttt{chain\_subsys} which would otherwise be set to the first \texttt{L/2} sites of the chain. To learn more about how to obtain the reduced density matrix or other features of \texttt{ent\_entropy}, consult the documentation, App.~\ref{app:doc}.
+\lstinputlisting[firstline=80,lastline=83,firstnumber=80]{example2.py}
+%
+The other way to calculate a time-dependent observable (ii) is more generic and works for arbitrary time-dependent Hamiltonians. It makes use of Schr\"odinger evolution to find the time-dependent state using the \texttt{evolve} method of the \texttt{hamiltonian} class. This method typically works for larger system sizes, than the ones that allow full ED. One can then simply pass the generator \texttt{psi\_t} into \texttt{obs\_vs\_time} instead of the initial tuple.
+\lstinputlisting[firstline=85,lastline=87,firstnumber=85]{example2.py}
+%
+The output of \texttt{obs\_vs\_time} is a dictionary. Extracting the energy density and entanglement entropy density values as a function of time, is as easy as:
+\lstinputlisting[firstline=89,lastline=91,firstnumber=89]{example2.py}
+%
+Last, we compute the infinite-time values of the energy density, and the entropy of the infinite-time reduced density matrix, as well as the diagonal entropy. They are, in fact, closely related to the expectation values of the Diagonal Ensemble of the initial state in the Floquet basis. The \texttt{measurements} tool contains the function \texttt{diag\_ensemble} specifically designed for this purpose. The required arguments are the system size \texttt{L}, the initial state \texttt{psi\_i}, as well as the Floquet spectrum \texttt{EF} and states \texttt{VF}. The optional arguments are packed in the auxiliary dictionary \texttt{DE\_args}, and contain the observable \texttt{Obs}, the diagonal entropy \texttt{Sd\_Renyi}, and the entanglement entropy of the reduced DM \texttt{Srdm\_Renyi} with its arguments \texttt{Srdm\_args}. The additional label \texttt{\_Renyi} is used since in general one can also compute the Renyi entropy with parameter $\alpha$, if desired. The function \texttt{diag\_ensemble} will automatically return the densities of the requested quantities, unless the flag \texttt{densities=False} is specified. It has more features which allow one to calculate the temporal and quantum fluctuations of an observable in the diagonal ensemble, and return the diagonal density matrix. Moreover, it can do additional averages of all diagonal ensemble quantities over a user-specified energy distribution, which may prove useful in calculating thermal expectations at infinite times, cf.~App.~\ref{app:doc}.
+\lstinputlisting[firstline=93,lastline=98,firstnumber=93]{example2.py}
+%
+The complete code is available in Fig.~\ref{code:ex2}.
+
+
+\subsection{Quantised Light-Atom Interactions in the Semi-classical Limit: Recovering the Periodically Driven Atom}
+\label{subsec:JC} 
+
+\emph{Physics Setup---}The last example we show deals with the quantisation of the (monochromatic) electromagnetic (EM) field. For the purpose of our little study, we take a two-level atom (i.e.~a single-site spin chain) and couple it to a single photon mode (i.e.~a quantum harmonic oscillator). The Hamiltonian reads 
+\begin{equation}
+\label{eq:JC_H}
+H = \Omega a^\dagger a + \frac{A}{2}\frac{1}{\sqrt{N_\mathrm{ph}}}\left(a^\dagger + a\right)\sigma^x + \Delta\sigma^z,
+\end{equation}
+where the operator $a^\dagger$/$a$ creates/destroys a photon in the mode, and the atom is modelled by a two-level system described by the Pauli spin operators $\sigma^{x,y,z}$. The photon frequency is $\Omega$, $N_\mathrm{ph}$ is the average number of photons in the mode, $A$ -- the coupling between the EM field $E=\sqrt{N_\mathrm{ph}^{-1}}\left( a^\dagger + a\right)$ and the dipole operator $\sigma^x$, and $\Delta$ measures the energy difference between the two atomic states. 
+
+An interesting question to ask is under what conditions the atom can be described\footnote{Strictly speaking the Hamiltonian $H_\mathrm{sc}(t)$ describes the spin dynamics in the rotating frame, defined by $a\to a\mathrm e^{-i\Omega t}$; however, all three observables of interest: $a^\dagger a$, and $\sigma^{y,z}$ are invariant under this transformation.} by the time-periodic semi-classical Hamiltonian:
+\begin{eqnarray}
+H_\mathrm{sc}(t) = A\cos\Omega t\;\sigma^x + \Delta\sigma^z. 
+\end{eqnarray}
+Curiously, despite its simple form, one cannot solve in a closed form for the dynamics generated by the semi-classical Hamiltonian $H_\mathrm{sc}(t)$. 
+
+To address the above question, we prepare the system such that the atom is in its ground state, while we put the photon mode in a coherent state with mean number of photons $N_\mathrm{ph}$, as required to by the semi-classical regime[CITE Haroche]: 
+\begin{equation}
+|\psi_i\rangle = |\mathrm{coh}(N_\mathrm{ph})\rangle|\downarrow\; \rangle.
+\label{eq:psi_i_sp_ph}
+\end{equation}
+We then calculate the exact dynamics generated by the spin-photon Hamiltonian $H$, measure the Pauli spin matrix $\sigma^z$ which represents the energy of the atom, $\sigma^x$ -- the dipole operator, and the photon number $n=a^\dagger a$:
+\begin{equation}
+\langle \mathcal{O}\rangle = \langle\psi_i|\mathrm e^{itH}\mathcal{O}\;\mathrm e^{-itH}|\psi_i\rangle, \qquad \mathcal{O} = n,\sigma^z,\sigma^y,
+\end{equation}
+and compare these to the semi-classical expectation values
+\begin{equation}
+\langle \mathcal{O}\rangle_\mathrm{sc} = \langle\;\downarrow|\mathcal{T}_t \mathrm e^{i\int^t_0 H_\mathrm{sc}(t')\mathrm{d}t'}\mathcal{O}\;\mathcal{T}_t \mathrm e^{-i\int^t_0 H_\mathrm{sc}(t')\mathrm{d}t'}|\downarrow\;\rangle, \qquad \mathcal{O} = \sigma^z,\sigma^y.
+\end{equation}
+
+Figure ??? a shows a comparison between the quantum and the semi-classical time evolution of all observables $\mathcal{O}$ as defined above. 
+
+
+\emph{Code Analysis---}We used the following compact \qspin\ code to produce these results. First we load the required classes, methods and functions to do the calculation:
+\lstinputlisting[firstline=1,lastline=6]{example3.py}
+%
+Next, we define the model parameters as follows:
+\lstinputlisting[linerange={8-12},firstnumber=8]{example3.py}
+%
+To set up the spin-photon Hamiltonian, we first build the operator lists. The \texttt{ph\_energy} list does not require the specification of a lattice site index, since the latter is not defined for the photon sector. The \texttt{at\_energy} list, on the other hand, requires the input of the lattice site for the $\sigma^z$ operator: since we consider a single two-level system or, equivalently -- a single-site chain, this index is \texttt{0}. The spin-photon coupling lists \texttt{absorb} and \texttt{emit} also require the site index which refers to the corresponding Pauli matrices: in this model -- \texttt{0} again due to dimensional constraints.
+%  
+\lstinputlisting[linerange={16-20},firstnumber=16]{example3.py}
+To build the static operator list, we use the \texttt{|} symbol in the operator string to distinguish the spin and photon operators: spin operators always come to the left of the \texttt{|}-symbol, while photon operators -- to the right. For convenience, the identity operator \texttt{I} can be omitted, such that \texttt{I|n} is the same as \texttt{|n}, and \texttt{z|I} is equivalent to \texttt{z|}, respectively. The dynamic list is empty since the spin-photon Hamiltonian is time-independent.
+%  
+\lstinputlisting[linerange={21-23},firstnumber=21]{example3.py}
+To build the spin-photon basis, we call the function \texttt{photon\_basis} and use \texttt{spin\_basis\_1d} as the first argument. We need to specify the number of spin lattice sites, and the total number of harmonic oscillator states. Building the Hamiltonian works as before.
+\lstinputlisting[linerange={24-27},firstnumber=24]{example3.py}
+We now define the time-periodic semi-classical Hamiltonian which is defined on the spin Hilbert space only; thus we use a \texttt{spin\_basis\_1d} basis object. Note the existence of a non-empty dynamic list to define the time-dependence.
+%
+\lstinputlisting[linerange={30-42},firstnumber=30]{example3.py}
+Next, we define the initial state as a product state, see Eq.~\eqref{eq:psi_i_sp_ph}. Notice that in the \qspin\ \texttt{spin\_basis\_1d} basis convention the state $|\downarrow\;\rangle = (1,0)^t$. This is because the spin basis states are coded using their bit representations and the state of all spins pointing down is assigned the integer \texttt{0}. To define the oscillator coherent state with mean photon number $N_\mathrm{ph}$, we use the function \texttt{coherent\_state}: its first argument is the eigenvalue of the annihilation operator $a$, while the second argument is the total number of oscillator states\footnote{Since the oscillator ground state is denoted by $|0\rangle$, the state $|N_\mathrm{ph}\rangle$ is the $(N_\mathrm{ph}+1)$--st state of the oscillator basis.}.
+% 
+\lstinputlisting[linerange={45-50},firstnumber=45]{example3.py}
+The next step is to define a vector of stroboscopic times, using the class \texttt{Floquet\_t\_vec}. Unlike in Sec.~\ref{subsec:Floquet}, here we are also interested in the non-stroboscopic times in between the perfect periods $lT$. Thus, we omit the optional argument \texttt{len\_T} since by default it is set to \texttt{len\_T=100}, meaning that there are now $100$ time points within each period. The initial time can be conveniently called by \texttt{t.i}, while the drive period -- by \texttt{t.T} making use of the attributes of the \texttt{Floquet\_t\_vec} class. For more information on \texttt{Floquet\_t\_vec}, the user is advised to consult the package documentation, see App.~\ref{app:doc}.
+% 
+\lstinputlisting[linerange={53-54},firstnumber=53]{example3.py}
+We now time evolve the initial state both in the atom-photon, and the semi-classical cases using the \texttt{hamiltonian} class method \texttt{evolve}, as before. Here we define the solution \texttt{psi\_t} as a generator expression.
+%
+\lstinputlisting[linerange={55-58},firstnumber=53]{example3.py}
+Last, we define the observables of interest, using the \texttt{hamiltonian} class with unit coupling constants. since each observable represents a single operator, we refrain from defining operator lists and set the observables in-line. Note that the main difference below (apart from the \texttt{|} notation) in defining the Pauli operators in the atom-photon and the semi-classical cases is the basis argument. The python dictionaries \texttt{obs\_args} and \texttt{obs\_args\_sc} represent another way of passing optional keyword arguments to the hamiltonian function. Here we also show how one can disable the automatic symmetry and hermiticity checks.
+% 
+\lstinputlisting[linerange={61-70},firstnumber=61]{example3.py}
+Finally, we calculate the time-dependent expectation values using the \texttt{measurements} tool function \texttt{obs\_vs\_time}. Its arguments are the time-dependent state \texttt{psi\_t}, the vector of times \texttt{t.vals}, and a tuple of all observables of interest. \texttt{obs\_vs\_time} returns a dictionary with all time-dependent expectations stored under the key \texttt{"Expt\_time"}. They can be accessed by array slicing in the order in which the observables appear in the tuple argument, as shown in lines \texttt{75} and \texttt{78}, respectively. 
+\lstinputlisting[linerange={73-78},firstnumber=73]{example3.py}
+%
+The complete code is available in Fig.~\ref{code:ex3}.
+
+\section{Future Perspectives for \qspin}
+\label{sec:outro}
+
+Fermions and Bosons to come; optimisation for hermitian operators.\\
+2d\\
+mention tensoring bases and refer to documentation\\
+
+Although \qspin\ passed all tests we could think of so far, there may still be some bugs lurking out there. Therefore, we would much appreciate it, if the users could report these by sending the relevant piece of their code to \href{weinbe58@bu.edu}{P.~Weinberg}. As a rule of thumb, bug reports are most useful when the script sent is as short as possible but contains the necessary annotations and comments so it can be followed and, at the same time, the Hamiltonian used is the simplest one which displays the bug.
+
+Last but not least, we would like to mention that \qspin\ can prove excellent for various teaching purposes. For instance it can be integrated into homework assignments of classes and tutorials. At the same time, the package provides a wonderful opportunity for undergrad and graduate students to gain intuition while working on a research project.
+
+
+
+
+\section*{Acknowledgements}
+\cyan{Let's also mention the SCC here -- I like them and we've been using the cluster for testing. I think they need to report what papers have been produced using thh cluster so that they get more funding to update it. IF u're fine just copy the sentences from the FAPT paper.} 
+
+% TODO: include author contributions
+\paragraph{Author contributions}
+This is optional. If desired, contributions should be succinctly described in a single short paragraph, using author initials.
+
+% TODO: include funding information
+\paragraph{Funding information}
+Authors are required to provide funding information, including relevant agencies and grant numbers with linked author's initials.
+
+
+\begin{appendix}
+
+\section{Installation Guide in a Few Steps}
+\label{app:install}
+\cyan{We should put a very very detailed description of how to install the program if we want people to be using it a lot. The current description from the README is not enough; E.g. for Linux if someone installs conda and the package but already has another version of python for some reason, we'll need to also ECHO conda's path, etc. And I betcha that Toli hasn't even heard about paths and what they are. While we can't cover for every subtlety we should think of what will be most likely. I suggest we do our best and then test this on different people (say Arden, I can ask a few friends, etc) to make sure it does the job.}
+
+\qspin\ is currently only being supported for python2.7 and so one must make sure to install this version of Python. The Authors recommend the use of Anaconda to install Python and manage your Python packages. It is free to download at \href{https://www.continuum.io/downloads}, or for a lighter installation you can use miniconda which can be found at \href{http://conda.pydata.org/miniconda.html}. 
+
+\subsection{Mac OS X/Linux}
+To install Anaconda/miniconda all one has to do is execute the installation script with administrative prevlige. To do this open up the terminal and go to the folder conataining the downloaded installation file and execute the following command: sudo bash $\rangle $ installation\_file $\langle $. You will be prompted to enter your password. Follow the prompts of the installation. We recommend that you allow the installer to prepend the installation directory to your PATH variable which will make sure this installation of Python will be called when executing a Python script in the terminal. If this is not done then you will have to do this manually in your bash profile file. 
+
+\underline{Installing \qspin\ via Anaconda} Once you have Anaconda/miniconda installed all you have to do to install \qspin\ is to execute the following command into the terminal: conda install -c weinbe58 qspin. If asked to install new packages just say yes. To update the code just run this command periodically. 
+
+\underline{Installing \qspin\ manually} Installing the package manually is not recomended unless the above method failed. Note that you must have Numpy, Scipy, and Joblib installed before installing \qspin\.Once all the prerequisit packages are installed can then download the source code from github and then extract the code to whichever directory you please. Open the terminal and go to the top level directory of the source code and then execute:  python setup.py install --record install\_file.txt. This will compile the source code and copy it to the installation directory of python and record the installation location to install\_file.txt. To update the code you must first completely remove the current version installed and then install the new code. The install\_file.txt can be used to remove the package by running:  cat install\_file.txt | xargs rm -rf. 
+
+\subsection{Windows}
+To install Anaconda/miniconda just download the installer and execute it following the prompts to install the program. Once Anaconda/miniconda is installed open the conda terminal and do one of the following to install the package:
+
+\underline{Installing \qspin\ via Anaconda} Once you have Anaconda/miniconda installed all you have to do to install \qspin\ is to execute the following command into the terminal: conda install -c weinbe58 qspin. If asked to install new packages just say yes. To update the code just run this command periodically. 
+
+\underline{Installing \qspin\ manually} Installing the package manually is not recomended unless the above method failed. Note that you must have Numpy, Scipy, and Joblib installed before installing \qspin\.Once all the prerequisit packages are installed can then download the source code from github and then extract the code to whichever directory you please. Open the terminal and go to the top level directory of the source code and then execute:  python setup.py install --record install\_file.txt. This will compile the source code and copy it to the installation directory of python and record the installation location to install\_file.txt. To update the code you must first completely remove the current version installed and then install the new code. 
+
+
+\newpage
+\section{Complete Example Codes}
+\label{app:scripts}
+\lstinputlisting[label=code:ex1,caption=Adiabatic Control of Parameters in MBL Phases]{example1.py}
+\newpage
+\lstinputlisting[label=code:ex2,caption=Heating in Periodically Driven Spin Chains]{example2.py}
+\newpage
+\lstinputlisting[label=code:ex3,caption=Quantised Light-Atom Interactions in the Semi-classical Limit]{example3.py}
+
+
+\section{Package Documentation}
+\label{app:doc}
+The complete up-to-date documentation for the package is available under:\\
+
+\href{https://github.com/weinbe58/qspin}{https://github.com/weinbe58/qspin}\\
+
+\end{appendix}
+
+
+% TODO: 
+% Provide your bibliography here. You have two options:
+\bibliographystyle{SciPost_bibstyle}
+
+% FIRST OPTION - write your entries here directly, following the example below, including Author(s), Title, Journal Ref. with year in parentheses at the end, followed by the DOI number.
+%\begin{thebibliography}{99}
+%\bibitem{1931_Bethe_ZP_71} H. A. Bethe, {\it Zur Theorie der Metalle. i. Eigenwerte und Eigenfunktionen der linearen Atomkette}, Zeit. f{\"u}r Phys. {\bf 71}, 205 (1931), \doi{10.1007\%2FBF01341708}.
+%\bibitem{arXiv:1108.2700} P. Ginsparg, {\it It was twenty years ago today... }, \url{http://arxiv.org/abs/1108.2700}.
+%\end{thebibliography}
+
+% SECOND OPTION:
+% Use your bibtex library
+% \bibliographystyle{SciPost_bibstyle} % Include this style file here only if you are not using our template
+\bibliography{SciPost_Example_BiBTeX_File.bib}
+
+\nolinenumbers
+
+\end{document}

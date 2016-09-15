@@ -1,0 +1,76 @@
+\documentclass[a5paper]{scrartcl}
+
+\usepackage{multido}
+\usepackage{graphicx}
+\usepackage{MnSymbol} % \triangle, \triangledown
+\usepackage{animate}
+\usepackage{media9}   % \mediabutton
+
+\makeatletter
+%%%%%%% docToBox  %%%%%%%%
+\newcommand\docToBox[3]{%
+  % #1 <file name (PDF)>
+  % #2 <left> <bot> <right> <top> % trim pages by given amounts (PS points)
+  % #3 <boxnum>
+  \pdfximage{#1}%  just for counting pages
+  \multido{\i=1+1}{\pdflastximagepages}{%
+    \global\setbox#3=\vbox{%
+      \box#3%
+      \hbox to \textwidth{\includegraphics[page=\i,trim=#2,clip,width=\textwidth]{#1}}%
+    }%
+  }%  
+}
+%%%%%%% /docToBox %%%%%%%%
+
+%%%%%%% smoothScroll %%%%%
+\newcommand\smoothScroll[5][]{%
+  % [#1] autoplay, controls, ... (see: texdoc animate)
+  % #2 <boxnum>
+  % #3 <viewport height>
+  % #4 <steps>
+  % #5 <steps per sec> while playing; >25 doesn't make sense
+  \edef\mywd{\the\wd#2}%
+  \edef\myht{\the\ht#2}%
+  \edef\mytht{\the\dimexpr\ht#2+\dp#2\relax}%
+  \@anim@reset%
+  \@anim@xform{}{}{#2}% distill box into re-usable PDF XObject
+  \edef\myxform{\@anim@lastxform}%
+  \edef\portht{\the\dimexpr#3\relax}%
+  \begin{animateinline}[#1,width=\mywd,height=\portht]{#5}%
+    \multiframe{#4}{
+      dRaiseLen=\the\dimexpr-\myht+\portht\relax+\the\dimexpr(\mytht-\portht)/#4\relax
+    }{%
+      \begin{minipage}[b][\portht][b]{\mywd}%
+        \raisebox{\dRaiseLen}[0pt][0pt]{\@anim@refxform\myxform}%
+      \end{minipage}%
+    }%
+  \end{animateinline}%
+}
+%%%%%%% /smoothScroll %%%%%
+\makeatother
+
+\begin{document}\Huge
+
+\newbox\lipsumbox
+%load the document with trims into save-box
+\docToBox{lppl.pdf}{131 110 115 121}{\lipsumbox}
+\edef\boxwidth{\the\wd\lipsumbox}% 
+
+\noindent Before you consider using \LaTeX, read the fine-print:\\
+\noindent\mediabutton[
+  jsaction={
+    if(event.shift){anim.lppl.pause();anim.lppl.frameNum=0;}
+    else try{anim.lppl.frameNum--}catch(e){}
+  }
+]{\fboxsep=0pt\framebox[\boxwidth][c]{\tiny\strut$\triangle\triangle\triangle$}}
+%the scrolling widget
+\noindent{\fboxsep=-\fboxrule\fbox{\smoothScroll[label=lppl]{\lipsumbox}{0.79\textheight}{512}{25}}}
+\vskip -0.8\baselineskip
+\noindent\mediabutton[
+  jsaction={
+    if(event.shift){anim.lppl.pause();anim.lppl.frameNum=anim.lppl.numFrames-1;}
+    else try{anim.lppl.frameNum++}catch(e){}
+  }
+]{\fboxsep=0pt\framebox[\boxwidth][c]{\tiny\strut$\triangledown\triangledown\triangledown$}}%
+
+\end{document}

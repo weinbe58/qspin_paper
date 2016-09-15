@@ -1,0 +1,13 @@
+\contentsline {section}{\numberline {1}What Problems can I Solve with $\mathcal {Q}^{\mathrm {u}}\tmspace -\thinmuskip {.1667em}\mathcal {S}\uprho \mathrm {\text {\textexclamdown }}\mathcal {N}$?}{2}{section.1}
+\contentsline {section}{\numberline {2}How do I use $\mathcal {Q}^{\mathrm {u}}\tmspace -\thinmuskip {.1667em}\mathcal {S}\uprho \mathrm {\text {\textexclamdown }}\mathcal {N}$?}{5}{section.2}
+\contentsline {subsection}{\numberline {2.1}Adiabatic Control of Parameters in Many-Body Localised Phases}{5}{subsection.2.1}
+\contentsline {subsection}{\numberline {2.2}Heating in Periodically Driven Spin Chains}{7}{subsection.2.2}
+\contentsline {subsection}{\numberline {2.3}Quantised Light-Atom Interactions in the Semi-classical Limit: Recovering the Periodically Driven Atom}{14}{subsection.2.3}
+\contentsline {section}{\numberline {3}Future Perspectives for $\mathcal {Q}^{\mathrm {u}}\tmspace -\thinmuskip {.1667em}\mathcal {S}\uprho \mathrm {\text {\textexclamdown }}\mathcal {N}$}{17}{section.3}
+\contentsline {paragraph}{Author contributions}{17}{paragraph*.1}
+\contentsline {paragraph}{Funding information}{18}{paragraph*.2}
+\contentsline {section}{\numberline {A}Installation Guide in a Few Steps}{18}{appendix.A}
+\contentsline {subsection}{\numberline {A.1}Mac OS X/Linux}{18}{subsection.A.1}
+\contentsline {subsection}{\numberline {A.2}Windows}{18}{subsection.A.2}
+\contentsline {section}{\numberline {B}Complete Example Codes}{20}{appendix.B}
+\contentsline {section}{\numberline {C}Package Documentation}{29}{appendix.C}

@@ -5,6 +5,7 @@ from numpy.random import ranf,seed # pseudo random numbers
 from joblib import delayed,Parallel # parallelisation
 import numpy as np # generic math functions
 from time import time # timing package
+
 #
 ##### define model parameters #####
 L=4 # system size
@@ -12,7 +13,7 @@ Jxy=1.0 # xy interaction
 Jzz_0=1.0 # zz interaction at time t=0
 h_MBL=3.9 # MBL disorder strength
 h_ETH=0.1 # delocalised disorder strength
-vs=np.logspace(-2.0,0.0,num=100,base=10) # log_2-spaced vector of ramp speeds
+vs=np.logspace(-2.0,0.0,num=100,base=10) # log_10-spaced vector of ramp speeds
 #
 ##### set up Heisenberg Hamiltonian with linearly varying zz-interaction #####
 # define linear ramp function
@@ -35,12 +36,12 @@ H_XXZ = hamiltonian(static,dynamic,basis=basis,dtype=np.float64)
 ##### calculate diagonal and entanglement entropies #####
 ti = time() # start timer
 #
-seed(1) # the random number needs to be seeded for each parallel process
+seed() # the random number needs to be seeded for each parallel process
 #
 # draw random field uniformly from [-1.0,1.0] for each lattice site
-unscaled_fields=-1+2*ranf((basis.L,))
+unscaled_fields=-1+2*ranf((L,))
 # define z-field operator site-coupling list
-h_z=[[unscaled_fields[i],i] for i in range(basis.L)]
+h_z=[[unscaled_fields[i],i] for i in range(L)]
 # static list
 disorder_field = [["z",h_z]]
 # compute disordered z-field Hamiltonians
@@ -48,7 +49,7 @@ Hz=hamiltonian(disorder_field,[],basis=basis,dtype=np.float64,check_herm=False,c
 # compute the MBL and ETH Hamiltonians for the same disorder realisation
 H_MBL=H_XXZ+h_MBL*Hz
 H_ETH=H_XXZ+h_ETH*Hz
-#
+
 ##### evolve state and evaluate entropies #####
 def _do_ramp(psi_0,H,basis,v,E_final,V_final):
 	"""
@@ -84,7 +85,7 @@ E_final,V_final=H_MBL.eigh(time=(0.5/vs[-1]))
 # evolve states and calculate entropies in MBL phase
 run_MBL=[_do_ramp(psi_0,H_MBL,basis,v,E_final,V_final) for v in vs]
 run_MBL=np.vstack(run_MBL).T
-#
+
 ###  ramp in ETH phase ###
 v=1.0 # reset ramp speed to unity
 # calculate the energy at infinite temperature for initial ETH hamiltonian
@@ -142,3 +143,5 @@ pltarr2[1].set_xlabel("$v/J_{zz}(0)$",fontsize=18) # label x-axis
 pltarr2[1].set_xscale("log") # set log scale on x-axis
 pltarr2[1].grid(True,which='both') # plot grid
 plt.show() # show plots
+'''
+'''

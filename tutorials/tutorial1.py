@@ -5,23 +5,21 @@ from numpy.random import ranf,seed # pseudo random numbers
 from joblib import delayed,Parallel # parallelisation
 import numpy as np # generic math functions
 from time import time # timing package
-exit()
-'''
+
+
 #
 ##### define simulation parameters #####
-n_real=20 # number of disorder realisations
-n_jobs=2 # number of spawned processes used for parallelisation
+n_real=10 # number of disorder realisations
+n_jobs=4 # number of spawned processes used for parallelisation
 #
-exit()
 ##### define model parameters #####
-L=4 # system size
+L=10 # system size
 Jxy=1.0 # xy interaction
 Jzz_0=1.0 # zz interaction at time t=0
 h_MBL=3.9 # MBL disorder strength
 h_ETH=0.1 # delocalised disorder strength
 vs=np.logspace(-2.0,0.0,num=20,base=10) # log_2-spaced vector of ramp speeds
 #
-exit()
 ##### set up Heisenberg Hamiltonian with linearly varying zz-interaction #####
 # define linear ramp function
 v = vs[-1] # declare ramp speed variable
@@ -39,7 +37,6 @@ dynamic = [["zz",J_zz,ramp,ramp_args]]
 # compute the time-dependent Heisenberg Hamiltonian
 H_XXZ = hamiltonian(static,dynamic,basis=basis,dtype=np.float64)
 #
-exit()
 ##### calculate diagonal and entanglement entropies #####
 def realization(vs,H_XXZ,basis,real):
 	"""
@@ -56,7 +53,6 @@ def realization(vs,H_XXZ,basis,real):
 	#
 	seed() # the random number needs to be seeded for each parallel process
 	#
-	exit()
 	# draw random field uniformly from [-1.0,1.0] for each lattice site
 	unscaled_fields=-1+2*ranf((basis.L,))
 	# define z-field operator site-coupling list
@@ -69,11 +65,10 @@ def realization(vs,H_XXZ,basis,real):
 	H_MBL=H_XXZ+h_MBL*Hz
 	H_ETH=H_XXZ+h_ETH*Hz
 	#
-	exit()
 	### ramp in MBL phase ###
 	v=1.0 # reset ramp speed to unity
 	# calculate the energy at infinite temperature for initial MBL Hamiltonian
-	Emin,Emax=H_MBL.eigsh(time=0.0,k=2,which=BE",maxiter=1E10,return_eigenvectors=False)
+	Emin,Emax=H_MBL.eigsh(time=0.0,k=2,which="BE",maxiter=1E10,return_eigenvectors=False)
 	E_inf_temp=(Emax+Emin)/2.0
 	# calculate nearest eigenstate to energy at infinite temperature
 	E,psi_0=H_MBL.eigsh(time=0.0,k=1,sigma=E_inf_temp,maxiter=1E10)
@@ -84,11 +79,10 @@ def realization(vs,H_XXZ,basis,real):
 	run_MBL=[_do_ramp(psi_0,H_MBL,basis,v,E_final,V_final) for v in vs]
 	run_MBL=np.vstack(run_MBL).T
 	#
-	exit()
 	###  ramp in ETH phase ###
 	v=1.0 # reset ramp speed to unity
 	# calculate the energy at infinite temperature for initial ETH hamiltonian
-	Emin,Emax=H_ETH.eigsh(time=0.0,k=2,which=BE",maxiter=1E10,return_eigenvectors=False)
+	Emin,Emax=H_ETH.eigsh(time=0.0,k=2,which="BE",maxiter=1E10,return_eigenvectors=False)
 	E_inf_temp=(Emax+Emin)/2.0
 	# calculate nearest eigenstate to energy at infinite temperature
 	E,psi_0=H_ETH.eigsh(time=0.0,k=1,sigma=E_inf_temp,maxiter=1E10)
@@ -137,7 +131,7 @@ run_MBL,run_ETH = zip(*data) # extract MBL and ETH data
 mean_MBL = np.mean(run_MBL,axis=0)
 mean_ETH = np.mean(run_ETH,axis=0)
 #
-exit()
+
 #
 ##### plot results #####
 import matplotlib.pyplot as plt
@@ -173,4 +167,4 @@ pltarr2[1].set_xlabel("$v/J_{zz}(0)$",fontsize=18) # label x-axis
 pltarr2[1].set_xscale("log") # set log scale on x-axis
 pltarr2[1].grid(True,which='both') # plot grid
 plt.show() # show plots
-'''
+

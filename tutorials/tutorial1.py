@@ -5,8 +5,6 @@ from numpy.random import ranf,seed # pseudo random numbers
 from joblib import delayed,Parallel # parallelisation
 import numpy as np # generic math functions
 from time import time # timing package
-
-
 #
 ##### define simulation parameters #####
 n_real=10 # number of disorder realisations
@@ -131,8 +129,6 @@ run_MBL,run_ETH = zip(*data) # extract MBL and ETH data
 mean_MBL = np.mean(run_MBL,axis=0)
 mean_ETH = np.mean(run_ETH,axis=0)
 #
-
-#
 ##### plot results #####
 import matplotlib.pyplot as plt
 ### MBL plot ###
@@ -140,14 +136,14 @@ fig, pltarr1 = plt.subplots(2,sharex=True) # define subplot panel
 pltarr1[0].set_title("MBL phase")
 # subplot 1: diag enetropy vs ramp speed
 pltarr1[0].plot(vs,mean_MBL[0],label="MBL",marker=".",color="blue") # plot data
-pltarr1[0].set_ylabel("$s_d(t_f)$",fontsize=18) # label y-axis
-pltarr1[0].set_xlabel("$v/J_{zz}(0)$",fontsize=18) # label x-axis
+pltarr1[0].set_ylabel("$s_d(t_f)$",fontsize=16) # label y-axis
+pltarr1[0].set_xlabel("$v/J_{zz}(0)$",fontsize=16) # label x-axis
 pltarr1[0].set_xscale("log") # set log scale on x-axis
 pltarr1[0].grid(True,which='both') # plot grid
 # subplot 2: entanglement entropy vs ramp speed
 pltarr1[1].plot(vs,mean_MBL[1],marker=".",color="blue") # plot data
-pltarr1[1].set_ylabel("$s_\mathrm{ent}(t_f)$",fontsize=18) # label y-axis
-pltarr1[1].set_xlabel("$v/J_{zz}(0)$",fontsize=18) # label x-axis
+pltarr1[1].set_ylabel("$s_\mathrm{ent}(t_f)$",fontsize=16) # label y-axis
+pltarr1[1].set_xlabel("$v/J_{zz}(0)$",fontsize=16) # label x-axis
 pltarr1[1].set_xscale("log") # set log scale on x-axis
 pltarr1[1].grid(True,which='both') # plot grid
 #
@@ -156,15 +152,14 @@ fig, pltarr2 = plt.subplots(2,sharex=True) # define subplot panel
 pltarr2[0].set_title("ETH phase")
 # subplot 1: diag enetropy vs ramp speed
 pltarr2[0].plot(vs,mean_ETH[0],marker=".",color="green") # plot data
-pltarr2[0].set_ylabel("$s_d(t_f)$",fontsize=18) # label y-axis
-pltarr2[0].set_xlabel("$v/J_{zz}(0)$",fontsize=18) # label x-axis
+pltarr2[0].set_ylabel("$s_d(t_f)$",fontsize=16) # label y-axis
+pltarr2[0].set_xlabel("$v/J_{zz}(0)$",fontsize=16) # label x-axis
 pltarr2[0].set_xscale("log") # set log scale on x-axis
 pltarr2[0].grid(True,which='both') # plot grid
 # subplot 2: entanglement entropy vs ramp speed
 pltarr2[1].plot(vs,mean_ETH[1],marker=".",color="green") # plot data
-pltarr2[1].set_ylabel("$s_\mathrm{ent}(t_f)$",fontsize=18) # label y-axis
-pltarr2[1].set_xlabel("$v/J_{zz}(0)$",fontsize=18) # label x-axis
+pltarr2[1].set_ylabel("$s_\mathrm{ent}(t_f)$",fontsize=16) # label y-axis
+pltarr2[1].set_xlabel("$v/J_{zz}(0)$",fontsize=16) # label x-axis
 pltarr2[1].set_xscale("log") # set log scale on x-axis
 pltarr2[1].grid(True,which='both') # plot grid
 plt.show() # show plots
-

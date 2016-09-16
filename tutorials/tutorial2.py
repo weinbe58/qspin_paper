@@ -4,8 +4,6 @@ from qspin.tools.measurements import obs_vs_time, diag_ensemble # t_dep measurem
 from qspin.tools.Floquet import Floquet, Floquet_t_vec # Floquet Hamiltonian
 import numpy as np # generic math functions
 #
-exit()
-'''
 ##### define model parameters #####
 L=14 # system size
 J=1.0 # spin interaction
@@ -13,7 +11,6 @@ g=0.809 # transverse field
 h=0.9045 # parallel field
 Omega=4.5 # drive frequency
 #
-exit()
 ##### set up alternating Hamiltonians #####
 # define time-reversal symmetric periodic step drive
 def drive(t,Omega):
@@ -33,7 +30,6 @@ dynamic=[["zz",J_nn,drive,drive_args],
 # compute Hamiltonians
 H=0.5*hamiltonian(static,dynamic,dtype=np.float64,basis=basis)
 #
-exit()
 ##### set up second-order van Vleck Floquet Hamiltonian #####
 # zeroth-order term
 Heff_0=0.5*hamiltonian(static,[],dtype=np.float64,basis=basis)
@@ -55,7 +51,6 @@ Heff_2*=-np.pi**2/(12.0*Omega**2)
 # zeroth + second order van Vleck Floquet Hamiltonian
 Heff_02=Heff_0+Heff_2
 #
-exit()
 ##### set up second-order van Vleck Kick operator #####
 Keff2_term_1=[[J*g,i,(i+1)%L] for i in range(L)] # PBC
 Keff2_term_2=[[h*g,i] for i in range(L)]
@@ -64,16 +59,13 @@ Keff_static=[["zy",Keff2_term_1],["yz",Keff2_term_1],["y",Keff2_term_2]]
 Keff_02=hamiltonian(Keff_static,[],dtype=np.complex128,basis=basis)
 Keff_02*=-np.pi**2/(8.0*Omega**2)
 #
-exit()
 ##### rotate Heff to stroboscopic basis #####
 # e^{-1j*Keff_02} Heff_02 e^{+1j*Keff_02}
 HF_02 = Heff_02.rotate_by(Keff_02,generator=True,a=-1j) 
 #
-exit()
 ##### define time vector of stroboscopic times with 100 cycles #####
 t=Floquet_t_vec(Omega,100,len_T=1) # t.vals=times, t.i=init. time, t.T=drive period
 #
-exit()
 ##### calculate exact Floquet eigensystem #####
 t_list=np.array([0.0,t.T/4.0,3.0*t.T/4.0])+np.finfo(float).eps # times to evaluate H
 dt_list=np.array([t.T/4.0,t.T/2.0,t.T/4.0]) # time step durations to apply H for
@@ -85,7 +77,6 @@ EF=Floq.EF # read off quasienergies
 EF_02, VF_02 = HF_02.eigh()
 EF_02, psi_i = EF_02[0], VF_02[:,0]
 #
-exit()
 ##### time-dependent measurements
 # calculate measurements
 Sent_args = {"basis":basis,"chain_subsys":[j for j in range(L/2)]}
@@ -99,7 +90,6 @@ meas = obs_vs_time(psi_t,t.vals,[HF_02/L],Sent_args=Sent_args)
 Energy_t = meas["Expt_time"]
 Entropy_t = meas["Sent_time"]["Sent"]
 #
-exit()
 ##### calculate diagonal ensemble measurements
 DE_args = {"Obs":HF_02,"Sd_Renyi":True,"Srdm_Renyi":True,"Srdm_args":Sent_args}
 DE = diag_ensemble(L,psi_i,EF,VF,**DE_args)
@@ -107,7 +97,6 @@ Ed = DE["Obs_pure"]
 Sd = DE["Sd_pure"]
 Srdm=DE["Srdm_pure"]
 #
-exit()
 ##### plot results #####
 import matplotlib.pyplot as plt
 import pylab
@@ -135,8 +124,5 @@ plt.legend(loc="lower right",ncol=2,fontsize=18)
 plt.tick_params(labelsize=16)
 # turn on grid
 plt.grid(True)
-# save figure
-fig.savefig('example2.pdf', bbox_inches='tight')
 # show plot
-plt.show() 
-'''
+plt.show()

@@ -5,7 +5,7 @@ from numpy.random import ranf,seed # pseudo random numbers
 from joblib import delayed,Parallel # parallelisation
 import numpy as np # generic math functions
 from time import time # timing package
-
+'''
 #
 ##### define model parameters #####
 L=4 # system size
@@ -15,6 +15,9 @@ h_MBL=3.9 # MBL disorder strength
 h_ETH=0.1 # delocalised disorder strength
 vs=np.logspace(-2.0,0.0,num=100,base=10) # log_10-spaced vector of ramp speeds
 #
+print ">>>>> exiting before defining the ramp function.."
+exit()
+
 ##### set up Heisenberg Hamiltonian with linearly varying zz-interaction #####
 # define linear ramp function
 v = vs[-1] # declare ramp speed variable
@@ -22,22 +25,37 @@ def ramp(t):
 	return (0.5 + v*t)
 #
 ramp_args=[]
+print ">>>>> exiting before creating the basis.."
+exit()
+
 # compute basis in the 0-total magnetisation sector (requires L even)
 basis = spin_basis_1d(L,Nup=L/2,pauli=False)
+print ">>>>> exiting before creating the site-coupling lists.."
+exit()
+
 # define operators with OBC using site-coupling lists
 J_zz = [[Jzz_0,i,i+1] for i in range(0,L-1)] # OBC
 J_xy = [[Jxy/2.0,i,i+1] for i in range(0,L-1)] # OBC
+print ">>>>> exiting before creating the XXZ Hamiltonian.."
+exit()
+
 # static and dynamic lists
 static = [["+-",J_xy],["-+",J_xy]]
 dynamic = [["zz",J_zz,ramp,ramp_args]]
 # compute the time-dependent Heisenberg Hamiltonian
 H_XXZ = hamiltonian(static,dynamic,basis=basis,dtype=np.float64)
 #
+print ">>>>> exiting before seeding the random # generator.."
+exit()
+
 ##### calculate diagonal and entanglement entropies #####
 ti = time() # start timer
 #
 seed() # the random number needs to be seeded for each parallel process
 #
+print ">>>>> exiting before creating the disorder field"
+exit()
+
 # draw random field uniformly from [-1.0,1.0] for each lattice site
 unscaled_fields=-1+2*ranf((L,))
 # define z-field operator site-coupling list
@@ -49,6 +67,8 @@ Hz=hamiltonian(disorder_field,[],basis=basis,dtype=np.float64,check_herm=False,c
 # compute the MBL and ETH Hamiltonians for the same disorder realisation
 H_MBL=H_XXZ+h_MBL*Hz
 H_ETH=H_XXZ+h_ETH*Hz
+print ">>>>> exiting before function _do_ramp.."
+exit()
 
 ##### evolve state and evaluate entropies #####
 def _do_ramp(psi_0,H,basis,v,E_final,V_final):
@@ -72,7 +92,9 @@ def _do_ramp(psi_0,H,basis,v,E_final,V_final):
 	S_d = diag_ensemble(basis.L,psi,E_final,V_final,Sd_Renyi=True)["Sd_pure"]
 	#
 	return np.asarray([S_d,Sent])
-#
+print ">>>>> exiting before MBL ramp.."
+exit()
+
 ### ramp in MBL phase ###
 v=1.0 # reset ramp speed to unity
 # calculate the energy at infinite temperature for initial MBL Hamiltonian
@@ -85,6 +107,8 @@ E_final,V_final=H_MBL.eigh(time=(0.5/vs[-1]))
 # evolve states and calculate entropies in MBL phase
 run_MBL=[_do_ramp(psi_0,H_MBL,basis,v,E_final,V_final) for v in vs]
 run_MBL=np.vstack(run_MBL).T
+print ">>>>> exiting before ETH ramp.."
+exit()
 
 ###  ramp in ETH phase ###
 v=1.0 # reset ramp speed to unity
@@ -101,14 +125,18 @@ run_ETH=np.vstack(run_ETH).T # stack vertically elements of list run_ETH
 # show time taken
 print "realization took {0:.2f} sec".format(time()-ti)
 #
+print ">>>>> exiting before data processing.."
+exit()
+
 ##### rearrange data for disorder realisations #####
 data = np.asarray([(run_MBL,run_ETH)])
 run_MBL,run_ETH = zip(*data) # extract MBL and ETH data
-
 # average over disorder
 mean_MBL = np.mean(run_MBL,axis=0)
 mean_ETH = np.mean(run_ETH,axis=0)
 #
+print ">>>>> exiting before plotting the data.."
+exit()
 ##### plot results #####
 import matplotlib.pyplot as plt
 ### MBL plot ###
@@ -116,14 +144,14 @@ fig, pltarr1 = plt.subplots(2,sharex=True) # define subplot panel
 pltarr1[0].set_title("MBL phase")
 # subplot 1: diag enetropy vs ramp speed
 pltarr1[0].plot(vs,mean_MBL[0],label="MBL",marker=".",color="blue") # plot data
-pltarr1[0].set_ylabel("$s_d(t_f)$",fontsize=18) # label y-axis
-pltarr1[0].set_xlabel("$v/J_{zz}(0)$",fontsize=18) # label x-axis
+pltarr1[0].set_ylabel("$s_d(t_f)$",fontsize=16) # label y-axis
+pltarr1[0].set_xlabel("$v/J_{zz}(0)$",fontsize=16) # label x-axis
 pltarr1[0].set_xscale("log") # set log scale on x-axis
 pltarr1[0].grid(True,which='both') # plot grid
 # subplot 2: entanglement entropy vs ramp speed
 pltarr1[1].plot(vs,mean_MBL[1],marker=".",color="blue") # plot data
-pltarr1[1].set_ylabel("$s_\mathrm{ent}(t_f)$",fontsize=18) # label y-axis
-pltarr1[1].set_xlabel("$v/J_{zz}(0)$",fontsize=18) # label x-axis
+pltarr1[1].set_ylabel("$s_\mathrm{ent}(t_f)$",fontsize=16) # label y-axis
+pltarr1[1].set_xlabel("$v/J_{zz}(0)$",fontsize=16) # label x-axis
 pltarr1[1].set_xscale("log") # set log scale on x-axis
 pltarr1[1].grid(True,which='both') # plot grid
 #
@@ -132,16 +160,18 @@ fig, pltarr2 = plt.subplots(2,sharex=True) # define subplot panel
 pltarr2[0].set_title("ETH phase")
 # subplot 1: diag enetropy vs ramp speed
 pltarr2[0].plot(vs,mean_ETH[0],marker=".",color="green") # plot data
-pltarr2[0].set_ylabel("$s_d(t_f)$",fontsize=18) # label y-axis
-pltarr2[0].set_xlabel("$v/J_{zz}(0)$",fontsize=18) # label x-axis
+pltarr2[0].set_ylabel("$s_d(t_f)$",fontsize=16) # label y-axis
+pltarr2[0].set_xlabel("$v/J_{zz}(0)$",fontsize=16) # label x-axis
 pltarr2[0].set_xscale("log") # set log scale on x-axis
 pltarr2[0].grid(True,which='both') # plot grid
 # subplot 2: entanglement entropy vs ramp speed
 pltarr2[1].plot(vs,mean_ETH[1],marker=".",color="green") # plot data
-pltarr2[1].set_ylabel("$s_\mathrm{ent}(t_f)$",fontsize=18) # label y-axis
-pltarr2[1].set_xlabel("$v/J_{zz}(0)$",fontsize=18) # label x-axis
+pltarr2[1].set_ylabel("$s_\mathrm{ent}(t_f)$",fontsize=16) # label y-axis
+pltarr2[1].set_xlabel("$v/J_{zz}(0)$",fontsize=16) # label x-axis
 pltarr2[1].set_xscale("log") # set log scale on x-axis
 pltarr2[1].grid(True,which='both') # plot grid
 plt.show() # show plots
 '''
-'''
+
+
+

@@ -5,8 +5,6 @@ from qspin.tools.Floquet import Floquet,Floquet_t_vec # Floquet Hamiltonian
 from qspin.basis.photon import coherent_state # HO coherent state
 import numpy as np # generic math functions
 #
-exit()
-'''
 ##### define model parameters #####
 Nph_tot=60 # total number of photon states
 Nph=Nph_tot/2 # mean number of photons in initial coherent state
@@ -14,7 +12,6 @@ Omega=3.5 # drive frequency
 A=0.8 # spin-photon coupling strength (drive amplitude)
 Delta=1.0 # difference between atom energy levels
 #
-exit()
 ##### set up photon-atom Hamiltonian #####
 # define operator site-coupling lists
 ph_energy=[[Omega]] # photon energy
@@ -29,7 +26,6 @@ basis=photon_basis(spin_basis_1d,L=1,Nph=Nph_tot)
 # compute atom-photon Hamiltonian H
 H=hamiltonian(static,dynamic,dtype=np.float64,basis=basis)
 #
-exit()
 ##### set up semi-classical Hamiltonian #####
 # define operators
 dipole_op=[[A,0]]
@@ -45,7 +41,6 @@ basis_sc=spin_basis_1d(L=1)
 # compute semi-classical Hamiltonian H_{sc}(t)
 H_sc=hamiltonian(static_sc,dynamic_sc,dtype=np.float64,basis=basis_sc)
 #
-exit()
 ##### define initial state #####
 # define atom ground state
 psi_at_i=np.array([1.0,0.0]) # spin-down eigenstate of \sigma^z
@@ -54,7 +49,6 @@ psi_ph_i=coherent_state(np.sqrt(Nph),Nph_tot+1)
 # compute atom-photon initial state as a tensor product
 psi_i=np.kron(psi_at_i,psi_ph_i)
 #
-exit()
 ##### calculate time evolution #####
 # define time vector over 30 driving cycles with 100 points per period
 t=Floquet_t_vec(Omega,30) # t.i = initial time, t.T = driving period
@@ -63,7 +57,6 @@ psi_t=H.evolve(psi_i,t.i,t.vals,iterate=True,rtol=1E-9,atol=1E-9)
 # evolve atom GS with semi-classical Hamiltonian H_sc
 psi_sc_t=H_sc.evolve(psi_at_i,t.i,t.vals,iterate=True,rtol=1E-9,atol=1E-9)
 #
-exit()
 ##### define observables #####
 # define observables parameters
 obs_args={"basis":basis,"check_herm":False,"check_symm":False}
@@ -76,7 +69,6 @@ sy=hamiltonian([["y|",	[[1.0,0]] ]],[],dtype=np.complex128,**obs_args)
 sz_sc=hamiltonian([["z",[[1.0,0]] ]],[],dtype=np.float64,**obs_args_sc)
 sy_sc=hamiltonian([["y",[[1.0,0]] ]],[],dtype=np.complex128,**obs_args_sc)
 #
-exit()
 ##### calculate expectation values #####
 # in atom-photon Hilbert space
 Obs_t = obs_vs_time(psi_t,t.vals,(n,sz,sy))["Expt_time"]
@@ -84,7 +76,7 @@ O_n, O_sz, O_sy = Obs_t[:,0], Obs_t[:,1], Obs_t[:,2]
 # in the semi-classical Hilbert space
 Obs_sc_t = obs_vs_time(psi_sc_t,t.vals,(sz_sc,sy_sc))["Expt_time"]
 O_sz_sc, O_sy_sc = Obs_sc_t[:,0], Obs_sc_t[:,1]
-exit()
+#
 ##### plot results #####
 import matplotlib.pyplot as plt
 import pylab
@@ -112,8 +104,5 @@ plt.legend(loc="upper right",ncol=5,columnspacing=0.6,numpoints=4)
 plt.tick_params(labelsize=16)
 # turn on grid
 plt.grid(True)
-# save figure
-fig.savefig('example3.pdf', bbox_inches='tight')
 # show plot
 plt.show() 
-'''

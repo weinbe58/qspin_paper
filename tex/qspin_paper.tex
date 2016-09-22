@@ -205,9 +205,10 @@ We present a new open-source Python package for quantum dynamics of spin chains 
 \cyan{
 	\begin{enumerate}
 		\item write test functions
-		\item support form Windows 7, 10
+		\item support for Windows 7, 10
 		\item put references
 		\item add terminal basics
+		\item write online doc using Jupyter
 	\end{enumerate}
 	}
 
@@ -365,8 +366,11 @@ Since the problem involves disorder, we have to generate multiple disorder reali
 Next, we set up the full disordered time-dependent Hamiltonian of the problem $H(t) = H_\mathrm{XXZ}(t) + \sum_j h_jS^z_j$. The random field $h_j$ differs from one realisation to another. Hence, it has to be defined inside the \texttt{realisation} function. Recall that we want to compare the localised with the delocalised regimes, corresponding to the disordered strengths $h_\mathrm{MBL}$ and $h_\mathrm{ETH}$, respectively. To this end, we first, for each lattice site $i$, draw a random number \texttt{unscaled\_fields[i]} uniformly in the interval $[-1,1]$, and store it in the vector \texttt{unscaled\_fields}, see \texttt{line 55} below. Building the external $z$-field proceeds in exactly the same way as before: (i) we calculate the site-coupling list, \texttt{line 57}, (ii) we designate that the operator is along the $z$-axis by defining a static operator list, \texttt{line 59}, and (iii) we use the already computed spin basis to construct the operator matrix with the \texttt{hamiltonian} class, \texttt{lines 61-62}. \qspin\ has the option to disable the default checks on hermiticity, magnetisation (particle number) conservation, and symmetries using the auxiliary dictionary \texttt{no\_checks} passed straight to \texttt{hamiltonian} as keyword arguments. This can allow the user to define non-hermitian operators. Last, in \texttt{lines 64-65}, we define the MBL and ETH time-dependent Hamiltonians, corresponding to the two disorder strengths $h_\mathrm{ETH}$ and $h_{MBL}$.  
 \lstinputlisting[firstline=54, lastline=65, firstnumber=54]{example1.py}
 %
-We choose to first focus on the MBL phase. Re-setting the ramp speed \texttt{v} to unity is required for calculating the correct eigensystem of the Hamiltonian at the end of the ramp, since $v$ is a parameter of $H(t;v)$ (see \texttt{line 77}). We want the initial state to be as close as possible to an infinite-temperature state within the given symmetry sector. To this end, we can first calculate the minimum and maximum energy, \texttt{Emin} and \texttt{Emax} of the spectrum of $H_\mathrm{MBL}(t=0)$. This is achieved using the \texttt{hamiltonian} attribute method \texttt{eigsh}, see \texttt{lines 70-71}, which is a wrapper for \texttt{scipy.sparse.linalg.eigsh}, cf.~App.~\ref{app:doc}. Then, by taking the `centre-of-mass' we obtain a number, \texttt{E\_inf\_temp}, which is as represents the infinite-temperature energy up to finite-size effects, \texttt{line 72}. The initial state \texttt{psi\_0} is then that eigenstate of $H_\mathrm{MBL}(t=0)$, whose energy is closest to \texttt{E\_inf\_temp}, cf.~\texttt{lines 74-75}. 
-\lstinputlisting[firstline=67, lastline=75, firstnumber=67]{example1.py}
+We choose to first focus on the MBL phase. Re-setting the ramp speed \texttt{v} to unity is required for calculating the correct eigensystem of the Hamiltonian at the end of the ramp, since $v$ is a parameter of $H(t;v)$ (see \texttt{line 77}). We want the initial state to be as close as possible to an infinite-temperature state within the given symmetry sector. To this end, we can first calculate the minimum and maximum energy, \texttt{Emin} and \texttt{Emax} of the spectrum of $H_\mathrm{MBL}(t=0)$. This is achieved using the \texttt{hamiltonian} attribute method \texttt{eigsh}, see \texttt{lines 70-71}, which is a wrapper for \href{http://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.sparse.linalg.eigsh.html}{\texttt{scipy.sparse.linalg.eigsh}}, cf.~also~App.~\ref{app:doc}. Then, by taking the `centre-of-mass' we obtain a number, \texttt{E\_inf\_temp}, which is as represents the infinite-temperature energy up to finite-size effects, \texttt{line 72}. The optional argument \texttt{k=2} ensures that only two eigenstates are calculated. To determine which ones, the argument \texttt{which="BE"} specifies  them to be the two states at \texttt{B}oth \texttt{E}nds of the spectrum. Convergence of the underlying diagonalisation algorithm is enforced by explicitly specifying the number of maximal iterations: \texttt{maxiter=1E10}. Since we do not need the eigenstates, we use \texttt{return\_eigenvectors=False}. Last, the \texttt{**eigsh\_args} is a standard Python way of reading off the arguments by name from a dictionary, here \texttt{eigsh\_args}.
+\lstinputlisting[firstline=67, lastline=72, firstnumber=67]{example1.py}
+%
+The initial state \texttt{psi\_0} is then that eigenstate of $H_\mathrm{MBL}(t=0)$, whose energy is closest to \texttt{E\_inf\_temp}. This time, we only need one eigenstate, and hence \texttt{k=1}. To pick up the desired eigenstate, we make use of another optional argument: \texttt{sigma=E\_inf\_temp}.
+\lstinputlisting[firstline=73, lastline=75, firstnumber=73]{example1.py}
 %
 The calculation of the diagonal entropy $s_d$ requires the eigensystem of the Hamiltonian $H_\mathrm{MBL}(t_f)$ at the end of the ramp $t_f=(2v_f)^{-2}$. The entire spectrum and the corresponding eigenstates are obtained using the \texttt{hamiltonian} method \texttt{eigh}. For time-dependent Hamiltonians, \texttt{eigh} accepts the argument \texttt{time} to specify the time slice. Unless explicitly specified, \texttt{time=0.0} by default.
 \lstinputlisting[firstline=76, lastline=77, firstnumber=76]{example1.py}
@@ -653,11 +657,11 @@ If asked to install new packages just say `yes'. To keep the code up-to-date, ju
 
 \underline{\bf Installing Manually.}---Installing the package manually is not recommended unless the above method failed. Note that you must have NumPy, SciPy, and Joblib installed before installing \qspin. Once all the prerequisite packages are installed, one can download the source code from \href{https://github.com/weinbe58/qspin/tree/master}{github} and then extract the code to whichever directory one desires. Open the terminal and go to the top level directory of the source code and execute:
 \begin{lstlisting}[numbers=none]  
-Python setup.py install --record install\_file.txt
+Python setup.py install --record install_file.txt
 \end{lstlisting}
 This will compile the source code and copy it to the installation directory of Python recording the installation location to \texttt{install\_file.txt}. To update the code, you must first completely remove the current version installed and then install the new code. The \texttt{install\_file.txt} can be used to remove the package by running:  
 \begin{lstlisting}[numbers=none]  
-cat install\_file.txt | xargs rm -rf. 
+cat install_file.txt | xargs rm -rf. 
 \end{lstlisting}
 
 \subsection{Windows}
@@ -671,7 +675,7 @@ If asked to install new packages just say `yes'. To update the code just run thi
 
 \underline{\bf Installing Manually.}---Installing the package manually is not recommended unless the above method failed. Note that you must have NumPy, SciPy, and Joblib installed before installing \qspin. Once all the prerequisite packages are installed, one can download the source code from \href{https://github.com/weinbe58/qspin/tree/master}{github} and then extract the code to whichever directory one desires. Open the terminal and go to the top level directory of the source code and then execute:  
 \begin{lstlisting}[numbers=none]
-Python setup.py install --record install\_file.txt
+Python setup.py install --record install_file.txt
 \end{lstlisting}
 This will compile the source code and copy it to the installation directory of Python and record the installation location to \texttt{install\_file.txt}. To update the code you must first completely remove the current version installed and then install the new code. 
 

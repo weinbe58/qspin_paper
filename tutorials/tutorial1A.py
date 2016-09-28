@@ -98,10 +98,10 @@ exit()
 ### ramp in MBL phase ###
 v=1.0 # reset ramp speed to unity
 # calculate the energy at infinite temperature for initial MBL Hamiltonian
-Emin,Emax=H_MBL.eigsh(time=0.0,k=2,which="BE",maxiter=1E10,return_eigenvectors=False)
+Emin,Emax=H_MBL.eigsh(time=0.0,k=2,which="BE",maxiter=1E4,return_eigenvectors=False)
 E_inf_temp=(Emax+Emin)/2.0
 # calculate nearest eigenstate to energy at infinite temperature
-E,psi_0=H_MBL.eigsh(time=0.0,k=1,sigma=E_inf_temp,maxiter=1E10)
+E,psi_0=H_MBL.eigsh(time=0.0,k=1,sigma=E_inf_temp,maxiter=1E4)
 # calculate the eigensystem of the final MBL hamiltonian
 E_final,V_final=H_MBL.eigh(time=(0.5/vs[-1]))
 # evolve states and calculate entropies in MBL phase
@@ -113,10 +113,10 @@ exit()
 ###  ramp in ETH phase ###
 v=1.0 # reset ramp speed to unity
 # calculate the energy at infinite temperature for initial ETH hamiltonian
-Emin,Emax=H_ETH.eigsh(time=0.0,k=2,which="BE",maxiter=1E10,return_eigenvectors=False)
+Emin,Emax=H_ETH.eigsh(time=0.0,k=2,which="BE",maxiter=1E4,return_eigenvectors=False)
 E_inf_temp=(Emax+Emin)/2.0
 # calculate nearest eigenstate to energy at infinite temperature
-E,psi_0=H_ETH.eigsh(time=0.0,k=1,sigma=E_inf_temp,maxiter=1E10)
+E,psi_0=H_ETH.eigsh(time=0.0,k=1,sigma=E_inf_temp,maxiter=1E4)
 # calculate the eigensystem of the final ETH hamiltonian
 E_final,V_final=H_ETH.eigh(time=(0.5/vs[-1]))
 # evolve states and calculate entropies in ETH phase

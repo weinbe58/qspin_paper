@@ -1,8 +1,8 @@
-qspin_paper.aux
-qspin_paper.bbl
-qspin_paper.blg
-qspin_paper.dvi
-qspin_paper.log
-qspin_paper.out
-qspin_paper.synctex.gz
-qspin_paper.toc
+*.aux
+*.bbl
+*.blg
+*.dvi
+*.log
+*.out
+*.synctex.gz
+*.toc

@@ -204,9 +204,7 @@ We present a new open-source Python package for quantum dynamics of spin chains 
 \cyan{
 	\begin{enumerate}
 		\item write test functions
-		\item support for Windows 7, 10
 		\item put references
-		\item add terminal basics
 		\item write online doc using Jupyter
 	\end{enumerate}
 	}
@@ -633,6 +631,97 @@ Authors are required to provide funding information, including relevant agencies
 
 \begin{appendix}
 
+\section{Basic Use command line to use Python}
+\label{app:cmd_line}
+
+In this appendix we will review how to use the command line for Windows and OS X/Linux to naviagte your computer's folders/directories and run the Python scripts. First some basic commands:
+
+\subsection{Mac OS X/Linux}
+Some basic commands:
+
+\begin{itemize}
+\item change directory:
+\begin{lstlisting}[numbers=none]
+$ cd < path_to_directory >
+\end{lstlisting}
+\item list files in current directory:
+\begin{lstlisting}[numbers=none]
+$ ls 
+\end{lstlisting}
+list files in another directory:
+\begin{lstlisting}[numbers=none]
+$ ls < path_to_directory >
+\end{lstlisting}
+\item make new directory:
+\begin{lstlisting}[numbers=none]
+$ mkdir <path>/< directory_name >
+\end{lstlisting}
+\item copy file:
+\begin{lstlisting}[numbers=none]
+$ cp < path >/< file_name > < new_path >/< new_file_name >
+\end{lstlisting}
+\item move file or change file name:
+\begin{lstlisting}[numbers=none]
+$ mv < path >/< file_name > < new_path >/< new_file_name >
+\end{lstlisting}
+\item remove file:
+\begin{lstlisting}[numbers=none]
+$ rm < path_to_file >/< file_name >
+\end{lstlisting}
+
+\end{itemize}
+Unix also has an auto complete feature if you press the TAB key. It will complete word or stop when it matches more than one file/folder name. The current directory is denoted by "." and the directory above is "..".
+%
+Now to execute a python script all you have to do is open your terminal and navigate to the directory which contains the python script. To execute the script just use the following command:
+\begin{lstlisting}[numbers=none]
+$ python script.py
+\end{lstlisting}
+it's that simple!
+
+\subsection{Windows}
+Some basic commands:
+
+\begin{itemize}
+\item change directory:
+\begin{lstlisting}[numbers=none]
+> cd < path_to_directory >
+\end{lstlisting}
+\item list files in current directory:
+\begin{lstlisting}[numbers=none]
+> dir
+\end{lstlisting}
+list files in another directory:
+\begin{lstlisting}[numbers=none]
+> dir < path_to_directory >
+\end{lstlisting}
+\item make new directory:
+\begin{lstlisting}[numbers=none]
+> mkdir <path>\< directory_name >
+\end{lstlisting}
+\item copy file:
+\begin{lstlisting}[numbers=none]
+> copy < path >\< file_name > < new_path >\< new_file_name >
+\end{lstlisting}
+\item move file or change file name:
+\begin{lstlisting}[numbers=none]
+> move < path >\< file_name > < new_path >\< new_file_name >
+\end{lstlisting}
+\item remove file:
+\begin{lstlisting}[numbers=none]
+> erase < path >\< file_name >
+\end{lstlisting}
+
+\end{itemize}
+Windows also has a auto complete feature but instead of stopping when there multiple files/folders with the same name, it will complete it with the first file alphebetically. The current directory is denoted by "." and the directory above is "..".
+
+\subsection{Execute Python script (any OS)}
+%
+Now to execute a python script all you have to do is open your terminal and navigate to the directory which contains the python script. To execute the script just use the following command:
+\begin{lstlisting}[numbers=none]
+python script.py
+\end{lstlisting}
+it's that simple!
+
 \section{Installation Guide in a Few Steps}
 \label{app:install}
 
@@ -641,26 +730,26 @@ Authors are required to provide funding information, including relevant agencies
 \subsection{Mac OS X/Linux}
 To install Anaconda/miniconda all one has to do is execute the installation script with administrative privilege. To do this open up the terminal and go to the folder containing the downloaded installation file and execute the following command: 
 \begin{lstlisting}[numbers=none]
-sudo bash > installation_file <
+$ sudo bash <installation_file>
 \end{lstlisting}
 You will be prompted to enter your password. Follow the prompts of the installation. We recommend that you allow the installer to prepend the installation directory to your PATH variable which will make sure this installation of Python will be called when executing a Python script in the terminal. If this is not done then you will have to do this manually in your bash profile file:
 \begin{lstlisting}[numbers=none]
-export PATH="path_to/anaconda/bin:$PATH"
+$ export PATH="path_to/anaconda/bin:$PATH"
 \end{lstlisting}
 
 \underline{\bf Installing via Anaconda.}---Once you have Anaconda/miniconda installed, all you have to do to install \qspin\ is to execute the following command into the terminal: 
 \begin{lstlisting}[numbers=none]
-conda install -c weinbe58 qspin
+$ conda install -c weinbe58 qspin
 \end{lstlisting}
 If asked to install new packages just say `yes'. To keep the code up-to-date, just run this command regularly. 
 
 \underline{\bf Installing Manually.}---Installing the package manually is not recommended unless the above method failed. Note that you must have NumPy, SciPy, and Joblib installed before installing \qspin. Once all the prerequisite packages are installed, one can download the source code from \href{https://github.com/weinbe58/qspin/tree/master}{github} and then extract the code to whichever directory one desires. Open the terminal and go to the top level directory of the source code and execute:
 \begin{lstlisting}[numbers=none]  
-Python setup.py install --record install_file.txt
+$ python setup.py install --record install_file.txt
 \end{lstlisting}
 This will compile the source code and copy it to the installation directory of Python recording the installation location to \texttt{install\_file.txt}. To update the code, you must first completely remove the current version installed and then install the new code. The \texttt{install\_file.txt} can be used to remove the package by running:  
 \begin{lstlisting}[numbers=none]  
-cat install_file.txt | xargs rm -rf. 
+$ cat install_file.txt | xargs rm -rf. 
 \end{lstlisting}
 
 \subsection{Windows}
@@ -668,19 +757,20 @@ To install Anaconda/miniconda on Windows, download the installer and execute it 
 
 \underline{\bf Installing via Anaconda.}---Once you have Anaconda/miniconda installed all you have to do to install \qspin\ is to execute the following command into the terminal: 
 \begin{lstlisting}[numbers=none]
-conda install -c weinbe58 qspin
+> conda install -c weinbe58 qspin
 \end{lstlisting}
 If asked to install new packages just say `yes'. To update the code just run this command regularly. 
 
 \underline{\bf Installing Manually.}---Installing the package manually is not recommended unless the above method failed. Note that you must have NumPy, SciPy, and Joblib installed before installing \qspin. Once all the prerequisite packages are installed, one can download the source code from \href{https://github.com/weinbe58/qspin/tree/master}{github} and then extract the code to whichever directory one desires. Open the terminal and go to the top level directory of the source code and then execute:  
 \begin{lstlisting}[numbers=none]
-Python setup.py install --record install_file.txt
+> python setup.py install --record install_file.txt
 \end{lstlisting}
 This will compile the source code and copy it to the installation directory of Python and record the installation location to \texttt{install\_file.txt}. To update the code you must first completely remove the current version installed and then install the new code. 
 
 
 \newpage
 \section{Complete Example Codes}
+The scripts can be downloaded from github \href{https://github.com/weinbe58/qspin_paper/tree/master/scripts}{here}.
 \label{app:scripts}
 \lstinputlisting[label=code:ex1,caption=Adiabatic Control of Parameters in MBL Phases]{example1.py}
 \newpage

@@ -67,11 +67,11 @@ def realization(vs,H_XXZ,basis,real):
 	### ramp in MBL phase ###
 	v=1.0 # reset ramp speed to unity
 	# calculate the energy at infinite temperature for initial MBL Hamiltonian
-	eigsh_args={"k":2,"which":"BE","maxiter":1E10,"return_eigenvectors":False}
+	eigsh_args={"k":2,"which":"BE","maxiter":1E4,"return_eigenvectors":False}
 	Emin,Emax=H_MBL.eigsh(time=0.0,**eigsh_args)
 	E_inf_temp=(Emax+Emin)/2.0
 	# calculate nearest eigenstate to energy at infinite temperature
-	E,psi_0=H_MBL.eigsh(time=0.0,k=1,sigma=E_inf_temp,maxiter=1E10)
+	E,psi_0=H_MBL.eigsh(time=0.0,k=1,sigma=E_inf_temp,maxiter=1E4)
 	psi_0=psi_0.reshape((-1,))
 	# calculate the eigensystem of the final MBL hamiltonian
 	E_final,V_final=H_MBL.eigh(time=(0.5/vs[-1]))
@@ -85,7 +85,7 @@ def realization(vs,H_XXZ,basis,real):
 	Emin,Emax=H_ETH.eigsh(time=0.0,**eigsh_args)
 	E_inf_temp=(Emax+Emin)/2.0
 	# calculate nearest eigenstate to energy at infinite temperature
-	E,psi_0=H_ETH.eigsh(time=0.0,k=1,sigma=E_inf_temp,maxiter=1E10)
+	E,psi_0=H_ETH.eigsh(time=0.0,k=1,sigma=E_inf_temp,maxiter=1E4)
 	psi_0=psi_0.reshape((-1,))
 	# calculate the eigensystem of the final ETH hamiltonian
 	E_final,V_final=H_ETH.eigh(time=(0.5/vs[-1]))
@@ -121,54 +121,57 @@ def _do_ramp(psi_0,H,basis,v,E_final,V_final):
 	return np.asarray([S_d,Sent])
 #
 ##### produce data for n_real disorder realisations #####
-"""
-# alternative way without parallelisation
-data = np.asarray([realization(vs,H_XXZ,basis,i) for i in xrange(n_real)])
-"""
-data = np.asarray(Parallel(n_jobs=n_jobs)(delayed(realization)(vs,H_XXZ,basis,i) for i in xrange(n_real)))
-run_MBL,run_ETH = zip(*data) # extract MBL and data
-# average over disorder
-mean_MBL = np.mean(run_MBL,axis=0)
-mean_ETH = np.mean(run_ETH,axis=0)
-#
-##### plot results #####
-import matplotlib.pyplot as plt
-### MBL plot ###
-fig, pltarr1 = plt.subplots(2,sharex=True) # define subplot panel
-# subplot 1: diag enetropy vs ramp speed
-pltarr1[0].plot(vs,mean_MBL[0],label="MBL",marker=".",color="blue") # plot data
-pltarr1[0].set_ylabel("$s_d(t_f)$",fontsize=22) # label y-axis
-pltarr1[0].set_xlabel("$v/J_{zz}(0)$",fontsize=22) # label x-axis
-pltarr1[0].set_xscale("log") # set log scale on x-axis
-pltarr1[0].grid(True,which='both') # plot grid
-pltarr1[0].tick_params(labelsize=16)
-# subplot 2: entanglement entropy vs ramp speed
-pltarr1[1].plot(vs,mean_MBL[1],marker=".",color="blue") # plot data
-pltarr1[1].set_ylabel("$s_\mathrm{ent}(t_f)$",fontsize=22) # label y-axis
-pltarr1[1].set_xlabel("$v/J_{zz}(0)$",fontsize=22) # label x-axis
-pltarr1[1].set_xscale("log") # set log scale on x-axis
-pltarr1[1].grid(True,which='both') # plot grid
-pltarr1[1].tick_params(labelsize=16)
-# save figure
-fig.savefig('example1_MBL.pdf', bbox_inches='tight')
-#
-### ETH plot ###
-fig, pltarr2 = plt.subplots(2,sharex=True) # define subplot panel
-# subplot 1: diag enetropy vs ramp speed
-pltarr2[0].plot(vs,mean_ETH[0],marker=".",color="green") # plot data
-pltarr2[0].set_ylabel("$s_d(t_f)$",fontsize=22) # label y-axis
-pltarr2[0].set_xlabel("$v/J_{zz}(0)$",fontsize=22) # label x-axis
-pltarr2[0].set_xscale("log") # set log scale on x-axis
-pltarr2[0].grid(True,which='both') # plot grid
-pltarr2[0].tick_params(labelsize=16)
-# subplot 2: entanglement entropy vs ramp speed
-pltarr2[1].plot(vs,mean_ETH[1],marker=".",color="green") # plot data
-pltarr2[1].set_ylabel("$s_\mathrm{ent}(t_f)$",fontsize=22) # label y-axis
-pltarr2[1].set_xlabel("$v/J_{zz}(0)$",fontsize=22) # label x-axis
-pltarr2[1].set_xscale("log") # set log scale on x-axis
-pltarr2[1].grid(True,which='both') # plot grid
-pltarr2[1].tick_params(labelsize=16)
-# save figure
-fig.savefig('example1_ETH.pdf', bbox_inches='tight')
-#
-plt.show() # show plots
+# __name__ == '__main__' required to use joblib in windows.
+if __name__ == '__main__':
+	"""
+	# alternative way without parallelisation
+	data = np.asarray([realization(vs,H_XXZ,basis,i) for i in xrange(n_real)])
+	"""
+	data = np.asarray(Parallel(n_jobs=n_jobs)(delayed(realization)(vs,H_XXZ,basis,i) for i in xrange(n_real)))
+
+	run_MBL,run_ETH = zip(*data) # extract MBL and data
+	# average over disorder
+	mean_MBL = np.mean(run_MBL,axis=0)
+	mean_ETH = np.mean(run_ETH,axis=0)
+	#
+	##### plot results #####
+	import matplotlib.pyplot as plt
+	### MBL plot ###
+	fig, pltarr1 = plt.subplots(2,sharex=True) # define subplot panel
+	# subplot 1: diag enetropy vs ramp speed
+	pltarr1[0].plot(vs,mean_MBL[0],label="MBL",marker=".",color="blue") # plot data
+	pltarr1[0].set_ylabel("$s_d(t_f)$",fontsize=22) # label y-axis
+	pltarr1[0].set_xlabel("$v/J_{zz}(0)$",fontsize=22) # label x-axis
+	pltarr1[0].set_xscale("log") # set log scale on x-axis
+	pltarr1[0].grid(True,which='both') # plot grid
+	pltarr1[0].tick_params(labelsize=16)
+	# subplot 2: entanglement entropy vs ramp speed
+	pltarr1[1].plot(vs,mean_MBL[1],marker=".",color="blue") # plot data
+	pltarr1[1].set_ylabel("$s_\mathrm{ent}(t_f)$",fontsize=22) # label y-axis
+	pltarr1[1].set_xlabel("$v/J_{zz}(0)$",fontsize=22) # label x-axis
+	pltarr1[1].set_xscale("log") # set log scale on x-axis
+	pltarr1[1].grid(True,which='both') # plot grid
+	pltarr1[1].tick_params(labelsize=16)
+	# save figure
+	fig.savefig('example1_MBL.pdf', bbox_inches='tight')
+	#
+	### ETH plot ###
+	fig, pltarr2 = plt.subplots(2,sharex=True) # define subplot panel
+	# subplot 1: diag enetropy vs ramp speed
+	pltarr2[0].plot(vs,mean_ETH[0],marker=".",color="green") # plot data
+	pltarr2[0].set_ylabel("$s_d(t_f)$",fontsize=22) # label y-axis
+	pltarr2[0].set_xlabel("$v/J_{zz}(0)$",fontsize=22) # label x-axis
+	pltarr2[0].set_xscale("log") # set log scale on x-axis
+	pltarr2[0].grid(True,which='both') # plot grid
+	pltarr2[0].tick_params(labelsize=16)
+	# subplot 2: entanglement entropy vs ramp speed
+	pltarr2[1].plot(vs,mean_ETH[1],marker=".",color="green") # plot data
+	pltarr2[1].set_ylabel("$s_\mathrm{ent}(t_f)$",fontsize=22) # label y-axis
+	pltarr2[1].set_xlabel("$v/J_{zz}(0)$",fontsize=22) # label x-axis
+	pltarr2[1].set_xscale("log") # set log scale on x-axis
+	pltarr2[1].grid(True,which='both') # plot grid
+	pltarr2[1].tick_params(labelsize=16)
+	# save figure
+	fig.savefig('example1_ETH.pdf', bbox_inches='tight')
+	#
+	plt.show() # show plots

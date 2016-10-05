@@ -83,9 +83,11 @@
 	tabsize=4,
 	columns=flexible,
 	emptylines=10000,
-	literate={'}{\pdfactualsquote}1{`}{\pdfactualbtick}1{\ \ }{\pdfactualdspace}2
+	literate={'}{\pdfactualsquote}1{`}{\pdfactualbtick}1{\ \ }{\pdfactualdspace}2,
+	inputpath=../scripts/,
+	keywords={lambda,xrange,abs,for,return},
 }
-\lstset{style=sublime,language=Python,inputpath=../scripts/,keywords={lambda,xrange,abs,for,return},breaklines}
+\lstset{style=sublime,language=Python}
 
 % change default listings caption title
 \renewcommand{\lstlistingname}{\qspin\ \emph{Example Code}}% Listing -> q\spin\ Example Code
@@ -201,29 +203,11 @@ We present a new open-source Python package for quantum dynamics of spin chains 
 \section{What Problems can I Solve with \qspin?}
 \label{sec:intro}
 
-\cyan{
-	\begin{enumerate}
-		\item write test functions
-		\item put references
-		\item write online doc using Jupyter
-	\end{enumerate}
-	}
+The study of quantum many-body dynamics comprises a variety of problems, such as dynamical phase transitions (e.g.~many-body localisation), thermalising long-time evolution, adiabatic change of parameters, periodically-driven systems, and many others. In contrast to the tremendous progress made in studying low-energy phenomena based on well-developed sophisticated techniques, such as Quantum Monte Carlo methods, Density Matrix Renormalisation Group, Matrix Product States, Dynamical Mean-Field Theory[CITE], etc., one of the most popular ``cutting-edge'' investigation technique for out-of-equilibrium quantum many-body problems is `old school' exact diagonalisation (ED). 
 
-\begin{comment}
-During the last several decades, interacting quantum systems have been the primary focus of research in the condensed matter community. Prominent examples include (high-$T_c$) superconductors, superfluids, spin liquids, fractional topological insulators, and various other strongly-correlated systems. With respect to their mathematical description, these systems can be divided into two categories: \emph{integrable} systems typically possess an extensive number of local conserved quantities (integrals of motion) and, therefore, their properties can be described in a closed, exact mathematical form with the help of ingenious techniques, such as the celebrated Bethe ansatz, the Jordan-Wigner transformation, transfer matrices, conformal field theory, etc. The analytical understanding of \emph{non-integrable} systems, on the other hand, is usually feasible only in limited parameter regimes, and relies predominantly on the development of sophisticated approximation schemes based on perturbation theory; notable examples include Landau's Fermi liquid theory, Bogoliubov's theory of superfluidity, the BCS theory of superconductivity, numerous other mean-field theories, the Renormalisation group, the Schrieffer-Wolff transformation, and may more. 
-
-It is widely accepted that generic quantum systems in dimensions $d>1$ are non-integrable and, thus, their theoretical study poses a formidable challenge. To tackle these hard problems, various highly-sophisticated numerical techniques, of different applicability regimes, have been developed: Quantum Monte Carlo methods, Density Matrix Renormalisation Group, Matrix Product States, Dynamical Mean-Field Theory \cyan{waht else?}, just to name a few. Although all of these methods are known to suffer from some sort of limitations of their own, when considered as a whole they allow one to successfully investigate the low-energy physics of many condensed matter systems. The \href{http://alps.comp-phys.org/mediawiki/index.php/Main_Page}{Algorithms and Libraries for Physics Simulations} (ALPS), the C\texttt{++} library \href{http://itensor.org/}{ITensor}, as well as the \href{http://qutip.org/}{Quantum Toolbox in Python} (QuTiP) provide open source, freely accessible packages which contribute to widespread the use of such numerical techniques among the physics community.   
-
-Often times, when it comes to the study of dynamical problems, e.g.~dynamical phase transitions (e.g.~many-body localisation), thermalising time evolution, long-time dynamics, \cyan{what else?}, most numerical methods originally developed to study low-energy physics fail and, thus, become unreliable. At the same time, in the dawn of scientific computing, a numerical technique based on linear algebra was developed, robust enough, to safely deal with such studies -- Exact Diagonalisation (ED). Although ED can also be applied to study low-energy phenomena, it is largely outperformed by the aforementioned much more sophisticated numerical algorithms. This comes mainly due to the limited computational resources available as of today, which imposes an upper limit on the Hilbert space size of the quantum model under consideration. In turn, for many-body systems, this typically sets an upper bound on the manageable system sizes, and gives rise to (sometimes unwanted and challenging to analyse) finite-size effects. However, when it comes to the study of dynamical problems at long times, ED still represents a cutting-edge investigation technique for `driven' quantum many-body problems.  
-\end{comment}
-
-The study of quantum many-body dynamics comprises a variety of problems, such as dynamical phase transitions (e.g.~many-body localisation), thermalising long-time evolution, adiabatic change of parameters, periodically-driven systems, and many others. In contrast to the tremendous progress made in studying low-energy phenomena based on well-developed sophisticated techniques, such as Quantum Monte Carlo methods, Density Matrix Renormalisation Group, Matrix Product States, Dynamical Mean-Field Theory, etc., one of the most popular ``cutting-edge" investigation technique for out-of-equilibrium quantum many-body problems is `old school' exact diagonalisation (ED). 
-
-Over the last years, there has been a push to provide open source, freely accessible numerical packages and libraries which contribute to widespread the use of such numerical techniques among the condensed matter community: the \href{http://alps.comp-phys.org/mediawiki/index.php/Main_Page}{Algorithms and Libraries for Physics Simulations} (ALPS), the C\texttt{++} library \href{http://itensor.org/}{ITensor}, as well as the \href{http://qutip.org/}{Quantum Toolbox in Python} (QuTiP) are among the most common available and freely accessible tools. In this paper, we report on a newly developed optimised open-source Python package for dynamics and exact diagonalisation of quantum many-body spin systems, called \qspin. 
-
-As in all ED code, quantum many-body operators in \qspin are represented as matrices. The computation of these matrices are done through custom code written in Cython. Cython is an optimizing static compiler which takes code written in a syntax similar to Python, and compiles it into a highly efficient C/C\texttt{++} shared library. These libraries are then easily interfaced with Python, but can run orders of magnitude faster than pure Python code\cite{Cython}. The matrices are stored in a sparse matrix format using the sparse matrix library of SciPy\cite{SciPy_package}. This allows \qspin\ to easily interface with mature Python packages, such as NumPy, SciPy, any many other Python package. These packages provide reliable state-of-the-art tools for scientific computation as well as support from the Python community to regularly improve and update them\cite{NumPy,Python_computing_1,Python_computing_2,SciPy_package}. Moreover, we have included specific functionality in \qspin\ which uses NumPy and SciPy to do many desired calculations common to ED studies, while making sure the user only has to call a few NumPy or SciPy functions directly. Some other features of \qspin\ are summarized below:
+Over the last years, there have appeared open source, freely accessible numerical packages and libraries which contribute to widespread the use of such numerical techniques among the condensed matter community: the \href{http://alps.comp-phys.org/mediawiki/index.php/Main_Page}{Algorithms and Libraries for Physics Simulations}~\cite{alet05,albuquerque2007,bauer11,dolfi14} (ALPS), the C\texttt{++} library \href{http://itensor.org/}{ITensor}~\cite{ITensor}, as well as the \href{http://qutip.org/}{Quantum Toolbox in Python} (QuTiP)~\cite{johansson2012,johansson2013} are among the most common available and freely accessible tools. In this paper, we report on a newly developed optimised open-source Python package for dynamics and exact diagonalisation of quantum many-body spin systems, called \qspin:
 \begin{itemize}
-	\item A major representative feature of \qspin\ is the construction of spin Hamiltonians containing arbitrary (possibly non-local in space) many-body operators. One example is the four-spin operator $\mathcal{O}= \sum_j \sigma^z_{j}\sigma^+_{j+1}\sigma^-_{j+2}\sigma^z_{j+3} + \mathrm{h.c.}$. Such multi-spin operators are often times generated by the nested commutators typically appearing in higher-order terms of perturbative expansions, such as the Schrieffer-Wolff transformation~\cite{bukov_SW} and the inverse-frequency expansion[CITE]. Sometimes they can appear in the study of exactly solvable engineered topological models.
+	\item A major representative feature of \qspin\ is the construction of spin Hamiltonians containing arbitrary (possibly non-local in space) many-body operators. One example is the four-spin operator $\mathcal{O}= \sum_j \sigma^z_{j}\sigma^+_{j+1}\sigma^-_{j+2}\sigma^z_{j+3} + \mathrm{h.c.}$. Such multi-spin operators are often times generated by the nested commutators typically appearing in higher-order terms of perturbative expansions, such as the Schrieffer-Wolff transformation~\cite{schrieffer_66,bravyi_11,bukov_SW} and the inverse-frequency expansion~\cite{goldman_14,bukov_14}. Sometimes they appear in the study of exactly solvable reverse-engineered models.
 	%
 	\item Another important feature is the availability to use symmetries which, if present in a given model, give rise to conservation laws leading to selection rules between the many-body states. As a result, the Hilbert space reduces to a tensor product of the Hilbert spaces corresponding to the underlying symmetry blocks. Consequently, the presence of symmetries effectively diminishes the relevant Hilbert space dimension which, in turn, allows one to study larger systems. Currently, \qspin\ supports the following spin chain symmetries:
 	\begin{itemize}
@@ -234,16 +218,16 @@ As in all ED code, quantum many-body operators in \qspin are represented as matr
 		\item[--] translation symmetry
 		\item[--] all physically meaningful combinations of the above
 	\end{itemize}
-	 As we shall see in Sec.~\ref{sec:examples}, constructing Hamiltonians with given symmetries is done by specifying the desired symmetry block.
+	We shall see in Sec.~\ref{sec:examples}, constructing Hamiltonians with given symmetries is done by specifying the desired combination of symmetry blocks.
 	% 
-	\item As we mentioned above, as of present date ED methods represent one of the most reliable ways to safely study the dynamics of a generic quantum many-body system. In this respect, it is important to emphasise that with \qspin\ the user can build arbitrary time-dependent Hamiltonians. The package contains built-in routines to calculate the real (and imaginary) time evolution of any quantum state under a user-defined time-dependent Hamiltonian based on SciPy's integration tool for ordinary differential equations~\cite{SciPy_package}.
+	\item As of present date, ED methods represent one of the most reliable ways to safely study the dynamics of a generic quantum many-body system. In this respect, it is important to emphasise that with \qspin\ the user can build arbitrary time-dependent Hamiltonians. The package contains built-in routines to calculate the real (and imaginary) time evolution of any quantum state under a user-defined time-dependent Hamiltonian based on SciPy's integration tool for ordinary differential equations~\cite{SciPy_package}.
 	%
 	\item Besides spin chains, \qspin\ also allows the user to couple an arbitrary interacting spin chain to a single photon mode (i.e.~quantum harmonic oscillator). In this case, the total magnetisation symmetry is replaced by the combined total photon and spin number conservation. Such an example is discussed in Sec.~\ref{subsec:JC}.
 	%
-	\item Last but not least, \qspin\ has been especially designed to construct particularly short and efficient ED codes (typically less than $200$ lines, as we explicitly demonstrate in Sec.~\ref{sec:examples} and App.~\ref{app:scripts}). This greatly reduces the amount of time required to start a new study; it also allows users with little-to-no programming experience to do state-of-the-art ED calculations. We, therefore, believe \qspin\ to be of particular interest to undergraduate and graduate students, post-doctoral researchers, and young professors who can use it to quickly test new exciting ideas, build up their intuition about quantum many-body problems, or even benefit from the code in a teaching process.
+	\item Last but not least, \qspin\ has been especially designed to construct particularly short and efficient ED codes (typically less than $200$ lines, as we explicitly demonstrate in Sec.~\ref{sec:examples} and App.~\ref{app:scripts}). This greatly reduces the amount of time required to start a new study; it also allows users with little-to-no programming experience to do state-of-the-art ED calculations.
 \end{itemize}
 
-Although ED constitutes the most generic way to understand quantum systems it is limited to small numbers of sites for many-body system. Even still, here is a list of the `hot' topics that have successfully studied with ED and can be be studied with the help of \qspin:
+\noindent Examples of `hot' problems that can be studied with the help of \qspin include:
 \begin{itemize}
 	\item[$\ast$] quantum quenches and quantum dynamics at finite and infinite times
 	\item[$\ast$] adiabatic and counter-diabatic ramps 
@@ -254,19 +238,19 @@ Although ED constitutes the most generic way to understand quantum systems it is
 	\item[$\ast$] dynamical phase transitions and critical phenomena
 	\item[$\ast$] machine learning with quantum many-body systems
 \end{itemize}
-This list is far from being complete, but it can serve as a useful guideline to the interested user. For the rest of the paper we will illustrate in detail how to use \qspin using 3 exmaples. We will go step by step through example code detailing each step. In Section\cyan{...list examples}. Finally we refer the reader to the appendices where all of the example code is laid out, as well as detailed instructions on how to install Python, \qspin\, and run the example scripts. 
+This list is far from being complete, but it can serve as a useful guideline to the interested user. 
 
-
+Overall, we believe \qspin\ to be of particular interest to both students and senior researchers, who can use it to quickly test new exciting ideas, and build up intuition about quantum many-body problems.
 
 
 \section{How do I use \qspin?}
 \label{sec:examples}
 
-One of the main advantages of \qspin\ is its user-friendly interface. To demonstrate how the package works, we shall guide the reader step by step through a short snippets of Python code. In case the reader is unfamiliar with Python, we kindly invite them to accept the challenge of learning the Python basics, while enjoying the study of quantum many-body dynamics! \\
+One of the main advantages of \qspin\ is its user-friendly interface. To demonstrate how the package works, we shall guide the reader step by step through a short snippets of Python code. In case the reader is unfamiliar with Python, we kindly invite them to accept the challenge of learning the Python basics, while enjoying the study of quantum many-body dynamics, see App.~\ref{app:cmd_line}. \\
 
 \emph{Installing \qspin\ is quick and efficient; just follow the steps outlined in App.~\ref{app:install}.}\\
 
-\noindent Below, we stick to the following general guidelines: first, we define the problem containing the physical quantities of interest and show their behaviour in a few figures. After that, we present the \qspin\ code used to generate them, broken up into its building blocks. We explain each step in great detail. The complete contiguous code, including the lines used to generate the figures shown below, is available in App.~\ref{app:scripts}. It is not our purpose in this paper to discuss in detail the interesting underlying physics of these systems; instead, we focus on setting up the Python code to study them with the help of \qspin, and leave the interested reader figure out the details themselves.
+\noindent Below, we stick to the following general guidelines: first, we define the problem containing the physical quantities of interest and show their behaviour in a few figures. After that, we present the \qspin\ code used to generate them, broken up into its building blocks. We explain each step in great detail. The complete code, including the lines used to generate the figures shown below, is available in App.~\ref{app:scripts}. It is not our purpose in this paper to discuss in detail the interesting underlying physics of these systems; instead, we focus on setting up the Python code to study them with the help of \qspin, and leave the interested reader figure out the details themselves.
 
 \subsection{Exact Diagonalisation of Spin Hamiltonians}
 \label{subsec:ED}
@@ -648,7 +632,9 @@ The complete code including the lines that produce Fig.~\ref{fig:example3} is av
 \label{sec:outro}
 
 
-We have shown that the \qspin\ functionality allows the user to do many different kinds of ED calculations of 1-dimensional systems with option of using a wide range of possible symmetries. In addition to the features we have dicussed in this article there are many other functions which we have implemented which are all listed in the Documentation (Appendix~\ref{app:doc}). Some important ones we missed include, the tensor\_basis class which constructs a new basis object implementing the tensor product of two individual basis objects. This is useful for studying interacting hard-core boson chains where the number of conserved for each chain. Another class which is useful is the HamiltonianOperator class. This class does the matrix vector product ``on the fly'' which significantly reduces the amount of memory needed to do this operation. This is useful for diagonalizing large spin chains with Lanczos as it only requires on the order of a hundred calls of the matrix vector product to solve for a few eigen values and eigen vectors. 
+We have shown that the \qspin\ functionality allows the user to do many different kinds of ED calculations. In one spatial dimension, one also has the option of using a wide range of available symmetries. It is interesting to note that, provided the study one is interested in does not require the use of symmetries (e.g.~a fully disordered 2D model), one can in principle specify the site-coupling lists to build up higher-dimensional Hamiltonians, using the same \texttt{spin\_basis\_1d} basis class. Setting up higher-dimensional Hamiltonians with symmetries is possible in limited cases, too, when they can be uniquely mapped to one-dimensional systems. 
+
+In addition to the features we have discussed in this article, there are many other functions implemented which are all listed in the Documentation (Appendix~\ref{app:doc}). Some the more interesting ones include the \texttt{tensor\_basis} class which constructs a new basis object implementing the tensor product of two individual basis objects. This is useful for studying interacting hard-core boson chains. Another class which is useful is the \texttt{HamiltonianOperator} class; it does the matrix vector product without actually storing the matrix elements which significantly reduces the amount of memory needed to do this operation. This is useful for diagonalizing very large spin chains using \texttt{eigsh} as it only requires on the order of a hundred calls of the matrix vector product to solve for a few eigenvalues and eigenvectors (for a specific example, see the documentation in App.~\ref{app:doc}).
 
 We have set up the code to make it simple to extend to different types of systems. We are currently working towards adding the 1-dimension symmetries for spinless and spinful fermions as well as higher spins and bosons. Farther into the future we may implement a number of two dimensional lattices as well as their symmetries. We also welcome anyone who is interested in contributing to this project to reach out to the Authors with any questions they may have about the package organization. All modifications can be proposed through the pull request system on github.com.  
 
@@ -679,23 +665,23 @@ Some basic commands:
 
 \begin{itemize}
 \item change directory:
-\begin{lstlisting}[numbers=none]
+\begin{lstlisting}[numbers=none,keywordstyle=\ttfamily]
 $ cd < path_to_directory >
 \end{lstlisting}
 \item list files in current directory:
-\begin{lstlisting}[numbers=none]
+\begin{lstlisting}[numbers=none,keywordstyle=\ttfamily]
 $ ls 
 \end{lstlisting}
 list files in another directory:
-\begin{lstlisting}[numbers=none]
+\begin{lstlisting}[numbers=none,keywordstyle=\ttfamily]
 $ ls < path_to_directory >
 \end{lstlisting}
 \item make new directory:
-\begin{lstlisting}[numbers=none]
+\begin{lstlisting}[numbers=none,keywordstyle=\ttfamily]
 $ mkdir <path>/< directory_name >
 \end{lstlisting}
 \item copy file:
-\begin{lstlisting}[numbers=none]
+\begin{lstlisting}[numbers=none,keywordstyle=\ttfamily]
 $ cp < path >/< file_name > < new_path >/< new_file_name >
 \end{lstlisting}
 \item move file or change file name:
@@ -703,7 +689,7 @@ $ cp < path >/< file_name > < new_path >/< new_file_name >
 $ mv < path >/< file_name > < new_path >/< new_file_name >
 \end{lstlisting}
 \item remove file:
-\begin{lstlisting}[numbers=none]
+\begin{lstlisting}[numbers=none,keywordstyle=\ttfamily]
 $ rm < path_to_file >/< file_name >
 \end{lstlisting}
 
@@ -711,7 +697,7 @@ $ rm < path_to_file >/< file_name >
 Unix also has an auto complete feature if you press the TAB key. It will complete word or stop when it matches more than one file/folder name. The current directory is denoted by "." and the directory above is "..".
 %
 Now to execute a python script all you have to do is open your terminal and navigate to the directory which contains the python script. To execute the script just use the following command:
-\begin{lstlisting}[numbers=none]
+\begin{lstlisting}[numbers=none,keywordstyle=\ttfamily]
 $ python script.py
 \end{lstlisting}
 it's that simple!
@@ -721,31 +707,31 @@ Some basic commands:
 
 \begin{itemize}
 \item change directory:
-\begin{lstlisting}[numbers=none]
+\begin{lstlisting}[numbers=none,keywordstyle=\ttfamily]
 > cd < path_to_directory >
 \end{lstlisting}
 \item list files in current directory:
-\begin{lstlisting}[numbers=none]
+\begin{lstlisting}[numbers=none,keywordstyle=\ttfamily]
 > dir
 \end{lstlisting}
 list files in another directory:
-\begin{lstlisting}[numbers=none]
+\begin{lstlisting}[numbers=none,keywordstyle=\ttfamily]
 > dir < path_to_directory >
 \end{lstlisting}
 \item make new directory:
-\begin{lstlisting}[numbers=none]
+\begin{lstlisting}[numbers=none,keywordstyle=\ttfamily]
 > mkdir <path>\< directory_name >
 \end{lstlisting}
 \item copy file:
-\begin{lstlisting}[numbers=none]
+\begin{lstlisting}[numbers=none,keywordstyle=\ttfamily]
 > copy < path >\< file_name > < new_path >\< new_file_name >
 \end{lstlisting}
 \item move file or change file name:
-\begin{lstlisting}[numbers=none]
+\begin{lstlisting}[numbers=none,keywordstyle=\ttfamily]
 > move < path >\< file_name > < new_path >\< new_file_name >
 \end{lstlisting}
 \item remove file:
-\begin{lstlisting}[numbers=none]
+\begin{lstlisting}[numbers=none,keywordstyle=\ttfamily]
 > erase < path >\< file_name >
 \end{lstlisting}
 
@@ -755,7 +741,7 @@ Windows also has a auto complete feature but instead of stopping when there mult
 \subsection{Execute Python script (any OS)}
 %
 Now to execute a python script all you have to do is open your terminal and navigate to the directory which contains the python script. To execute the script just use the following command:
-\begin{lstlisting}[numbers=none]
+\begin{lstlisting}[numbers=none,keywordstyle=\ttfamily]
 python script.py
 \end{lstlisting}
 it's that simple!
@@ -767,26 +753,26 @@ it's that simple!
 
 \subsection{Mac OS X/Linux}
 To install Anaconda/miniconda all one has to do is execute the installation script with administrative privilege. To do this open up the terminal and go to the folder containing the downloaded installation file and execute the following command: 
-\begin{lstlisting}[numbers=none]
+\begin{lstlisting}[numbers=none,keywordstyle=\ttfamily]
 $ sudo bash <installation_file>
 \end{lstlisting}
 You will be prompted to enter your password. Follow the prompts of the installation. We recommend that you allow the installer to prepend the installation directory to your PATH variable which will make sure this installation of Python will be called when executing a Python script in the terminal. If this is not done then you will have to do this manually in your bash profile file:
-\begin{lstlisting}[numbers=none]
+\begin{lstlisting}[numbers=none,keywordstyle=\ttfamily]
 $ export PATH="path_to/anaconda/bin:$PATH"
 \end{lstlisting}
 
 \underline{\bf Installing via Anaconda.}---Once you have Anaconda/miniconda installed, all you have to do to install \qspin\ is to execute the following command into the terminal: 
-\begin{lstlisting}[numbers=none]
+\begin{lstlisting}[numbers=none,keywordstyle=\ttfamily]
 $ conda install -c weinbe58 qspin
 \end{lstlisting}
 If asked to install new packages just say `yes'. To keep the code up-to-date, just run this command regularly. 
 
 \underline{\bf Installing Manually.}---Installing the package manually is not recommended unless the above method failed. Note that you must have NumPy, SciPy, and Joblib installed before installing \qspin. Once all the prerequisite packages are installed, one can download the source code from \href{https://github.com/weinbe58/qspin/tree/master}{github} and then extract the code to whichever directory one desires. Open the terminal and go to the top level directory of the source code and execute:
-\begin{lstlisting}[numbers=none]  
+\begin{lstlisting}[numbers=none,keywordstyle=\ttfamily]  
 $ python setup.py install --record install_file.txt
 \end{lstlisting}
 This will compile the source code and copy it to the installation directory of Python recording the installation location to \texttt{install\_file.txt}. To update the code, you must first completely remove the current version installed and then install the new code. The \texttt{install\_file.txt} can be used to remove the package by running:  
-\begin{lstlisting}[numbers=none]  
+\begin{lstlisting}[numbers=none,keywordstyle=\ttfamily]  
 $ cat install_file.txt | xargs rm -rf. 
 \end{lstlisting}
 
@@ -794,13 +780,13 @@ $ cat install_file.txt | xargs rm -rf.
 To install Anaconda/miniconda on Windows, download the installer and execute it to install the program. Once Anaconda/miniconda is installed open the conda terminal and do one of the following to install the package:
 
 \underline{\bf Installing via Anaconda.}---Once you have Anaconda/miniconda installed all you have to do to install \qspin\ is to execute the following command into the terminal: 
-\begin{lstlisting}[numbers=none]
+\begin{lstlisting}[numbers=none,keywordstyle=\ttfamily]
 > conda install -c weinbe58 qspin
 \end{lstlisting}
 If asked to install new packages just say `yes'. To update the code just run this command regularly. 
 
 \underline{\bf Installing Manually.}---Installing the package manually is not recommended unless the above method failed. Note that you must have NumPy, SciPy, and Joblib installed before installing \qspin. Once all the prerequisite packages are installed, one can download the source code from \href{https://github.com/weinbe58/qspin/tree/master}{github} and then extract the code to whichever directory one desires. Open the terminal and go to the top level directory of the source code and then execute:  
-\begin{lstlisting}[numbers=none]
+\begin{lstlisting}[numbers=none,keywordstyle=\ttfamily]
 > python setup.py install --record install_file.txt
 \end{lstlisting}
 This will compile the source code and copy it to the installation directory of Python and record the installation location to \texttt{install\_file.txt}. To update the code you must first completely remove the current version installed and then install the new code. 
@@ -819,7 +805,7 @@ The scripts can be downloaded from github \href{https://github.com/weinbe58/qspi
 
 \section{Package Documentation}
 \label{app:doc}
-The complete up-to-date documentation for the package is available online under:\\
+In \qspin quantum many-body operators are represented as matrices. The computation of these matrices are done through custom code written in Cython. Cython is an optimizing static compiler which takes code written in a syntax similar to Python, and compiles it into a highly efficient C/C\texttt{++} shared library. These libraries are then easily interfaced with Python, but can run orders of magnitude faster than pure Python code~\cite{Cython}. The matrices are stored in a sparse matrix format using the sparse matrix library of SciPy~\cite{SciPy_package}. This allows \qspin\ to easily interface with mature Python packages, such as NumPy, SciPy, any many other Python package. These packages provide reliable state-of-the-art tools for scientific computation as well as support from the Python community to regularly improve and update them~\cite{NumPy,Python_computing_1,Python_computing_2,SciPy_package}. Moreover, we have included specific functionality in \qspin\ which uses NumPy and SciPy to do many desired calculations common to ED studies, while making sure the user only has to call a few NumPy or SciPy functions directly. The complete up-to-date documentation for the package is available online under:\\
 
 \href{https://github.com/weinbe58/qspin}{https://github.com/weinbe58/qspin}\\
 

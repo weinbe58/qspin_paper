@@ -203,6 +203,15 @@ We present a new open-source Python package for quantum dynamics of spin chains 
 \section{What Problems can I Solve with \qspin?}
 \label{sec:intro}
 
+\cyan{TO-DO list
+	\begin{itemize}
+		\item fill in refs
+		\item read outro and basic use
+		\item fix name=main
+		\item put link to tutorials in App C
+		\item google out tabs in listings
+	\end{itemize}}
+
 The study of quantum many-body dynamics comprises a variety of problems, such as dynamical phase transitions (e.g.~many-body localisation), thermalising long-time evolution, adiabatic change of parameters, periodically-driven systems, and many others. In contrast to the tremendous progress made in studying low-energy phenomena based on well-developed sophisticated techniques, such as Quantum Monte Carlo methods, Density Matrix Renormalisation Group, Matrix Product States, Dynamical Mean-Field Theory[CITE], etc., one of the most popular ``cutting-edge'' investigation technique for out-of-equilibrium quantum many-body problems is `old school' exact diagonalisation (ED). 
 
 Over the last years, there have appeared open source, freely accessible numerical packages and libraries which contribute to widespread the use of such numerical techniques among the condensed matter community: the \href{http://alps.comp-phys.org/mediawiki/index.php/Main_Page}{Algorithms and Libraries for Physics Simulations}~\cite{alet05,albuquerque2007,bauer11,dolfi14} (ALPS), the C\texttt{++} library \href{http://itensor.org/}{ITensor}~\cite{ITensor}, as well as the \href{http://qutip.org/}{Quantum Toolbox in Python} (QuTiP)~\cite{johansson2012,johansson2013} are among the most common available and freely accessible tools. In this paper, we report on a newly developed optimised open-source Python package for dynamics and exact diagonalisation of quantum many-body spin systems, called \qspin:
@@ -278,7 +287,7 @@ To set up any Hamiltonian, we need to calculate the basis of the Hilbert space i
 The XXZ Hamiltonian $H$ from Eq.~\eqref{eq:XXZ_ED} obeys certain symmetries. In particular, one can specify a magnetisation sector (a.k.a.~filling) using the \texttt{basis} optional argument \texttt{N\_up=int}, where \texttt{int$\in[0,L]$} is any integer to specify the number of up-spins, see \texttt{line 14}. However, magnetisation is not the only integral of motion -- the model also conserves parity, i.e.~reflection w.r.t.~the middle of the chain. The parity operator has eigenvalues $\pm1$ and thus divides the Hilbert space into two further sectors. To restrict the Hamiltonian to one of them, we use the \texttt{basis} optional argument \texttt{pblock=$\pm1$}. Since parity and magnetisation commute, it is also possible to request them both, see \texttt{line 15}. We stress that each one of the \texttt{lines 13-15} is sufficient to build the \texttt{basis} and we only show them all here for clarity.
 \lstinputlisting[firstline=14, lastline=15, firstnumber=14]{example0.py}
 % 
-Setting up the spin-spin operators goes as follows. First, we need to define the site-coupling lists \texttt{J\_zz}, \texttt{J\_xy} and \texttt{h\_z}. To uniquely specify a two-spin interaction, we need (i) the coupling, and (ii) --  the labels of the sites the two operators act on. \qspin\ uses Python's indexing convention meaning that the first lattice site is always $i=0$, and the last one: $i=L-1$. For example, for the $zz$-interaction, the coupling is \texttt{Jzz\_0}, while the two sites are the nearest neighbours \texttt{i,i+1}. Hence, the list \texttt{[Jzz\_0,i,i+1]} defines the bond operator $J_{zz}(0)\times S^\mu_{i}S^\mu_{i+1}$ (we specify $\mu$ in the next step). To define the total interaction energy $J_{zz}(0)\sum_{i=0}^{L-2}S^\mu_{i}S^\mu_{i+1}$, all we need is to loop over the $L-2$ bonds of the open chain\footnote{The Python expression \texttt{range(L-1)} produces all integers between \texttt{0} and \texttt{L-2} including.}. In the same spirit one can define boundary or single-site operators, such as \texttt{h\_z}. It is also possible to set up multi-spin operators. 
+Setting up the spin-spin operators goes as follows. First, we need to define the site-coupling lists \texttt{J\_zz}, \texttt{J\_xy} and \texttt{h\_z}. To uniquely specify a two-spin interaction, we need (i) the coupling, and (ii) --  the labels of the sites the two operators act on. \qspin\ uses Python's indexing convention meaning that the first lattice site is always $i=0$, and the last one: $i=L-1$. For example, for the $zz$-interaction, the coupling is \texttt{Jzz\_0}, while the two sites are the nearest neighbours \texttt{i,i+1}. Hence, the list \texttt{[Jzz\_0,i,i+1]} defines the bond operator $J_{zz}(0) S^\mu_{i}S^\mu_{i+1}$ (we specify $\mu$ in the next step). To define the total interaction energy $J_{zz}(0)\sum_{i=0}^{L-2}S^\mu_{i}S^\mu_{i+1}$, all we need is to loop over the $L-2$ bonds of the open chain\footnote{The Python expression \texttt{range(L-1)} produces all integers between \texttt{0} and \texttt{L-2} including.}. In the same spirit one can define boundary or single-site operators, such as \texttt{h\_z}. It is also possible to set up multi-spin operators. 
 \lstinputlisting[firstline=16, lastline=19, firstnumber=16]{example0.py}
 %
 The above lines of code specify the coupling but not yet which spin operators are being coupled (we have not yet fixed $\mu$). To do this, we need to create a \texttt{static} and/or \texttt{dynamic} operator list. As the name suggests, static lists define time-independent operators. Given the site-coupling list \texttt{J\_xy} from above, it is easy to set the operator $J_{xy}/2\sum_{i=0}^{L-2}S^+_{i}S^-_{i+1}$ by specifying the spin operator type in the same order as the site indices appear in the corresponding site-coupling list: \texttt{[["+-",J\_xy]]}. In other words, the order \texttt{"+-"} corresponds directly to the site-index order \texttt{"i,i+1"}. Similarly, one should set up the hermitian conjugate term $J_{xy}/2\sum_{i=0}^{L-2}S^-_{i}S^+_{i+1}$ as \texttt{[["-+",J\_xy]]}. In the end, one can concatenate these operator lists to produce the static part of the Hamiltonian.
@@ -641,11 +650,7 @@ Although \qspin\ passed all tests we could think of so far, there may still be s
 
 
 \section*{Acknowledgements}
-...
-
-% TODO: include author contributions
-\paragraph{Author contributions}
-This is optional. If desired, contributions should be succinctly described in a single short paragraph, using author initials.
+Dries, Anatoli, Anders, Praney, Adam, Szabolcs, Mike, Pankaj
 
 % TODO: include funding information
 \paragraph{Funding information}
@@ -653,97 +658,6 @@ Authors are required to provide funding information, including relevant agencies
 
 
 \begin{appendix}
-
-\section{Basic Use command line to use Python}
-\label{app:cmd_line}
-
-In this appendix we will review how to use the command line for Windows and OS X/Linux to naviagte your computer's folders/directories and run the Python scripts. First some basic commands:
-
-\subsection{Mac OS X/Linux}
-Some basic commands:
-
-\begin{itemize}
-\item change directory:
-\begin{lstlisting}[numbers=none,keywordstyle=\ttfamily]
-$ cd < path_to_directory >
-\end{lstlisting}
-\item list files in current directory:
-\begin{lstlisting}[numbers=none,keywordstyle=\ttfamily]
-$ ls 
-\end{lstlisting}
-list files in another directory:
-\begin{lstlisting}[numbers=none,keywordstyle=\ttfamily]
-$ ls < path_to_directory >
-\end{lstlisting}
-\item make new directory:
-\begin{lstlisting}[numbers=none,keywordstyle=\ttfamily]
-$ mkdir <path>/< directory_name >
-\end{lstlisting}
-\item copy file:
-\begin{lstlisting}[numbers=none,keywordstyle=\ttfamily]
-$ cp < path >/< file_name > < new_path >/< new_file_name >
-\end{lstlisting}
-\item move file or change file name:
-\begin{lstlisting}[numbers=none]
-$ mv < path >/< file_name > < new_path >/< new_file_name >
-\end{lstlisting}
-\item remove file:
-\begin{lstlisting}[numbers=none,keywordstyle=\ttfamily]
-$ rm < path_to_file >/< file_name >
-\end{lstlisting}
-
-\end{itemize}
-Unix also has an auto complete feature if you press the TAB key. It will complete word or stop when it matches more than one file/folder name. The current directory is denoted by "." and the directory above is "..".
-%
-Now to execute a python script all you have to do is open your terminal and navigate to the directory which contains the python script. To execute the script just use the following command:
-\begin{lstlisting}[numbers=none,keywordstyle=\ttfamily]
-$ python script.py
-\end{lstlisting}
-it's that simple!
-
-\subsection{Windows}
-Some basic commands:
-
-\begin{itemize}
-\item change directory:
-\begin{lstlisting}[numbers=none,keywordstyle=\ttfamily]
-> cd < path_to_directory >
-\end{lstlisting}
-\item list files in current directory:
-\begin{lstlisting}[numbers=none,keywordstyle=\ttfamily]
-> dir
-\end{lstlisting}
-list files in another directory:
-\begin{lstlisting}[numbers=none,keywordstyle=\ttfamily]
-> dir < path_to_directory >
-\end{lstlisting}
-\item make new directory:
-\begin{lstlisting}[numbers=none,keywordstyle=\ttfamily]
-> mkdir <path>\< directory_name >
-\end{lstlisting}
-\item copy file:
-\begin{lstlisting}[numbers=none,keywordstyle=\ttfamily]
-> copy < path >\< file_name > < new_path >\< new_file_name >
-\end{lstlisting}
-\item move file or change file name:
-\begin{lstlisting}[numbers=none,keywordstyle=\ttfamily]
-> move < path >\< file_name > < new_path >\< new_file_name >
-\end{lstlisting}
-\item remove file:
-\begin{lstlisting}[numbers=none,keywordstyle=\ttfamily]
-> erase < path >\< file_name >
-\end{lstlisting}
-
-\end{itemize}
-Windows also has a auto complete feature but instead of stopping when there multiple files/folders with the same name, it will complete it with the first file alphebetically. The current directory is denoted by "." and the directory above is "..".
-
-\subsection{Execute Python script (any OS)}
-%
-Now to execute a python script all you have to do is open your terminal and navigate to the directory which contains the python script. To execute the script just use the following command:
-\begin{lstlisting}[numbers=none,keywordstyle=\ttfamily]
-python script.py
-\end{lstlisting}
-it's that simple!
 
 \section{Installation Guide in a Few Steps}
 \label{app:install}
@@ -790,6 +704,97 @@ If asked to install new packages just say `yes'. To update the code just run thi
 \end{lstlisting}
 This will compile the source code and copy it to the installation directory of Python and record the installation location to \texttt{install\_file.txt}. To update the code you must first completely remove the current version installed and then install the new code. 
 
+
+\section{Basic Use command line to use Python}
+\label{app:cmd_line}
+
+In this appendix we will review how to use the command line for Windows and OS X/Linux to naviagte your computer's folders/directories and run the Python scripts. First some basic commands:
+
+\subsection{Mac OS X/Linux}
+Some basic commands:
+
+\begin{itemize}
+	\item change directory:
+	\begin{lstlisting}[numbers=none,keywordstyle=\ttfamily]
+	$ cd < path_to_directory >
+	\end{lstlisting}
+	\item list files in current directory:
+	\begin{lstlisting}[numbers=none,keywordstyle=\ttfamily]
+	$ ls 
+	\end{lstlisting}
+	list files in another directory:
+	\begin{lstlisting}[numbers=none,keywordstyle=\ttfamily]
+	$ ls < path_to_directory >
+	\end{lstlisting}
+	\item make new directory:
+	\begin{lstlisting}[numbers=none,keywordstyle=\ttfamily]
+	$ mkdir <path>/< directory_name >
+	\end{lstlisting}
+	\item copy file:
+	\begin{lstlisting}[numbers=none,keywordstyle=\ttfamily]
+	$ cp < path >/< file_name > < new_path >/< new_file_name >
+	\end{lstlisting}
+	\item move file or change file name:
+	\begin{lstlisting}[numbers=none]
+	$ mv < path >/< file_name > < new_path >/< new_file_name >
+	\end{lstlisting}
+	\item remove file:
+	\begin{lstlisting}[numbers=none,keywordstyle=\ttfamily]
+	$ rm < path_to_file >/< file_name >
+	\end{lstlisting}
+	
+\end{itemize}
+Unix also has an auto complete feature if you press the TAB key. It will complete word or stop when it matches more than one file/folder name. The current directory is denoted by "." and the directory above is "..".
+%
+Now to execute a python script all you have to do is open your terminal and navigate to the directory which contains the python script. To execute the script just use the following command:
+\begin{lstlisting}[numbers=none,keywordstyle=\ttfamily]
+$ python script.py
+\end{lstlisting}
+it's that simple!
+
+\subsection{Windows}
+Some basic commands:
+
+\begin{itemize}
+	\item change directory:
+	\begin{lstlisting}[numbers=none,keywordstyle=\ttfamily]
+	> cd < path_to_directory >
+	\end{lstlisting}
+	\item list files in current directory:
+	\begin{lstlisting}[numbers=none,keywordstyle=\ttfamily]
+	> dir
+	\end{lstlisting}
+	list files in another directory:
+	\begin{lstlisting}[numbers=none,keywordstyle=\ttfamily]
+	> dir < path_to_directory >
+	\end{lstlisting}
+	\item make new directory:
+	\begin{lstlisting}[numbers=none,keywordstyle=\ttfamily]
+	> mkdir <path>\< directory_name >
+	\end{lstlisting}
+	\item copy file:
+	\begin{lstlisting}[numbers=none,keywordstyle=\ttfamily]
+	> copy < path >\< file_name > < new_path >\< new_file_name >
+	\end{lstlisting}
+	\item move file or change file name:
+	\begin{lstlisting}[numbers=none,keywordstyle=\ttfamily]
+	> move < path >\< file_name > < new_path >\< new_file_name >
+	\end{lstlisting}
+	\item remove file:
+	\begin{lstlisting}[numbers=none,keywordstyle=\ttfamily]
+	> erase < path >\< file_name >
+	\end{lstlisting}
+	
+\end{itemize}
+Windows also has a auto complete feature but instead of stopping when there multiple files/folders with the same name, it will complete it with the first file alphebetically. The current directory is denoted by "." and the directory above is "..".
+
+\subsection{Execute Python script (any OS)}
+%
+Now to execute a python script all you have to do is open your terminal and navigate to the directory which contains the python script. To execute the script just use the following command:
+\begin{lstlisting}[numbers=none,keywordstyle=\ttfamily]
+python script.py
+\end{lstlisting}
+it's that simple!
 
 \newpage
 \section{Complete Example Codes}

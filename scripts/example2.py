@@ -17,7 +17,7 @@ def drive(t,Omega):
 	return np.sign(np.cos(Omega*t))
 drive_args=[Omega]
 # compute basis in the 0-total momentum and +1-parity sector
-basis=spin_basis_1d(L=L,kblock=0,pblock=1)
+basis=spin_basis_1d(L=L,a=1,kblock=0,pblock=1)
 # define PBC site-coupling lists for operators
 x_field_pos=[[+g,i]	for i in range(L)]
 x_field_neg=[[-g,i]	for i in range(L)]

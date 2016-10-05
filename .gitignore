@@ -1,3 +1,4 @@
+*.pyc 
 *.aux
 *.bbl
 *.blg
@@ -5,4 +6,5 @@
 *.log
 *.out
 *.synctex.gz
+*.synctex.gz(busy)
 *.toc

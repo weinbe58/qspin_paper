@@ -283,7 +283,7 @@ where $J_{xy}$ and $J_{zz}$ are the $xy$- and $zz$-interaction strengths, respec
 Next, we define the physical model parameters. In doing so, it is advisable to use the floating point when the coupling is meant to be a non-integer real number, in order to avoid problems with division: for example, \texttt{1} is the integer $1$ while \texttt{1.0} -- the corresponding float. For instance, in Python 2.7, we have \texttt{0.5}$\neq$\texttt{1/2$=$0}, but rather \texttt{0.5}$=$\texttt{1.0/2.0}.  
 \lstinputlisting[firstline=5, lastline=9, firstnumber=5]{example0.py}
 %
-To set up any Hamiltonian, we need to calculate the basis of the Hilbert space it is defined on, see \texttt{line 13} below. Note that, since we work with spin operators here, it is required to pass the flag \texttt{pauli=False}; failure to do so will result in a Hamiltonian defined in terms of the Pauli spin matrices. One can also display the basis using the command \texttt{print basis}.
+To set up any Hamiltonian, we need to calculate the basis of the Hilbert space it is defined on, see \texttt{line 13} below. Note that, since we work with spin operators here, it is required to pass the flag \texttt{pauli=False}; failure to do so will result in a Hamiltonian defined in terms of the Pauli spin matrices $1/2\sigma^\mu_i=S^\mu_i$. One can also display the basis using the command \texttt{print basis}.
 \lstinputlisting[firstline=11, lastline=13, firstnumber=11]{example0.py}
 %
 The XXZ Hamiltonian $H$ from Eq.~\eqref{eq:XXZ_ED} obeys certain symmetries. In particular, one can specify a magnetisation sector (a.k.a.~filling) using the \texttt{basis} optional argument \texttt{N\_up=int}, where \texttt{int$\in[0,L]$} is any integer to specify the number of up-spins, see \texttt{line 14}. However, magnetisation is not the only integral of motion -- the model also conserves parity, i.e.~reflection w.r.t.~the middle of the chain. The parity operator has eigenvalues $\pm1$ and thus further divides the Hilbert space into two new subspaces. To restrict the Hamiltonian to either one of them, we use the \texttt{basis} optional argument \texttt{pblock=$\pm1$}. Since parity and magnetisation commute, it is also possible to request them simultaneously, see \texttt{line 15}. We stress that each one of the \texttt{lines 13-15} is sufficient to build the \texttt{basis} on its own and we only show them all here for clarity.
@@ -355,7 +355,7 @@ of subsystem A, defined to contain the left half of the chain and $|\mathrm{A}|=
 	\end{subfigure}
 	\caption{\label{fig:example1} Diagonal and entanglement entropy densities as a function of the ramp speed in the MBL and delocalised (ETH) phases of the ramped disordered XXZ model. The ramped protocol is chosen as $J_{zz}(t) = (1/2 + vt)J_{zz}(0)$. The parameters are $J_{xy}/J_{zz}(0)=1.0$, $h_\mathrm{MBL}/J_{zz}(0)=3.9$, $h_\mathrm{ETH}/J_{zz}(0)=0.1$, and $L=10$. Disorder averaging was performed over $1000$ realisations.}  
 \end{figure}
-Figure~\ref{fig:example1} shows the entropies vs.~ramp speed data in the MBL and ETH phases. The interesting underlying physics is, however, beyond the purpose of this paper.
+Figure~\ref{fig:example1} shows the entropies vs.~ramp speed in the MBL and ETH phases. The interesting underlying physics is, however, beyond the purpose of this paper.
 
 
 \emph{Code Analysis---}Let us now explain how one can study this problem numerically using \qspin. We begin by first loading the required Python packages. 

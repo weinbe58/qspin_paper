@@ -5,7 +5,7 @@ import numpy as np # generic math functions
 ##### define model parameters #####
 L=6 # system size
 Jxy=np.sqrt(2.0) # xy interaction
-Jzz_0=1.0 # zz interaction at time t=0
+Jzz_0=1.0 # zz interaction
 hz=1.0/np.sqrt(3.0) # z external field
 #
 ##### set up Heisenberg Hamiltonian in an enternal z-field #####

@@ -121,14 +121,14 @@ def _do_ramp(psi_0,H,basis,v,E_final,V_final):
 	return np.asarray([S_d,Sent])
 #
 ##### produce data for n_real disorder realisations #####
-# __name__ == '__main__' required to use joblib in windows.
+# __name__ == '__main__' required to use joblib in Windows.
 if __name__ == '__main__':
 	"""
 	# alternative way without parallelisation
 	data = np.asarray([realization(vs,H_XXZ,basis,i) for i in xrange(n_real)])
 	"""
 	data = np.asarray(Parallel(n_jobs=n_jobs)(delayed(realization)(vs,H_XXZ,basis,i) for i in xrange(n_real)))
-
+	#
 	run_MBL,run_ETH = zip(*data) # extract MBL and data
 	# average over disorder
 	mean_MBL = np.mean(run_MBL,axis=0)

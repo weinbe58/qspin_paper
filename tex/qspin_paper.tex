@@ -294,7 +294,8 @@ Setting up the spin-spin operators goes as follows. First, we need to define the
 The above lines of code specify the coupling but not yet which spin operators are being coupled (we have not yet fixed $\mu$). To do this, we need to create a \texttt{static} and/or \texttt{dynamic} operator list. As the name suggests, static lists define time-independent operators. Given the site-coupling list \texttt{J\_xy} from above, it is easy to set the operator $J_{xy}/2\sum_{i=0}^{L-2}S^+_{i}S^-_{i+1}$ by specifying the spin operator type in the same order as the site indices appear in the corresponding site-coupling list: \texttt{[["+-",J\_xy]]}. In other words, the order \texttt{"+-"} corresponds directly to the site-index order \texttt{"i,i+1"}. Similarly, one should set up the hermitian conjugate term $J_{xy}/2\sum_{i=0}^{L-2}S^-_{i}S^+_{i+1}$ as \texttt{[["-+",J\_xy]]}. In the end, one can concatenate these operator lists to produce the static part of the Hamiltonian.
 \lstinputlisting[firstline=20, lastline=21, firstnumber=20]{example0.py} 
 %
-If the Hamiltonian has time dependence, it is defined using \texttt{dynamic} lists. Since we are dealing with a static problem in this section, we set the \texttt{dynamic} to an empty list. In the following three sections, we shall show how to set up non-trivial time-dependent Hamiltonians. 
+If the Hamiltonian has time dependence, it is defined using \texttt{dynamic} lists. Since we are dealing with a static problem in this section, we set the \texttt{dynamic} to an empty list. In the following three sections, we shall show how to set up non-trivial time-dependent Hamiltonians.
+\lstinputlisting[firstline=22, lastline=22, firstnumber=22]{example0.py} 
 %
 Once the static and dynamic lists are set up, building up the corresponding Hamiltonian is a one-liner. In \qspin, this is done using the \texttt{hamiltonian} constructor class, see \texttt{line 24} below. The first required argument is the \texttt{static} list, while the second one -- the \texttt{dynamic} list. These two arguments necessarily must appear in this order. Another required argument is the \texttt{basis}, which carries the necessary information about symmetries. Yet whether a given Hamiltonian has these symmetries or not, depends on the operators defined in the static and dynamic lists. The \texttt{hamiltonian} class performs an automatic check on the Hamiltonian for hermiticity and the presence of magnetisation conservations and other symmetries.
 \lstinputlisting[firstline=23, lastline=24, firstnumber=23]{example0.py}
@@ -706,7 +707,7 @@ If asked to install new packages just say `yes'. To update the code just run thi
 This will compile the source code and copy it to the installation directory of Python and record the installation location to \texttt{install\_file.txt}. To update the code you must first completely remove the current version installed and then install the new code. 
 
 
-\section{Basic Use command line to use Python}
+\section{Basic Use of Command Line to Run Python}
 \label{app:cmd_line}
 
 In this appendix we will review how to use the command line for Windows and OS X/Linux to naviagte your computer's folders/directories and run the Python scripts. First some basic commands:

@@ -186,7 +186,7 @@ Department of Physics, Boston University, \\
 
 \section*{Abstract}
 {\bf 
-We present a new open-source Python package for quantum dynamics of spin chains based on exact diagonalisation, called \qspin. The package is well-suited to study, among others, quantum quenches at finite and infinite times, the Eigenstate Thermalisation hypothesis, many-body localisation and other dynamical phase transitions, periodically-driven (Floquet) systems, adiabatic and counter-diabatic ramps, and spin-photon interactions. Moreover, \qspin's user-friendly interface can easily be used in combination with other Python packages which makes it amenable to a high-level customisation. We explain how to use \qspin\ using three detailed examples: (i) adiabatic ramping of parameters in the many-body localised XXZ model, (ii) heating in the periodically-driven transverse-field Ising model in a parallel field, and (iii) quantised light-atom interactions: recovering the periodically-driven atom in the semi-classical limit of a static Hamiltonian.
+We present a new open-source Python package for exact diagonalization and quantum dynamics of spin chains, called \qspin. The package is well-suited to study, among others, quantum quenches at finite and infinite times, the Eigenstate Thermalisation hypothesis, many-body localisation and other dynamical phase transitions, periodically-driven (Floquet) systems, adiabatic and counter-diabatic ramps, and spin-photon interactions. Moreover, \qspin's user-friendly interface can easily be used in combination with other Python packages which makes it amenable to a high-level customisation. We explain how to use \qspin\ using three detailed examples: (i) adiabatic ramping of parameters in the many-body localised XXZ model, (ii) heating in the periodically-driven transverse-field Ising model in a parallel field, and (iii) quantised light-atom interactions: recovering the periodically-driven atom in the semi-classical limit of a static Hamiltonian.
 }
 
 
@@ -287,7 +287,7 @@ To set up any Hamiltonian, we need to calculate the basis of the Hilbert space i
 The XXZ Hamiltonian $H$ from Eq.~\eqref{eq:XXZ_ED} obeys certain symmetries. In particular, one can specify a magnetisation sector (a.k.a.~filling) using the \texttt{basis} optional argument \texttt{N\_up=int}, where \texttt{int$\in[0,L]$} is any integer to specify the number of up-spins, see \texttt{line 14}. However, magnetisation is not the only integral of motion -- the model also conserves parity, i.e.~reflection w.r.t.~the middle of the chain. The parity operator has eigenvalues $\pm1$ and thus divides the Hilbert space into two further sectors. To restrict the Hamiltonian to one of them, we use the \texttt{basis} optional argument \texttt{pblock=$\pm1$}. Since parity and magnetisation commute, it is also possible to request them both, see \texttt{line 15}. We stress that each one of the \texttt{lines 13-15} is sufficient to build the \texttt{basis} and we only show them all here for clarity.
 \lstinputlisting[firstline=14, lastline=15, firstnumber=14]{example0.py}
 % 
-Setting up the spin-spin operators goes as follows. First, we need to define the site-coupling lists \texttt{J\_zz}, \texttt{J\_xy} and \texttt{h\_z}. To uniquely specify a two-spin interaction, we need (i) the coupling, and (ii) --  the labels of the sites the two operators act on. \qspin\ uses Python's indexing convention meaning that the first lattice site is always $i=0$, and the last one: $i=L-1$. For example, for the $zz$-interaction, the coupling is \texttt{Jzz\_0}, while the two sites are the nearest neighbours \texttt{i,i+1}. Hence, the list \texttt{[Jzz\_0,i,i+1]} defines the bond operator $J_{zz}(0) S^\mu_{i}S^\mu_{i+1}$ (we specify $\mu$ in the next step). To define the total interaction energy $J_{zz}(0)\sum_{i=0}^{L-2}S^\mu_{i}S^\mu_{i+1}$, all we need is to loop over the $L-2$ bonds of the open chain\footnote{The Python expression \texttt{range(L-1)} produces all integers between \texttt{0} and \texttt{L-2} including.}. In the same spirit one can define boundary or single-site operators, such as \texttt{h\_z}. It is also possible to set up multi-spin operators. 
+Setting up the spin-spin operators goes as follows. First, we need to define the site-coupling lists \texttt{J\_zz}, \texttt{J\_xy} and \texttt{h\_z}. To uniquely specify a two-spin interaction, we need (i) the coupling, and (ii) --  the labels of the sites the two operators act on. \qspin\ uses Python's indexing convention meaning that the first lattice site is always $i=0$, and the last one: $i=L-1$. For example, for the $zz$-interaction, the coupling is \texttt{Jzz\_0}, while the two sites are the nearest neighbours \texttt{i,i+1}. Hence, the list \texttt{[Jzz\_0,i,i+1]} defines the bond operator $J_{zz}(0) S^\mu_{i}S^\nu_{i+1}$ (we specify $\mu$ and $\nu$ in the next step). To define the total interaction energy $J_{zz}(0)\sum_{i=0}^{L-2}S^\mu_{i}S^\nu_{i+1}$, all we need is to loop over the $L-2$ bonds of the open chain\footnote{The Python expression \texttt{range(L-1)} produces all integers between \texttt{0} and \texttt{L-2} including.}. In the same spirit one can define boundary or single-site operators, such as \texttt{h\_z}. It is also possible to set up multi-spin operators. 
 \lstinputlisting[firstline=16, lastline=19, firstnumber=16]{example0.py}
 %
 The above lines of code specify the coupling but not yet which spin operators are being coupled (we have not yet fixed $\mu$). To do this, we need to create a \texttt{static} and/or \texttt{dynamic} operator list. As the name suggests, static lists define time-independent operators. Given the site-coupling list \texttt{J\_xy} from above, it is easy to set the operator $J_{xy}/2\sum_{i=0}^{L-2}S^+_{i}S^-_{i+1}$ by specifying the spin operator type in the same order as the site indices appear in the corresponding site-coupling list: \texttt{[["+-",J\_xy]]}. In other words, the order \texttt{"+-"} corresponds directly to the site-index order \texttt{"i,i+1"}. Similarly, one should set up the hermitian conjugate term $J_{xy}/2\sum_{i=0}^{L-2}S^-_{i}S^+_{i+1}$ as \texttt{[["-+",J\_xy]]}. In the end, one can concatenate these operator lists to produce the static part of the Hamiltonian.
@@ -426,8 +426,8 @@ We can now display how long the single iteration took
 and conclude the definition of \texttt{realization}:
 \lstinputlisting[firstline=98, lastline=98, firstnumber=98]{example1.py}
 %
-Now that we have written the \texttt{realization} function, we can call it \texttt{n\_real} times to produce the data. The easiest way of doing this is to loop over the disorder realisation, as shown in \texttt{lines 125-126}. However, a better way of doing this makes use of the \texttt{joblib} package which can distribute simultaneous function calls over \texttt{n\_job} Python processes, see \texttt{line 128}.\cyan{...rework example1.py and tutorial1.py to include \_\_name\_\_=="\_\_main\_\_" then add information about there here...} To learn more about how to do this, we invite the readers to check the documentation of \texttt{joblib}. Having produced and extracted the entropy vs.~ramp speed data, we are ready to perform the disorder average by taking the mean over all realisations, \texttt{lines 130-132}. 
-\lstinputlisting[firstline=123, lastline=132, firstnumber=123]{example1.py}
+Now that we have written the \texttt{realization} function, we can call it \texttt{n\_real} times to produce the data. The easiest way of doing this is to loop over the disorder realisation, as shown in \texttt{lines 125-126}. However, a better way of doing this makes use of the \texttt{joblib} package which can distribute simultaneous function calls over \texttt{n\_job} Python processes, see \texttt{line 130}\footnote{The if statement which has \texttt{if \_\_name\_\_ == "\_\_main\_\_"} in \texttt{line 125} is needed by \texttt{joblib} to protect the parallel loop from recursively spawning python processes on Windows OS. For Linux/OS X this is not needed, but the code should still work.}. To learn more about how to do this, we invite the readers to check the documentation of \texttt{joblib}. Having produced and extracted the entropy vs.~ramp speed data, we are ready to perform the disorder average by taking the mean over all realisations, \texttt{lines 132-134}. 
+\lstinputlisting[firstline=123, lastline=135, firstnumber=123]{example1.py}
 %
 The complete code including the lines that produce Fig.~\ref{fig:example1} is available in Fig.~\ref{code:ex1}.
 
@@ -821,13 +821,13 @@ In \qspin quantum many-body operators are represented as matrices. The computati
 %\bibliographystyle{SciPost_bibstyle}
 %\bibliographystyle{abbrv}
 
-%\begin{comment}
-%% FIRST OPTION - write your entries here directly, following the example below, including Author(s), Title, Journal Ref. with year in parentheses at the end, followed by the DOI number.
-%\begin{thebibliography}{99}
-%\bibitem{1931_Bethe_ZP_71} H. A. Bethe, {\it Zur Theorie der Metalle. i. Eigenwerte und Eigenfunktionen der linearen Atomkette}, Zeit. f{\"u}r Phys. {\bf 71}, 205 (1931), \doi{10.1007\%2FBF01341708}.
-%\bibitem{arXiv:1108.2700} P. Ginsparg, {\it It was twenty years ago today... }, \url{http://arxiv.org/abs/1108.2700}.
-%\end{thebibliography}
-%\end{comment}
+\begin{comment}
+% FIRST OPTION - write your entries here directly, following the example below, including Author(s), Title, Journal Ref. with year in parentheses at the end, followed by the DOI number.
+\begin{thebibliography}{99}
+\bibitem{1931_Bethe_ZP_71} H. A. Bethe, {\it Zur Theorie der Metalle. i. Eigenwerte und Eigenfunktionen der linearen Atomkette}, Zeit. f{\"u}r Phys. {\bf 71}, 205 (1931), \doi{10.1007\%2FBF01341708}.
+\bibitem{arXiv:1108.2700} P. Ginsparg, {\it It was twenty years ago today... }, \url{http://arxiv.org/abs/1108.2700}.
+\end{thebibliography}
+\end{comment}
 
 % SECOND OPTION:
 % Use your bibtex library

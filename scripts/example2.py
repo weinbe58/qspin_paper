@@ -74,20 +74,20 @@ VF=Floq.VF # read off Floquet states
 EF=Floq.EF # read off quasienergies
 #
 ##### calculate initial state (GS of HF_02) and its energy
-EF_02, VF_02 = HF_02.eigh()
-EF_02, psi_i = EF_02[0], VF_02[:,0]
+EF_02, psi_i = HF_02.eigsh(k=1,sigma=-100.0)
+psi_i = psi_i.reshape((-1,))
 #
 ##### time-dependent measurements
 # calculate measurements
 Sent_args = {"basis":basis,"chain_subsys":[j for j in range(L/2)]}
-meas = obs_vs_time((psi_i,EF,VF),t.vals,[HF_02/L],Sent_args=Sent_args)
-"""
+#meas = obs_vs_time((psi_i,EF,VF),t.vals,{"E_time":HF_02/L},Sent_args=Sent_args)
+#"""
 # alternative way by solving Schroedinger's eqn
 psi_t = H.evolve(psi_i,t.i,t.vals,iterate=True,rtol=1E-9,atol=1E-9)
-meas = obs_vs_time(psi_t,t.vals,[HF_02/L],Sent_args=Sent_args)
-"""
+meas = obs_vs_time(psi_t,t.vals,{"E_time":HF_02/L},Sent_args=Sent_args)
+#"""
 # read off measurements
-Energy_t = meas["Expt_time"]
+Energy_t = meas["E_time"]
 Entropy_t = meas["Sent_time"]["Sent"]
 #
 ##### calculate diagonal ensemble measurements

@@ -74,7 +74,7 @@ VF=Floq.VF # read off Floquet states
 EF=Floq.EF # read off quasienergies
 #
 ##### calculate initial state (GS of HF_02) and its energy
-EF_02, psi_i = HF_02.eigsh(k=1,sigma=-100.0)
+EF_02, psi_i = HF_02.eigsh(k=1,which="SA",maxiter=1E4)
 psi_i = psi_i.reshape((-1,))
 #
 ##### time-dependent measurements

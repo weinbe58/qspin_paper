@@ -33,7 +33,7 @@
 \usepackage{caption}
 \usepackage{subcaption}
 % needed for \sout{}
-\usepackage[normalem]{ulem}
+%\usepackage[normalem]{ulem}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%% Python code %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -158,7 +158,7 @@
 % TODO: write your article's title here. 
 % The article title is centered, Large boldface, and should fit in two lines
 \begin{center}{\Large \textbf{
-\qspin: a Python Package for Dynamics and Exact Diagonalisation of Quantum Many Body Systems\\
+QuSpiN: a Python Package for Dynamics and Exact Diagonalisation of Quantum Many Body Systems\\
 \large part I: spin chains
 }}\end{center}
 
@@ -207,12 +207,7 @@ We present a new open-source Python package for exact diagonalization and quantu
 
 \cyan{TO-DO list
 	\begin{itemize}
-		\item fill in refs
-		\item read outro and basic use
-		\item fix name=main
-		\item put link to tutorials in App C
 		\item google out tabs in listings
-		\item jupyter notebook
 		\item run-check all scripts and tutorials!
 	\end{itemize}}
 
@@ -291,7 +286,7 @@ To set up any Hamiltonian, we need to calculate the basis of the Hilbert space i
 The XXZ Hamiltonian $H$ from Eq.~\eqref{eq:XXZ_ED} obeys certain symmetries. In particular, one can specify a magnetisation sector (a.k.a.~filling) using the \texttt{basis} optional argument \texttt{N\_up=int}, where \texttt{int$\in[0,L]$} is any integer to specify the number of up-spins, see \texttt{line 14}. However, magnetisation is not the only integral of motion -- the model also conserves parity, i.e.~reflection w.r.t.~the middle of the chain. The parity operator has eigenvalues $\pm1$ and thus further divides the Hilbert space into two new subspaces. To restrict the Hamiltonian to either one of them, we use the \texttt{basis} optional argument \texttt{pblock=$\pm1$}. Since parity and magnetisation commute, it is also possible to request them simultaneously, see \texttt{line 15}. We stress that each one of the \texttt{lines 13-15} is sufficient to build the \texttt{basis} on its own and we only show them all here for clarity.
 \lstinputlisting[firstline=14, lastline=15, firstnumber=14]{example0.py}
 % 
-In \qspin, many-body operators $JS_{i_1}^{\mu_1}\dots S_{i_n}^{\mu_n}$ are defined by a string of letters $\mu_1,\dots\mu_n$, representing the operator types, \texttt{$\mu_i\in$["+","-","x","y","z"]}, together with a site-coupling list $[J,i_1,\dots,i_n]$ which holds the \sout{matrix element} \cyan{coupling} and the indices for the sites $i$ that each \cyan{spin} operator acts at on the lattice. Setting up the spin-spin operators in the XXZ model goes as follows. First, we need to define the site-coupling lists \texttt{J\_zz}, \texttt{J\_xy} and \texttt{h\_z}. To uniquely specify a two-spin interaction, we need (i) the coupling, and (ii) --  the labels of the sites the two operators act on. \qspin\ uses Python's indexing convention meaning that the first lattice site is always $i=0$, and the last one: $i=L-1$. For example, for the $zz$-interaction, the coupling is \texttt{Jzz}, while the two sites are the nearest neighbours \texttt{i,i+1}. Hence, the list \texttt{[Jzz,i,i+1]} defines the bond operator $J_{zz}(0) S^\mu_{i}S^\nu_{i+1}$ (we specify $\mu$ and $\nu$ in the next step). To define the total interaction energy $J_{zz}(0)\sum_{i=0}^{L-2}S^\mu_{i}S^\nu_{i+1}$, all we need is to loop over the $L-2$ bonds of the open chain\footnote{The Python expression \texttt{range(L-1)} produces all integers between \texttt{0} and \texttt{L-2} including.}. In the same spirit one can define boundary or single-site operators, such as \texttt{h\_z}. It is also possible to set up multi-spin operators, as we show in Sec.~\ref{subsec:Floquet}. 
+In \qspin, many-body operators $JS_{i_1}^{\mu_1}\dots S_{i_n}^{\mu_n}$ are defined by a string of letters $\mu_1,\dots\mu_n$, representing the operator types, \texttt{$\mu_i\in$["+","-","x","y","z"]}, together with a site-coupling list $[J,i_1,\dots,i_n]$ which holds the coupling and the indices for the sites $i$ that each spin operator acts at on the lattice. Setting up the spin-spin operators in the XXZ model goes as follows. First, we need to define the site-coupling lists \texttt{J\_zz}, \texttt{J\_xy} and \texttt{h\_z}. To uniquely specify a two-spin interaction, we need (i) the coupling, and (ii) --  the labels of the sites the two operators act on. \qspin\ uses Python's indexing convention meaning that the first lattice site is always $i=0$, and the last one: $i=L-1$. For example, for the $zz$-interaction, the coupling is \texttt{Jzz}, while the two sites are the nearest neighbours \texttt{i,i+1}. Hence, the list \texttt{[Jzz,i,i+1]} defines the bond operator $J_{zz}(0) S^\mu_{i}S^\nu_{i+1}$ (we specify $\mu$ and $\nu$ in the next step). To define the total interaction energy $J_{zz}(0)\sum_{i=0}^{L-2}S^\mu_{i}S^\nu_{i+1}$, all we need is to loop over the $L-2$ bonds of the open chain\footnote{The Python expression \texttt{range(L-1)} produces all integers between \texttt{0} and \texttt{L-2} including.}. In the same spirit one can define boundary or single-site operators, such as \texttt{h\_z}. It is also possible to set up multi-spin operators, as we show in Sec.~\ref{subsec:Floquet}. 
 \lstinputlisting[firstline=16, lastline=19, firstnumber=16]{example0.py}
 %
 The above lines of code specify the coupling but not yet which spin operators are being coupled. i.e.~we have not yet fixed $\mu$ and $\nu$. To do this, we need to create a \texttt{static} and/or \texttt{dynamic} operator list. As the name suggests, static lists define time-independent operators. Given the site-coupling list \texttt{J\_xy} from above, it is easy to define the operator $J_{xy}/2\sum_{i=0}^{L-2}S^+_{i}S^-_{i+1}$ by specifying the spin operator type in the same order as the site indices appear in the corresponding site-coupling list: \texttt{[["+-",J\_xy]]}. In other words, the order \texttt{"+-"} corresponds directly to the site-index order \texttt{"i,i+1"}. Similarly, one should set up the hermitian conjugate term $J_{xy}/2\sum_{i=0}^{L-2}S^-_{i}S^+_{i+1}$ as \texttt{[["-+",J\_xy]]}. In the end, one can concatenate these operator lists to produce the static part of the Hamiltonian.
@@ -369,7 +364,7 @@ Since we want to produce many realisations of the data and average over disorder
 Next, we define the physical model parameters.  
 \lstinputlisting[firstline=13, lastline=19, firstnumber=13]{example1.py}
 %
-The time-dependent disordered Hamiltonian consists of two parts: the time-dependent XXZ model which is disorder-free, and the disorder field whose values differ from one realisation to another. We focus on the XXZ part first. Let us code up the driving protocol $J_{zz}(t) = (1/2 + vt)J_{zz}(0)$. As already explained, our goal is to obtain the disorder-averaged entropies as a function of the ramp speed $v$. Hence, for each disorder realisation, we need to evolve the initial state many times, each corresponding to a different ramp speed. However, \sout{defining} \cyan{calculating} the Hamiltonian every single time is not particularly efficient from the point of view of simulation runtime. We thus want to set up a family of Hamiltonians $\{v:H(t;v)\}$ at once, and we shall employ Python's features to do so. This will require that the drive speed \texttt{v} is \emph{not} a parameter of the function \texttt{ramp}, see \texttt{line 29}, but is declared beforehand as a global variable. Once, \texttt{ramp} has been defined, reassigning \texttt{v} dynamically induces the corresponding change in \texttt{ramp} without any need to re-define \texttt{ramp} itself. We shall comment on how this works later on in the code.   
+The time-dependent disordered Hamiltonian consists of two parts: the time-dependent XXZ model which is disorder-free, and the disorder field whose values differ from one realisation to another. We focus on the XXZ part first. Let us code up the driving protocol $J_{zz}(t) = (1/2 + vt)J_{zz}(0)$. As already explained, our goal is to obtain the disorder-averaged entropies as a function of the ramp speed $v$. Hence, for each disorder realisation, we need to evolve the initial state many times, each corresponding to a different ramp speed. However, calculating the Hamiltonian every single time is not particularly efficient from the point of view of simulation runtime. We thus want to set up a family of Hamiltonians $\{v:H(t;v)\}$ at once, and we shall employ Python's features to do so. This will require that the drive speed \texttt{v} is \emph{not} a parameter of the function \texttt{ramp}, see \texttt{line 29}, but is declared beforehand as a global variable. Once, \texttt{ramp} has been defined, reassigning \texttt{v} dynamically induces the corresponding change in \texttt{ramp} without any need to re-define \texttt{ramp} itself. We shall comment on how this works later on in the code.   
 \lstinputlisting[firstline=21, lastline=26, firstnumber=26]{example1.py}
 %
 To set up the static part of the Hamiltonian, we follow the same steps as in Sec.~\ref{subsec:ED}. Since the Hamiltonian~\eqref{eq:H_XXZ} conserves the total magnetisation, the overlap betweens states of different magnetisation sectors vanishes trivially, and we can reach larger system sizes by working in a fixed magnetisation sector. A natural choice is the zero-magnetisation sector which contains the ground state. Parity is broken by the disorder field, so we leave it out. 
@@ -558,7 +553,7 @@ As discussed in the setup of the problem, we choose for the initial state the gr
 Finally, we can calculate the time-dependence of the energy density $\mathcal{E}(t)$ and the entanglement entropy density $s_\mathrm{ent}(t)$. This is done using the \texttt{measurements} function \texttt{obs\_vs\_time}. If one evolves with a constant Hamiltonian (which is effectively the case for stroboscopic time evolution), \qspin\ offers two different but equivalent options, that we now discuss. (i) As a first required argument of \texttt{obs\_vs\_time} one passes a tuple \texttt{(psi\_i,E,V)} with the initial state, the spectrum, and the eigenbasis of the Hamiltonian to do the evolution with. The second argument is the time vector (here \texttt{t.vals}), and the third one -- a dictionary with the operator one would like to measure (here the approximate energy density \texttt{HF\_02/L}, see \texttt{line 83} below. If the observable is time-dependent, \texttt{obs\_vs\_time} will evaluate it at the appropriate times: $\langle\psi(t)|\mathcal{O}(t)|\psi(t)\rangle$. To obtain the entanglement entropy, \texttt{obs\_vs\_time} calls the \texttt{measurements} function \texttt{ent\_entropy}, whose arguments are passed using the variable \texttt{Sent\_args}. \texttt{ent\_entropy} requires the \texttt{basis}, and optionally -- the subsystem \texttt{chain\_subsys} which would otherwise be set to the first \texttt{L/2} sites of the chain. To learn more about how to obtain the reduced density matrix or other features of \texttt{ent\_entropy}, consult the documentation, App.~\ref{app:doc}.
 \lstinputlisting[firstline=80,lastline=83,firstnumber=80]{example2.py}
 %
-The other way to calculate a time-dependent observable (ii) is more generic and works for arbitrary time-dependent Hamiltonians. It makes use of Schr\"odinger evolution to find the time-dependent state using the \texttt{evolve} method of the \texttt{hamiltonian} class. While we introduced \texttt{evolve} in Sec.~\ref{subsec:MBL}, here we explain an important feature: if the optional argument \texttt{iterate=True} is passed, then \qspin\ will not do the calculation of the state immediately; instead -- it will create a generator object. \cyan{This generator object will calculate the time dependent state one by one upon request.} By doing so one can avoid the causal loop over the times \texttt{t.vals} to first find the state, and then looping once more over time to evaluate observables. The \texttt{evolve} method typically works for larger system sizes, than the ones that allow full ED. One can then simply pass the generator \texttt{psi\_t} into \texttt{obs\_vs\_time} instead of the initial tuple.
+The other way to calculate a time-dependent observable (ii) is more generic and works for arbitrary time-dependent Hamiltonians. It makes use of Schr\"odinger evolution to find the time-dependent state using the \texttt{evolve} method of the \texttt{hamiltonian} class. While we introduced \texttt{evolve} in Sec.~\ref{subsec:MBL}, here we explain an important feature: if the optional argument \texttt{iterate=True} is passed, then \qspin\ will not do the calculation of the state immediately; instead -- it will create a generator object. This generator object will calculate the time dependent state one by one upon request. By doing so one can avoid the causal loop over the times \texttt{t.vals} to first find the state, and then looping once more over time to evaluate observables. The \texttt{evolve} method typically works for larger system sizes, than the ones that allow full ED. One can then simply pass the generator \texttt{psi\_t} into \texttt{obs\_vs\_time} instead of the initial tuple.
 \lstinputlisting[firstline=85,lastline=87,firstnumber=85]{example2.py}
 %
 The output of \texttt{obs\_vs\_time} is a dictionary. Extracting the energy density and entanglement entropy density values as a function of time, is as easy as:
@@ -648,11 +643,13 @@ The complete code including the lines that produce Fig.~\ref{fig:example3} is av
 \label{sec:outro}
 
 
-We have shown that the \qspin\ functionality allows the user to do many different kinds of ED calculations. In one spatial dimension, one also has the option of using a wide range of available symmetries. It is interesting to note that, provided the study does not require the use of symmetries (e.g.~a fully disordered 2D model), one can in principle specify the site-coupling lists to build up higher-dimensional Hamiltonians, using the same \texttt{spin\_basis\_1d} basis class. Setting up higher-dimensional Hamiltonians with symmetries is possible in limited cases, too, when they can be uniquely mapped to one-dimensional systems. 
+We have demonstrated that the \qspin\ functionality allows the user to do many different kinds of ED calculations. In one spatial dimension, one also has the option of using a wide range of available symmetries. \cyan{The reader might have noticed} that, provided the study does not require the use of symmetries (e.g.~a fully disordered 2D model), one can specify the site-coupling lists such as to build higher-dimensional Hamiltonians, using the \texttt{spin\_basis\_1d} class. Setting up higher-dimensional Hamiltonians with symmetries is possible in limited cases, too, when they can be uniquely mapped to one-dimensional systems. 
 
-In addition to the features we have discussed in this paper, there are many other functions defined in\qspin\ which are all listed in the Documentation (Appendix~\ref{app:doc}). Some of the more interesting ones include the \texttt{tensor\_basis} class which constructs a new basis object implementing the tensor product of two individual basis objects. This is useful, e.g.~, for studying interacting hard-core boson ladders. Another class which is useful for state-of-the-art calculations is the \texttt{HamiltonianOperator} class; it does the matrix vector product without actually storing the matrix elements which significantly reduces the amount of memory needed to do this operation. This is particularly suited for diagonalising very large spin chains using \texttt{eigsh} as it only requires on the order of a hundred calls of the matrix vector product to solve for a few eigenvalues and eigenvectors (for a specific example, see the documentation in App.~\ref{app:doc}). \cyan{Finally the \texttt{hamiltonian} class is not just limited to matrices produced in our code from the operator strings. In general this class also takes matrices as inputs for both static and dynamic operators; therefore so one can use all of the packages functionality for any matrix one can cook up.}
+In addition to the features we have discussed in this paper, there are many other functions defined in\qspin\ which are all listed in the Documentation (Appendix~\ref{app:doc}). Some of the more interesting ones include the \texttt{tensor\_basis} class which constructs a new \cyan{basis object out of two other basis objects, thus implementing the tensor product. This can be employed, e.g., to study interacting ladders with hard-core bosons.} Another class which is useful for state-of-the-art calculations is the \texttt{HamiltonianOperator} class. It does the matrix vector product without actually storing the matrix elements which significantly reduces the amount of memory needed to do this operation. This is particularly suited for diagonalising very large spin chains using \texttt{eigsh}, as it only requires on the order of a hundred calls of the matrix vector product to solve for a few eigenvalues and eigenvectors (for a specific example, see the documentation in App.~\ref{app:doc}). Finally the \texttt{hamiltonian} class is not just limited to matrices generated in our code from the operator strings. In general, this class also takes arbitrary matrices as inputs for both static and dynamic operators; therefore, one can use all of the packages functionality for any user-defined matrix.
 
 We have set up the code to make it easily generalisable to different types of systems. We are currently working towards adding the one-dimensional symmetries for spinless and spinful fermions, but we are hoping to eventually add higher spins and bosons, too. Farther into the future we may implement a number of two dimensional lattices as well as their symmetries. We also welcome anyone who is interested in contributing to this project to reach out to the authors with any questions they may have about the package organisation. All modifications can be proposed through the pull request system on \href{https://github.com/weinbe58/qspin}{github.com}.  
+
+\cyan{We would much appreciate it if the users could report bugs using the \href{https://github.com/weinbe58/qspin/issues}{issues} forum in the \qspin\ online repository. }
 
 %Although \qspin\ passed a variety of tests up to present date, there may still be some bugs lurking out there. Therefore, we would much appreciate it if the users could report these bugs to the ``Issues'' forum on the \qspin\ repository. With the report we request that the user please add a segment of code which reproduces the bug. As a rule of thumb, bug reports are most useful when the code segment is as short as possible but contains the necessary annotations and comments so it can be followed and, at the same time, the Hamiltonian used is the simplest one which displays the bug.
 
@@ -662,17 +659,17 @@ We would like to thank  A.~Iazzi, M.~Kolodrubetz, P.~Mehta, P.~Patil, A.~Polkovn
 
 % TODO: include funding information
 \paragraph{Funding information}
-This work was supported by ...
+This work was supported by NSF DMR-1506340 and ARO W911NF1410540 \cyan{AND???}
 
 \begin{appendix}
 
 \section{Installation Guide in a Few Steps}
 \label{app:install}
 
-\qspin\ is currently only being supported for Python 2.7 and so one must make sure to install this version of Python. The Authors recommend the use of Anaconda to install Python and manage your Python packages. It is free to download at \href{https://www.continuum.io/downloads}{here}, or for a lighter installation you can use miniconda which can be found \href{http://conda.pydata.org/miniconda.html}{here}. 
+\qspin\ is currently only being supported for Python 2.7 and so one must make sure to install this version of Python. \cyan{We recommend the use of the free package manager \href{https://www.continuum.io/downloads}{Anaconda} which installs Python and manages its packages. For a lighter installation, one can use \href{http://conda.pydata.org/miniconda.html}{miniconda}.} 
 
 \subsection{Mac OS X/Linux}
-To install Anaconda/miniconda all one has to do is execute the installation script with administrative privilege. To do this open up the terminal and go to the folder containing the downloaded installation file and execute the following command: 
+To install Anaconda/miniconda all one has to do is execute the installation script with administrative privilege. To do this, open up the terminal and go to the folder containing the downloaded installation file and execute the following command: 
 \begin{lstlisting}[numbers=none,keywordstyle=\ttfamily]
 $ sudo bash <installation_file>
 \end{lstlisting}
@@ -687,7 +684,7 @@ $ conda install -c weinbe58 qspin
 \end{lstlisting}
 If asked to install new packages just say `yes'. To keep the code up-to-date, just run this command regularly. 
 
-\underline{\bf Installing Manually.}---Installing the package manually is not recommended unless the above method failed. Note that you must have NumPy, SciPy, and Joblib installed before installing \qspin. Once all the prerequisite packages are installed, one can download the source code from \href{https://github.com/weinbe58/qspin/tree/master}{github} and then extract the code to whichever directory one desires. Open the terminal and go to the top level directory of the source code and execute:
+\underline{\bf Installing Manually.}---Installing the package manually is not recommended unless the above method failed. Note that you must have the Python packages NumPy, SciPy, and Joblib installed before installing \qspin. Once all the prerequisite packages are installed, one can download the source code from \href{https://github.com/weinbe58/qspin/tree/master}{github} and then extract the code to whichever directory one desires. Open the terminal and go to the top level directory of the source code and execute:
 \begin{lstlisting}[numbers=none,keywordstyle=\ttfamily]  
 $ python setup.py install --record install_file.txt
 \end{lstlisting}
@@ -715,7 +712,7 @@ This will compile the source code and copy it to the installation directory of P
 \section{Basic Use of Command Line to Run Python}
 \label{app:cmd_line}
 
-In this appendix we will review how to use the command line for Windows and OS X/Linux to naviagte your computer's folders/directories and run the Python scripts. First some basic commands:
+In this appendix we will review how to use the command line for Windows and OS X/Linux to naviagte your computer's folders/directories and run the Python scripts.
 
 \subsection{Mac OS X/Linux}
 Some basic commands:
@@ -751,13 +748,13 @@ Some basic commands:
 	\end{lstlisting}
 	
 \end{itemize}
-Unix also has an auto complete feature if you press the TAB key. It will complete word or stop when it matches more than one file/folder name. The current directory is denoted by "." and the directory above is "..".
+Unix also has an auto complete feature if one hits the TAB key. It will complete a word or stop when it matches more than one file/folder name. The current directory is denoted by "." and the directory above is "..".
 %
-Now to execute a python script all you have to do is open your terminal and navigate to the directory which contains the python script. To execute the script just use the following command:
+Now, to execute a Python script all one has to do is open your terminal and navigate to the directory which contains the python script. To execute the script just use the following command:
 \begin{lstlisting}[numbers=none,keywordstyle=\ttfamily]
 $ python script.py
 \end{lstlisting}
-it's that simple!
+It's that simple!
 
 \subsection{Windows}
 Some basic commands:
@@ -793,15 +790,15 @@ Some basic commands:
 	\end{lstlisting}
 	
 \end{itemize}
-Windows also has a auto complete feature but instead of stopping when there multiple files/folders with the same name, it will complete it with the first file alphebetically. The current directory is denoted by "." and the directory above is "..".
+Windows also has a auto complete feature using the TAB key but instead of stopping when there multiple files/folders with the same name, it will complete it with the first file alphabetically. The current directory is denoted by "." and the directory above is "..".
 
-\subsection{Execute Python script (any OS)}
+\subsection{Execute Python Script (any operating systems)}
 %
-Now to execute a python script all you have to do is open your terminal and navigate to the directory which contains the python script. To execute the script just use the following command:
+To execute a Python script all one has to do is open up a terminal and navigate to the directory which contains the Python script. Python can be recognised by the extension \texttt{.py}. To execute the script just use the following command:
 \begin{lstlisting}[numbers=none,keywordstyle=\ttfamily]
 python script.py
 \end{lstlisting}
-it's that simple!
+It's that simple!
 
 \newpage
 \section{Complete Example Codes}
@@ -820,7 +817,7 @@ The scripts can be downloaded from github \href{https://github.com/weinbe58/qspi
 
 \section{Package Documentation}
 \label{app:doc}
-In \qspin quantum many-body operators are represented as matrices. The computation of these matrices are done through custom code written in Cython. Cython is an optimizing static compiler which takes code written in a syntax similar to Python, and compiles it into a highly efficient C/C\texttt{++} shared library. These libraries are then easily interfaced with Python, but can run orders of magnitude faster than pure Python code~\cite{Cython}. The matrices are stored in a sparse matrix format using the sparse matrix library of SciPy~\cite{SciPy_package}. This allows \qspin\ to easily interface with mature Python packages, such as NumPy, SciPy, any many other Python package. These packages provide reliable state-of-the-art tools for scientific computation as well as support from the Python community to regularly improve and update them~\cite{NumPy,Python_computing_1,Python_computing_2,SciPy_package}. Moreover, we have included specific functionality in \qspin\ which uses NumPy and SciPy to do many desired calculations common to ED studies, while making sure the user only has to call a few NumPy or SciPy functions directly. The complete up-to-date documentation for the package is available online under:\\
+In \qspin quantum many-body operators are represented as matrices. The computation of these matrices are done through custom code written in Cython. Cython is an optimizing static compiler which takes code written in a syntax similar to Python, and compiles it into a highly efficient C/C\texttt{++} shared library. These libraries are then easily interfaced with Python, but can run orders of magnitude faster than pure Python code~\cite{Cython}. The matrices are stored in a sparse matrix format using the sparse matrix library of SciPy~\cite{SciPy_package}. This allows \qspin\ to easily interface with mature Python packages, such as NumPy, SciPy, any many others. These packages provide reliable state-of-the-art tools for scientific computation as well as support from the Python community to regularly improve and update them~\cite{NumPy,Python_computing_1,Python_computing_2,SciPy_package}. Moreover, we have included specific functionality in \qspin\ which uses NumPy and SciPy to do many desired calculations common to ED studies, while making sure the user only has to call a few NumPy or SciPy functions directly. The complete up-to-date documentation for the package is available online under:\\
 
 \href{https://github.com/weinbe58/qspin}{https://github.com/weinbe58/qspin}\\
 

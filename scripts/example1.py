@@ -45,7 +45,7 @@ def realization(vs,H_XXZ,basis,real):
 	basis: spin_basis_1d object containing the spin basis
 	n_real: number of disorder realisations; used only for timing
 	"""
-	ti = time() # start timer
+	ti = time() # get start time
 	#
 	global v # declare ramp speed v a global variable
 	#

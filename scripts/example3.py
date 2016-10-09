@@ -6,7 +6,7 @@ from qspin.basis.photon import coherent_state # HO coherent state
 import numpy as np # generic math functions
 #
 ##### define model parameters #####
-Nph_tot=60 # total number of photon states
+Nph_tot=60 # maximum photon occupation 
 Nph=Nph_tot/2 # mean number of photons in initial coherent state
 Omega=3.5 # drive frequency
 A=0.8 # spin-photon coupling strength (drive amplitude)

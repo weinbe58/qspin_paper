@@ -3,7 +3,7 @@ from qspin.basis import spin_basis_1d # Hilbert space spin basis
 import numpy as np # generic math functions
 #
 ##### define model parameters #####
-L=14 # system size
+L=12 # system size
 Jxy=np.sqrt(2.0) # xy interaction
 Jzz_0=1.0 # zz interaction
 hz=1.0/np.sqrt(3.0) # z external field

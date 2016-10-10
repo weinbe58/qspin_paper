@@ -205,11 +205,13 @@ We present a new open-source Python package for exact diagonalization and quantu
 \section{What Problems can I Solve with \qspin?}
 \label{sec:intro}
 
+\begin{comment}
 \cyan{TO-DO list
 	\begin{itemize}
 		\item google out tabs in listings
 		\item run-check all scripts and tutorials!
 	\end{itemize}}
+\end{comment}
 
 The study of quantum many-body dynamics comprises a variety of problems, such as dynamical phase transitions (e.g.~many-body localisation), thermalising time evolution, adiabatic change of parameters, periodically-driven systems, and many others. In contrast to the tremendous progress made in studying low-energy phenomena based on well-developed sophisticated techniques, such as Quantum Monte Carlo methods~\cite{pollet_12,foulkes_01,acioli_97}, Density Matrix Renormalisation Group~\cite{daley_04,schollwock_05}, Matrix Product States~\cite{schollwock_11}, Dynamical Mean-Field Theory~\cite{georges_96,kotliar_06,aoki_14}, etc., one of the most popular ``cutting-edge'' investigation technique for out-of-equilibrium quantum many-body problems remains `old school' exact diagonalisation (ED). 
 
@@ -643,30 +645,28 @@ The complete code including the lines that produce Fig.~\ref{fig:example3} is av
 \label{sec:outro}
 
 
-We have demonstrated that the \qspin\ functionality allows the user to do many different kinds of ED calculations. In one spatial dimension, one also has the option of using a wide range of available symmetries. \cyan{The reader might have noticed} that, provided the study does not require the use of symmetries (e.g.~a fully disordered 2D model), one can specify the site-coupling lists such as to build higher-dimensional Hamiltonians, using the \texttt{spin\_basis\_1d} class. Setting up higher-dimensional Hamiltonians with symmetries is possible in limited cases, too, when they can be uniquely mapped to one-dimensional systems. 
+We have demonstrated that the \qspin\ functionality allows the user to do many different kinds of ED calculations. In one spatial dimension, one also has the option of using a wide range of available symmetries. The reader might have noticed that, provided the study does not require the use of symmetries (e.g.~a fully disordered 2D model), one can specify the site-coupling lists such as to build higher-dimensional Hamiltonians, using the \texttt{spin\_basis\_1d} class. Setting up higher-dimensional Hamiltonians with symmetries is possible in limited cases, too, when they can be uniquely mapped to one-dimensional systems. 
 
-In addition to the features we have discussed in this paper, there are many other functions defined in\qspin\ which are all listed in the Documentation (Appendix~\ref{app:doc}). Some of the more interesting ones include the \texttt{tensor\_basis} class which constructs a new \cyan{basis object out of two other basis objects, thus implementing the tensor product. This can be employed, e.g., to study interacting ladders with hard-core bosons.} Another class which is useful for state-of-the-art calculations is the \texttt{HamiltonianOperator} class. It does the matrix vector product without actually storing the matrix elements which significantly reduces the amount of memory needed to do this operation. This is particularly suited for diagonalising very large spin chains using \texttt{eigsh}, as it only requires on the order of a hundred calls of the matrix vector product to solve for a few eigenvalues and eigenvectors (for a specific example, see the documentation in App.~\ref{app:doc}). Finally the \texttt{hamiltonian} class is not just limited to matrices generated in our code from the operator strings. In general, this class also takes arbitrary matrices as inputs for both static and dynamic operators; therefore, one can use all of the packages functionality for any user-defined matrix.
+In addition to the features we have discussed in this paper, there are many other functions defined in\qspin\ which are all listed in the Documentation (Appendix~\ref{app:doc}). Some of the more interesting ones include the \texttt{tensor\_basis} class which constructs a new basis object out of two other basis objects, thus implementing the tensor product. This can be employed, e.g., to study interacting ladders with hard-core bosons. Another class which is useful for state-of-the-art calculations is the \texttt{HamiltonianOperator} class. It does the matrix vector product without actually storing the matrix elements which significantly reduces the amount of memory needed to do this operation. This is particularly suited for diagonalising very large spin chains using \texttt{eigsh}, as it only requires on the order of a hundred calls of the matrix vector product to solve for a few eigenvalues and eigenvectors (for a specific example, see the documentation in App.~\ref{app:doc}). Finally the \texttt{hamiltonian} class is not just limited to matrices generated in our code from the operator strings. In general, this class also takes arbitrary matrices as inputs for both static and dynamic operators; therefore, one can use all of the packages functionality for any user-defined matrix.
 
 We have set up the code to make it easily generalisable to different types of systems. We are currently working towards adding the one-dimensional symmetries for spinless and spinful fermions, but we are hoping to eventually add higher spins and bosons, too. Farther into the future we may implement a number of two dimensional lattices as well as their symmetries. We also welcome anyone who is interested in contributing to this project to reach out to the authors with any questions they may have about the package organisation. All modifications can be proposed through the pull request system on \href{https://github.com/weinbe58/qspin}{github.com}.  
 
-\cyan{We would much appreciate it if the users could report bugs using the \href{https://github.com/weinbe58/qspin/issues}{issues} forum in the \qspin\ online repository. }
-
-%Although \qspin\ passed a variety of tests up to present date, there may still be some bugs lurking out there. Therefore, we would much appreciate it if the users could report these bugs to the ``Issues'' forum on the \qspin\ repository. With the report we request that the user please add a segment of code which reproduces the bug. As a rule of thumb, bug reports are most useful when the code segment is as short as possible but contains the necessary annotations and comments so it can be followed and, at the same time, the Hamiltonian used is the simplest one which displays the bug.
+We would much appreciate it if the users could report bugs using the \href{https://github.com/weinbe58/qspin/issues}{issues} forum in the \qspin\ online repository.
 
 
 \section*{Acknowledgements}
-We would like to thank  A.~Iazzi, M.~Kolodrubetz, P.~Mehta, P.~Patil, A.~Polkovnikov, A.~Sandvik, D.~Sels, and S.~Vajna for various stimulating discussions and for providing comments on the draft. 
+We would like to thank  A.~Iazzi, M.~Kolodrubetz, P.~Mehta, P.~Patil, A.~Polkovnikov, A.~Sandvik, D.~Sels, and S.~Vajna for various stimulating discussions and for providing comments on the draft. The authors are pleased to acknowledge that the computational work reported on in this paper was performed on the Shared Computing Cluster which is administered by \href{http://www.bu.edu/tech/support/research/}{Boston University's Research Computing Services}. The authors also acknowledge the Research Computing Services group for providing consulting support which has contributed to the results reported within this paper. We would also like to thank \href{https://github.com/}{Github} for providing the online resources to help develop and maintain this project. 
 
 % TODO: include funding information
 \paragraph{Funding information}
-This work was supported by NSF DMR-1506340 and ARO W911NF1410540 \cyan{AND???}
+This work was supported by NSF DMR-1410126, NSF DMR-1506340 and ARO W911NF1410540.
 
 \begin{appendix}
 
 \section{Installation Guide in a Few Steps}
 \label{app:install}
 
-\qspin\ is currently only being supported for Python 2.7 and so one must make sure to install this version of Python. \cyan{We recommend the use of the free package manager \href{https://www.continuum.io/downloads}{Anaconda} which installs Python and manages its packages. For a lighter installation, one can use \href{http://conda.pydata.org/miniconda.html}{miniconda}.} 
+\qspin\ is currently only being supported for Python 2.7 and so one must make sure to install this version of Python. We recommend the use of the free package manager \href{https://www.continuum.io/downloads}{Anaconda} which installs Python and manages its packages. For a lighter installation, one can use \href{http://conda.pydata.org/miniconda.html}{miniconda}.
 
 \subsection{Mac OS X/Linux}
 To install Anaconda/miniconda all one has to do is execute the installation script with administrative privilege. To do this, open up the terminal and go to the folder containing the downloaded installation file and execute the following command: 
@@ -804,7 +804,7 @@ It's that simple!
 \section{Complete Example Codes}
 \label{app:scripts}
 
-The scripts can be downloaded from github \href{https://github.com/weinbe58/qspin_paper/tree/master/scripts}{here}.
+In this appendix, we give the complete python scripts for the four examples discussed in Sec.~\ref{sec:examples}. In case the reader has trouble with the TAB spaces when copying from the code environments below, the scripts can be downloaded from github \href{https://github.com/weinbe58/qspin_paper/tree/master/scripts}{here}.
 
 \lstinputlisting[label=code:ex0,caption=Exact Diagonalisation of the XXZ Model]{example0.py}
 \newpage
@@ -819,7 +819,7 @@ The scripts can be downloaded from github \href{https://github.com/weinbe58/qspi
 \label{app:doc}
 In \qspin quantum many-body operators are represented as matrices. The computation of these matrices are done through custom code written in Cython. Cython is an optimizing static compiler which takes code written in a syntax similar to Python, and compiles it into a highly efficient C/C\texttt{++} shared library. These libraries are then easily interfaced with Python, but can run orders of magnitude faster than pure Python code~\cite{Cython}. The matrices are stored in a sparse matrix format using the sparse matrix library of SciPy~\cite{SciPy_package}. This allows \qspin\ to easily interface with mature Python packages, such as NumPy, SciPy, any many others. These packages provide reliable state-of-the-art tools for scientific computation as well as support from the Python community to regularly improve and update them~\cite{NumPy,Python_computing_1,Python_computing_2,SciPy_package}. Moreover, we have included specific functionality in \qspin\ which uses NumPy and SciPy to do many desired calculations common to ED studies, while making sure the user only has to call a few NumPy or SciPy functions directly. The complete up-to-date documentation for the package is available online under:\\
 
-\href{https://github.com/weinbe58/qspin}{https://github.com/weinbe58/qspin}\\
+\href{https://github.com/weinbe58/qspin\#qspin}{https://github.com/weinbe58/qspin\#qspin}\\
 
 \end{appendix}
 

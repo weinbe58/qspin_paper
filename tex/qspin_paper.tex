@@ -199,7 +199,7 @@ We present a new open-source Python package for exact diagonalization and quantu
 \vspace{10pt}
 
 
-\section{What Problems can I Solve with \qspin?}
+\section{What Problems Can I Solve with \qspin?}
 \label{sec:intro}
 
 \begin{comment}
@@ -313,7 +313,7 @@ The entire code is available in Example Code~\ref{code:ex0}.
 \subsection{Adiabatic Control of Parameters in Many-Body Localised Phases}
 \label{subsec:MBL}
 
-\emph{Physics Setup---}Strongly  disordered many-body models have recently enjoyed a lot of attention in the theoretical condensed matter community. It has been shown that, beyond a critical disorder strength, these models undergo a dynamical phase transition from an delocalised ergodic (thermalising) phase to a many-body localised (MBL), i.e.~non-conducting, non-thermalising phase, in which the system violates the Eigenstate Thermalisation hypothesis~\cite{basko_06,gornyi_05,imbrie_16,oganesyan_07,pal_16,vosk_13,nandkishore_15}. 
+\emph{Physics Setup---}Strongly  disordered many-body models have recently enjoyed a lot of attention in the theoretical condensed matter community. It has been shown that, beyond a critical disorder strength, these models undergo a dynamical phase transition from a delocalised ergodic (thermalising) phase to a many-body localised (MBL), i.e.~non-conducting, non-thermalising phase, in which the system violates the Eigenstate Thermalisation hypothesis~\cite{basko_06,gornyi_05,imbrie_16,oganesyan_07,pal_16,vosk_13,nandkishore_15}. 
 
 In our first \qspin\ example, we show how one can study the adiabatic control of model parameters in many-body localised phases. It was recently argued that the adiabatic theorem does not apply to disordered systems~\cite{khemani_15}. On the other hand, controlling the system parameters in MBL phases is of crucial experimental\cite{Schreiber15,ovadia_15,bordia_16,smith_16,choi_16} significance. Thus, the question as to whether there exists an adiabatic window for some, possibly intermediate, ramp speeds (as is the case for periodically-driven systems\cite{weinberg_FAPT}), is of particular and increasing importance. 
 
@@ -481,7 +481,7 @@ It was recently argued based on the aforementioned Floquet theorem that, in a cl
 \end{equation}
 Regimes of slow and fast heating can then be easily detected by looking at the energy density $\mathcal{E}$ absorbed by the system from the drive
 \begin{eqnarray}
-\mathcal{E}(lT) = \frac{1}{L}\langle\psi_i|\mathrm e^{ilT H_F}H_F^{(0+1+2)}\mathrm e^{-ilT H_F}|\psi_i\rangle, 
+\mathcal{E}(lT) = \frac{1}{L}\langle\psi_i|\mathrm e^{ilT H_F}H_F^{(0+1+2+3)}\mathrm e^{-ilT H_F}|\psi_i\rangle, 
 \label{eq:Floquet_E}
 \end{eqnarray}
 and the entanglement entropy of a subsystem. We call this subsystem A and define it to contain $L/2$ consecutive chain sites\footnote{Since we use periodic boundaries, it does not matter which consecutive sites we choose. In fact, in \qspin\ the user can choose any (possibly disconnected) subsystem to calculate the entanglement entropy and the reduced DM, see the documentation in App.~\ref{app:doc}.}:

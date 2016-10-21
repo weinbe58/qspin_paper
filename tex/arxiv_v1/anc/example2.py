@@ -61,7 +61,7 @@ Keff_02*=-np.pi**2/(8.0*Omega**2)
 #
 ##### rotate Heff to stroboscopic basis #####
 # e^{-1j*Keff_02} Heff_02 e^{+1j*Keff_02}
-HF_02 = Heff_02.rotate_by(Keff_02,generator=True,a=1j) 
+HF_02 = Heff_02.rotate_by(Keff_02,generator=True,a=-1j) 
 #
 ##### define time vector of stroboscopic times with 100 cycles #####
 t=Floquet_t_vec(Omega,100,len_T=1) # t.vals=times, t.i=init. time, t.T=drive period

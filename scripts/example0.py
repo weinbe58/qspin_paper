@@ -1,5 +1,5 @@
-from qspin.operators import hamiltonian # Hamiltonians and operators
-from qspin.basis import spin_basis_1d # Hilbert space spin basis
+from quspin.operators import hamiltonian # Hamiltonians and operators
+from quspin.basis import spin_basis_1d # Hilbert space spin basis
 import numpy as np # generic math functions
 #
 ##### define model parameters #####

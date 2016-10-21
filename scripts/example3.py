@@ -1,8 +1,8 @@
-from qspin.basis import spin_basis_1d,photon_basis # Hilbert space bases
-from qspin.operators import hamiltonian # Hamiltonian and observables
-from qspin.tools.measurements import obs_vs_time # t_dep measurements
-from qspin.tools.Floquet import Floquet,Floquet_t_vec # Floquet Hamiltonian
-from qspin.basis.photon import coherent_state # HO coherent state
+from quspin.basis import spin_basis_1d,photon_basis # Hilbert space bases
+from quspin.operators import hamiltonian # Hamiltonian and observables
+from quspin.tools.measurements import obs_vs_time # t_dep measurements
+from quspin.tools.Floquet import Floquet,Floquet_t_vec # Floquet Hamiltonian
+from quspin.basis.photon import coherent_state # HO coherent state
 import numpy as np # generic math functions
 #
 ##### define model parameters #####

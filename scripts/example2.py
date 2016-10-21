@@ -1,7 +1,7 @@
-from qspin.operators import hamiltonian # Hamiltonians and operators
-from qspin.basis import spin_basis_1d # Hilbert space spin basis
-from qspin.tools.measurements import obs_vs_time, diag_ensemble # t_dep measurements
-from qspin.tools.Floquet import Floquet, Floquet_t_vec # Floquet Hamiltonian
+from quspin.operators import hamiltonian # Hamiltonians and operators
+from quspin.basis import spin_basis_1d # Hilbert space spin basis
+from quspin.tools.measurements import obs_vs_time, diag_ensemble # t_dep measurements
+from quspin.tools.Floquet import Floquet, Floquet_t_vec # Floquet Hamiltonian
 import numpy as np # generic math functions
 #
 ##### define model parameters #####

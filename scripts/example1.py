@@ -1,6 +1,6 @@
-from qspin.operators import hamiltonian # Hamiltonians and operators
-from qspin.basis import spin_basis_1d # Hilbert space spin basis
-from qspin.tools.measurements import ent_entropy, diag_ensemble # entropies
+from quspin.operators import hamiltonian # Hamiltonians and operators
+from quspin.basis import spin_basis_1d # Hilbert space spin basis
+from quspin.tools.measurements import ent_entropy, diag_ensemble # entropies
 from numpy.random import ranf,seed # pseudo random numbers
 from joblib import delayed,Parallel # parallelisation
 import numpy as np # generic math functions

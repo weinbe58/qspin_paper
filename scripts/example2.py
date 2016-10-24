@@ -57,7 +57,7 @@ Keff2_term_2=[[h*g,i] for i in range(L)]
 # define static list
 Keff_static=[["zy",Keff2_term_1],["yz",Keff2_term_1],["y",Keff2_term_2]]
 Keff_02=hamiltonian(Keff_static,[],dtype=np.complex128,basis=basis)
-Keff_02*=-np.pi**2/(8.0*Omega**2)
+Keff_02*=np.pi**2/(8.0*Omega**2)
 #
 ##### rotate Heff to stroboscopic basis #####
 # e^{-1j*Keff_02} Heff_02 e^{+1j*Keff_02}

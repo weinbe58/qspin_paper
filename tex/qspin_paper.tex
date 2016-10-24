@@ -157,7 +157,7 @@
 % TODO: write your article's title here. 
 % The article title is centered, Large boldface, and should fit in two lines
 \begin{center}{\Large \textbf{
-QuSpiN: a Python Package for Dynamics and Exact Diagonalisation of Quantum Many Body Systems.\\
+QuSpin: a Python Package for Dynamics and Exact Diagonalisation of Quantum Many Body Systems.\\
 \large Part I: spin chains
 }}\end{center}
 
@@ -474,7 +474,7 @@ H_\mathrm{eff}^{(0)} &=& \frac{1}{2}\sum_j J\sigma^z_j\sigma^z_{j+1} + h\sigma^z
 H_\mathrm{eff}^{(2)} &=& -\frac{\pi^2}{12\Omega^2}\sum_j J^2g\sigma^z_{j-1}\sigma^x_j\sigma^z_{j+1} + Jgh(\sigma^x_j\sigma^z_{j+1} + \sigma^z_j\sigma^x_{j+1}) + Jg^2(\sigma^y_j\sigma^y_{j+1}-\sigma^z_j\sigma^z_{j+1}) \nonumber\\
 && \quad \qquad\qquad + \left(J^2g + \frac{1}{2}h^2g\right)\sigma^x_j + \frac{1}{2}hg^2\sigma^z_j,\nonumber\\
 K_\mathrm{eff}^{(0)} &=& {\bf 0},\nonumber\\
-K_\mathrm{eff}^{(2)}(0) &=& -\frac{\pi^2}{8\Omega^2}\sum_j Jg\left(\sigma^z_j\sigma^y_{j+1} + \sigma^y_j\sigma^z_{j+1}\right) +hg\sigma^y_j,
+K_\mathrm{eff}^{(2)}(0) &=& \frac{\pi^2}{8\Omega^2}\sum_j Jg\left(\sigma^z_j\sigma^y_{j+1} + \sigma^y_j\sigma^z_{j+1}\right) +hg\sigma^y_j,
 \end{eqnarray}
 
 It was recently argued based on the aforementioned Floquet theorem that, in a closed periodically driven system, stroboscopic dynamics is sufficient to completely quantify heating~\cite{bukov_16}, and we shall make use of this fact in our little study here. We choose as the initial state the ground state of the approximate Hamiltonian $H_F^{(0+1+2+3)}$ and denote it by $|\psi_i\rangle$:
@@ -539,7 +539,7 @@ In order to rotate the state from the van Vleck to the stroboscopic (Floquet-Mag
 If the user tries to force define a real-valued Hamiltonian which, however, has complex matrix elements, QuSpin will raise an error. 
 \lstinputlisting[firstline=54,lastline=60,firstnumber=54]{example2.py}
 %
-Next, we need to find $H_F^{(0+2)} = \exp[-i K^{(2)}_\mathrm{eff}(0)] H^{(0+2)}_\mathrm{eff}\exp[i K^{(2)}_\mathrm{eff}(0)]$. To this end, we make use of the \texttt{hamiltonian} class method \texttt{rotate\_by} which conveniently provides a function for this purpose. By specifying the optional argument \texttt{generator=True}, \texttt{rotate\_by} recognises the operator $B$ as a generator and defines a linear transformation to `rotate' a \texttt{hamiltonian} object $A$ via $\exp(aB)A\exp(a^*B^\dagger)$ for any complex-valued number $a$. Although we do not make use of it directly here, it might also be useful for the user to become familiar with the documentation of the \texttt{exp\_op} class which provides the matrix exponential, cf.~App.~\ref{app:doc}, and contains a variety of useful method functions. For instance, $\exp(zB)A$ can be obtained using \texttt{exp\_op(B,a=z).dot(A)}, while $A\exp(zB)$ is \texttt{A.dot(exp\_op(B,a=z))}\footnote{One can also use the syntax \texttt{A.rdot(exp\_op(a*B))} and \texttt{exp\_op(z*B).rdot(A)}, respectively, for multiplication from the \texttt{r}ight.} for any complex number \texttt{z}.
+Next, we need to find $H_F^{(0+2)} = \exp[-i K^{(2)}_\mathrm{eff}(0)] H^{(0+2)}_\mathrm{eff}\exp[i K^{(2)}_\mathrm{eff}(0)]$. To this end, we make use of the \texttt{hamiltonian} class method \texttt{rotate\_by} which conveniently provides a function for this purpose. By specifying the optional argument \texttt{generator=True}, \texttt{rotate\_by} recognises the operator $B$ as a generator and defines a linear transformation to `rotate' a \texttt{hamiltonian} object $A$ via $\exp(a^*B^\dagger)A\exp(aB)$ for any complex-valued number $a$. Although we do not make use of it directly here, it might also be useful for the user to become familiar with the documentation of the \texttt{exp\_op} class which provides the matrix exponential, cf.~App.~\ref{app:doc}, and contains a variety of useful method functions. For instance, $\exp(zB)A$ can be obtained using \texttt{exp\_op(B,a=z).dot(A)}, while $A\exp(zB)$ is \texttt{A.dot(exp\_op(B,a=z))}\footnote{One can also use the syntax \texttt{A.rdot(exp\_op(a*B))} and \texttt{exp\_op(z*B).rdot(A)}, respectively, for multiplication from the \texttt{r}ight.} for any complex number \texttt{z}.
 \lstinputlisting[firstline=62,lastline=64,firstnumber=62]{example2.py}
 %
 Now that we have concluded the initialisation of the approximate Floquet Hamiltonian, it is time to discuss how to study the dynamics of the system. We start by defining a vector of times \texttt{t}, particularly suitable for the study of periodically driven systems. We initialise this time vector as an object of the \texttt{Floquet\_t\_vec} class. The arguments we need are the drive frequency \texttt{Omega}, the number of periods (here \texttt{100}), and the number of time points per period \texttt{len\_T} (here set to \texttt{1}). Once initialised, \texttt{t} has many useful attributes, such as the time values \texttt{t.vals}, the drive period \texttt{t.T}, the stroboscopic times \texttt{t.strobo.vals}, or their indices \texttt{t.strobo.inds}. The \texttt{Floquet\_t\_vec} class has further useful properties, described in the documentation in App.~\ref{app:doc}.
@@ -665,7 +665,7 @@ This work was supported by NSF DMR-1410126, NSF DMR-1506340 and ARO W911NF141054
 \section{Installation Guide in a Few Steps}
 \label{app:install}
 
-QuSpin is currently only being supported for Python 2.7 and so one must make sure to install this version of Python. We recommend the use of the free package manager \href{https://www.continuum.io/downloads}{Anaconda} which installs Python and manages its packages. For a lighter installation, one can use \href{http://conda.pydata.org/miniconda.html}{miniconda}.
+QuSpin is currently only being supported for Python 2.7 and Python 3.5 and so one must make sure to install this version of Python. We recommend the use of the free package manager \href{https://www.continuum.io/downloads}{Anaconda} which installs Python and manages its packages. For a lighter installation, one can use \href{http://conda.pydata.org/miniconda.html}{miniconda}.
 
 \subsection{Mac OS X/Linux}
 To install Anaconda/miniconda all one has to do is execute the installation script with administrative privilege. To do this, open up the terminal and go to the folder containing the downloaded installation file and execute the following command: 
@@ -679,7 +679,7 @@ $ export PATH="path_to/anaconda/bin:$PATH"
 
 \underline{\bf Installing via Anaconda.}---Once you have Anaconda/miniconda installed, all you have to do to install QuSpin is to execute the following command into the terminal: 
 \begin{lstlisting}[numbers=none,keywordstyle=\ttfamily]
-$ conda install -c weinbe58 QuSpin
+$ conda install -c weinbe58 quspin
 \end{lstlisting}
 If asked to install new packages just say `yes'. To keep the code up-to-date, just run this command regularly. 
 
@@ -697,7 +697,7 @@ To install Anaconda/miniconda on Windows, download the installer and execute it 
 
 \underline{\bf Installing via Anaconda.}---Once you have Anaconda/miniconda installed all you have to do to install QuSpin is to execute the following command into the terminal: 
 \begin{lstlisting}[numbers=none,keywordstyle=\ttfamily]
-> conda install -c weinbe58 QuSpin
+> conda install -c weinbe58 quspin
 \end{lstlisting}
 If asked to install new packages just say `yes'. To update the code just run this command regularly. 
 

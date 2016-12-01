@@ -25,7 +25,7 @@ def ramp(t):
 	return (0.5 + v*t)
 ramp_args=[]
 # compute basis in the 0-total magnetisation sector (requires L even)
-basis = spin_basis_1d(L,Nup=L/2,pauli=False)
+basis = spin_basis_1d(L,Nup=L//2,pauli=False)
 # define operators with OBC using site-coupling lists
 J_zz = [[Jzz_0,i,i+1] for i in range(L-1)] # OBC
 J_xy = [[Jxy/2.0,i,i+1] for i in range(L-1)] # OBC
@@ -93,7 +93,7 @@ def realization(vs,H_XXZ,basis,real):
 	run_ETH=[_do_ramp(psi_0,H_ETH,basis,v,E_final,V_final) for v in vs]
 	run_ETH=np.vstack(run_ETH).T # stack vertically elements of list run_ETH
 	# show time taken
-	print "realization {0}/{1} took {2:.2f} sec".format(real+1,n_real,time()-ti)
+	print("realization {0}/{1} took {2:.2f} sec".format(real+1,n_real,time()-ti))
 	#
 	return run_MBL,run_ETH
 #
@@ -113,7 +113,7 @@ def _do_ramp(psi_0,H,basis,v,E_final,V_final):
 	# time-evolve state from time 0.0 to time t_f
 	psi = H.evolve(psi_0,0.0,t_f)
 	# calculate entanglement entropy
-	subsys = range(basis.L/2) # define subsystem
+	subsys = range(basis.L//2) # define subsystem
 	Sent = ent_entropy(psi,basis,chain_subsys=subsys)["Sent"]
 	# calculate diagonal entropy in the basis of H(t_f)
 	S_d = diag_ensemble(basis.L,psi,E_final,V_final,Sd_Renyi=True)["Sd_pure"]
@@ -125,9 +125,9 @@ def _do_ramp(psi_0,H,basis,v,E_final,V_final):
 if __name__ == '__main__':
 	"""
 	# alternative way without parallelisation
-	data = np.asarray([realization(vs,H_XXZ,basis,i) for i in xrange(n_real)])
+	data = np.asarray([realization(vs,H_XXZ,basis,i) for i in range(n_real)])
 	"""
-	data = np.asarray(Parallel(n_jobs=n_jobs)(delayed(realization)(vs,H_XXZ,basis,i) for i in xrange(n_real)))
+	data = np.asarray(Parallel(n_jobs=n_jobs)(delayed(realization)(vs,H_XXZ,basis,i) for i in range(n_real)))
 	#
 	run_MBL,run_ETH = zip(*data) # extract MBL and data
 	# average over disorder

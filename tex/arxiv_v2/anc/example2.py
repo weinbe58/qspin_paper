@@ -79,7 +79,7 @@ psi_i = psi_i.reshape((-1,))
 #
 ##### time-dependent measurements
 # calculate measurements
-Sent_args = {"basis":basis,"chain_subsys":[j for j in range(L//2)]}
+Sent_args = {"basis":basis,"chain_subsys":[j for j in range(L/2)]}
 #meas = obs_vs_time((psi_i,EF,VF),t.vals,{"E_time":HF_02/L},Sent_args=Sent_args)
 #"""
 # alternative way by solving Schroedinger's eqn

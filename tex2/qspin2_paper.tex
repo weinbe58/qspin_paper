@@ -159,7 +159,7 @@
 % The article title is centered, Large boldface, and should fit in two lines
 \begin{center}{\Large \textbf{
 QuSpin: a Python Package for Dynamics and Exact Diagonalisation of Quantum Many Body Systems.\\
-\large Part I: spin chains
+\large Part II: bosons, fermions and higher spins
 }}\end{center}
 
 % TODO: write the author list here. Use initials + surname format.
@@ -202,7 +202,7 @@ We present a major update to QuSpin, \emph{SciPostPhys.2.1.003}, -- an open-sour
 \vspace{10pt}
 
 
-\section{How can I Make the Most out of QuSpin?}
+\section{How can I make the most out of QuSpin?}
 \label{sec:intro}
 
 \begin{itemize}
@@ -210,7 +210,7 @@ We present a major update to QuSpin, \emph{SciPostPhys.2.1.003}, -- an open-sour
 	\item education
 \end{itemize}
 
-\section{How do I Use the New Features of QuSpin?}
+\section{How do I use the New Features of QuSpin?}
 \label{sec:examples}
 
 ...
@@ -252,7 +252,20 @@ Here, we are interested in studying the spectrum of the TFI model in both the sp
 
 Recall that the starting point is the periodic boundary condition imposed on the spin Hamiltonian~\ref{eq:TFIM}. Due to the symmetries of the spin Hamiltonian~\eqref{eq:TFIM}, we can define the JW transformation on every symmetry sector separately. To make the JW mapping exact, we supplement Eq.~\eqref{eq:JW_transf} with the following boundary conditions: (i) the negative spin-inversion symmetry sector maps to the fermion Hamiltonian~\eqref{eq:TFIM_fermion} with \emph{periodic} boundary conditions (PBC); (ii) the positive spin-inversion symmetry sector maps to the fermion Hamiltonian~\eqref{eq:TFIM_fermion} with \emph{anti-periodic} boundary conditions (APBC). Anti-periodic boundary conditions differ from PBC by a negative sign attached to all coupling constants that cross a single, fixed lattice bond (the bond itself is arbitrary as all bonds are equal for PBC). APBC and PBC are special cases of the more general, twisted boundary conditions, where instead of a negative sign, one attaches a phase factor.
 
-In the following, we show how to compute the spectra of the Hamiltonians in Eqs.~\eqref{eq:TFIM} and~\eqref{eq:TFIM_fermion} with the correct boundary conditions, and show that they match exactly. 
+In the following, we show how to compute the spectra of the Hamiltonians in Eqs.~\eqref{eq:TFIM} and~\eqref{eq:TFIM_fermion} with the correct boundary conditions. Figure~\ref{fig:JW} shows that they match exactly in both the PBC and APBC cases.
+
+\begin{figure}[t!]
+	\centering
+	\begin{subfigure}[b]{0.496\textwidth}
+		\includegraphics[width=\textwidth]{JW_PBC.pdf}
+		\caption{ETH phase}
+	\end{subfigure}
+	\begin{subfigure}[b]{0.496\textwidth}
+		\includegraphics[width=\textwidth]{JW_APBC.pdf}
+		\caption{MBL phase}
+	\end{subfigure}
+	\caption{\label{fig:JW} Comparison of the spectra of the spin and fermion representation of the transverse field Ising Hamiltonian in the spin~\eqref{eq:TFIM} and fermion~\eqref{eq:TFIM_fermion} representations. (a) negative spin inversion/PBC sector and (b) positive spin inversion/APBC sector. The degeneracy is the spectrum is due to the remaining parity and momentum conservations which are not taken into account (see text). The parameters are $J=1.0$, $h=\sqrt{2}$, and $L=8$.}  
+\end{figure} 
 
 \noindent\emph{Code Analysis---}...
 \lstinputlisting[firstline=1, lastline=55]{example6.py}

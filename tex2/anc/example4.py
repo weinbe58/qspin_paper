@@ -26,14 +26,16 @@ else:
 	i_CM = L//2
 
 
+
 q_vec=2*np.pi*np.fft.fftfreq(L)
 
 J=1.0 # hopping
-U=1.1 # Bose-Hubbard interaction strength
+U=1.0 # Bose-Hubbard interaction strength
 
 mu_i=0.02 # initial chemical potential
 mu_f=0.0002 # final chemical potential
 t_f=30.0/J # set total ramp time
+
 
 print('ramp speed:', (mu_f - mu_i)/t_f )
 
@@ -55,6 +57,10 @@ dynamic=[['n',trap_dynamic, ramp, ramp_args]]
 #### calculate Hamiltonian
 H=hamiltonian(static,dynamic,basis=basis,dtype=np.float64)
 E,V=H.eigh(time=0.0)
+
+#print(H.toarray(time=10))
+#exit()
+print(E[:4])
 
 ##### imaginary-time evolution
 
@@ -83,16 +89,14 @@ plt.scatter(np.arange(L)-i_CM, abs(y_trial)**2, color='green' )
 plt.scatter(np.arange(L)-i_CM, abs(y0)**2, color='red' )
 plt.show()
 
-plt.scatter(q_vec, abs(np.fft.fft(y_trial)/L)**2, color='green' )
-plt.scatter(q_vec, abs(np.fft.fft(y0)/L)**2, color='red' )
-plt.show()
+#plt.scatter(q_vec, abs(np.fft.fft(y_trial)/L)**2, color='green' )
+#plt.scatter(q_vec, abs(np.fft.fft(y0)/L)**2, color='red' )
+#plt.show()
 #exit()
 """
 
 
 ##### real-time evolution
-t=np.linspace(0.0,t_f,21)
-
 
 def GPE_cpx(time,psi,H,U):
 	"""
@@ -145,19 +149,24 @@ def GPE(time,phi):
 	# solve dynamic part of GPE
 	for Hd,f,f_args in H.dynamic:
 		phi_dot += -1j*f(time,*f_args)*Hd.dot(phi)
+
 	return phi_dot
 
+t=np.linspace(0.0,t_f,201)
 
 y0=V[:,0]*np.sqrt(L)
 GPE_params = (H,U) #
 #y_t = evolve(y0,t[0],t,GPE_cpx,stack_state=True,iterate=True,f_params=GPE_params)
-y_t = evolve(y0,t[0],t,GPE,iterate=True)
+y_t = evolve(y0,t[0],t,GPE,iterate=False,solver_name='lsoda',nsteps=1E6)
+y_t2 = evolve(y0,t[0],t,GPE,iterate=False,atol=1E-15,rtol=1E-15,solver_name='lsoda',nsteps=1E6)
 
+"""
 print('starting real-time evolution...')
 E=[]
 for i,y in enumerate(y_t):
 	E.append( (H.matrix_ele(y,y) + 0.5*U*np.sum(np.abs(y)**4) ).real )
 	print("(t,mu(t))=:", (t[i],ramp(t[i],mu_i,mu_f,t_f) + mu_i) )
+
 
 	plt.plot(np.arange(L)-i_CM, abs(y)**2, color='blue',marker='o' )
 	plt.plot(np.arange(L)-i_CM, (abs(y)**2)[::-1], color='green',marker='s' )
@@ -171,8 +180,17 @@ for i,y in enumerate(y_t):
 	plt.pause(0.005)
 	plt.clf()
 plt.close()
+"""
+i=200
+plt.plot(np.arange(L)-i_CM, abs(y_t[:,i])**2, color='blue',marker='o' )
+plt.plot(np.arange(L)-i_CM, abs(y_t2[:,i])**2, color='r',marker='s' )
+#plt.plot(np.arange(L)-i_CM, (abs(y)**2)[::-1], color='green',marker='s' )
+#plt.plot(np.arange(L)-i_CM, (ramp(t[i],mu_i,mu_f,t_f) + mu_i)*(np.arange(L)-i_CM)**2,'--',color='red')
+#plt.scatter(q_vec, abs(np.fft.fft(y))**2/L**2, color='blue',marker='o' )
+#plt.ylim([-0.01,max(abs(y0)**2)+0.01])
 
+plt.title('$Jt=%0.2f$'%(t[i]))
 
 #plt.plot(t,(E-E[0])/L)
-#plt.show()
+plt.show()
 

@@ -3,10 +3,10 @@ from __future__ import print_function, division
 import sys,os
 import argparse
 
-qspin_path = os.path.join(os.getcwd(),"../../../QuSpin_dev/")
+qspin_path = os.path.join(os.getcwd(),"../")
 sys.path.insert(0,qspin_path)
 
-from quspin.operators import hamiltonian # Hamiltonians and operators
+from quspin.operators import hamiltonian,exp_op # Hamiltonians and operators
 from quspin.basis import fermion_basis_1d # Hilbert space spin basis
 from quspin.tools.block_tools import block_diag_hamiltonian # block diagonalisation tool
 import numpy as np # generic math functions
@@ -19,7 +19,7 @@ except ImportError:
 
 
 # define model params
-L=10 # system size
+L=100 # system size
 J=1.0 #uniform hopping
 deltaJ=0.2 # hopping difference
 Delta=0.5 # staggered potential
@@ -41,34 +41,51 @@ E,V=H.eigh()
 FT,Hblock = block_diag_hamiltonian(blocks,static,dynamic,fermion_basis_1d,basis_args,np.complex128,get_proj_kwargs=dict(pcon=True))
 Eblock=Hblock.eigvalsh()
 
-
-#plt.scatter(np.arange(L),E)
-#plt.show()
+plt.scatter(np.arange(L),E)
+plt.show()
 
 # construct Fermi sea
-psi_FS=V[:,5]
+psi_0=V
 
-# construct operator n_{j=0}
-n_static=[['n',[[1.0,0]]]]
-n_j=hamiltonian(n_static,[],basis=basis,dtype=np.float64,check_herm=False,check_pcon=False)
+# construct operator n_{j=0} and n_{j=L/2}
+n_i_static=[['n',[[1.0,0]]]]
+n_i=hamiltonian(n_i_static,[],basis=basis,dtype=np.float64,check_herm=False,check_pcon=False)
+n_f_static=[['n',[[1.0,L//2]]]]
+n_f=hamiltonian(n_f_static,[],basis=basis,dtype=np.float64,check_herm=False,check_pcon=False)
+
 # transform n_j to momentum space
-n_k=n_j.rotate_by(FT,generator=False)
-# evaluate nonequal time correlator <FS|n_j(t) n_j(0)|FS>
-t=np.linspace(0.0,30.0,300)
-npsi=n_k.dot(psi_FS)
-psi_t=Hblock.evolve(psi_FS,0.0,t,iterate=True)
-npsi_t=Hblock.evolve( npsi,0.0,t,iterate=True)
+n_i=n_i.rotate_by(FT,generator=False)
+n_f=n_f.rotate_by(FT,generator=False)
+# evaluate nonequal time correlator <FS|n_f(t) n_i(0)|FS>
+t=np.linspace(0.0,90.0,901)
+psi_n_0=n_i.dot(psi_0)
+
+# evolve via exp_op class (sometimes faster )
+U = exp_op(Hblock,a=-1j,start=t.min(),stop=t.max(),num=len(t),iterate=True)
+psi_t=U.dot(psi_0)
+psi_n_t = U.dot(psi_n_0)
+
+# evolve using Hamiltonian class
+#psi_t=Hblock.evolve(psi_0,0.0,t,iterate=True)
+#psi_n_t=Hblock.evolve(psi_n_0,0.0,t,iterate=True)
+
 # compute correlator
-n_k_0=n_k.matrix_ele(psi_FS,psi_FS,diagonal=True) # expectation of n_k at t=0
-correlator=np.zeros(t.shape)
-for i, (psi,npsi) in enumerate( zip(psi_t,npsi_t) ):
-	correlator[i]=np.sum(  n_k.matrix_ele(psi,npsi,diagonal=True) \
-						 - n_k.matrix_ele(psi, psi,diagonal=True)*n_k_0  ).real
+n_i_0=n_i.matrix_ele(psi_0,psi_0,diagonal=True) # expectation of n_i at t=0
+correlators=np.zeros(t.shape+psi_0.shape[1:])
+
+for i, (psi,psi_n) in enumerate( zip(psi_t,psi_n_t) ):
+	correlators[i,:]= ( n_f.matrix_ele(psi,psi_n,diagonal=True) \
+						 - n_f.matrix_ele(psi, psi,diagonal=True)*n_i_0  ).real
+
+
+
+T=0.1 # set temperature for Fermi-Dirac distribution
+
+# evaluate thermal expectation value
+correlator = (correlators/(np.exp(E/T)+1.0)).sum(axis=-1) 
 
 plt.plot(t,correlator)
 plt.show()
-
-
 
 
 

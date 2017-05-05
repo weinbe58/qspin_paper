@@ -258,19 +258,69 @@ In the following, we show how to compute the spectra of the Hamiltonians in Eqs.
 	\centering
 	\begin{subfigure}[b]{0.496\textwidth}
 		\includegraphics[width=\textwidth]{JW_PBC.pdf}
-		\caption{ETH phase}
+		\caption{negative spin inversion/PBC sector}
 	\end{subfigure}
 	\begin{subfigure}[b]{0.496\textwidth}
 		\includegraphics[width=\textwidth]{JW_APBC.pdf}
-		\caption{MBL phase}
+		\caption{positive spin inversion/APBC sector}
 	\end{subfigure}
-	\caption{\label{fig:JW} Comparison of the spectra of the spin and fermion representation of the transverse field Ising Hamiltonian in the spin~\eqref{eq:TFIM} and fermion~\eqref{eq:TFIM_fermion} representations. (a) negative spin inversion/PBC sector and (b) positive spin inversion/APBC sector. The degeneracy is the spectrum is due to the remaining parity and momentum conservations which are not taken into account (see text). The parameters are $J=1.0$, $h=\sqrt{2}$, and $L=8$.}  
+	\caption{\label{fig:JW} Comparison of the spectra of the spin and fermion representation of the transverse field Ising Hamiltonian in the spin~\eqref{eq:TFIM} and fermion~\eqref{eq:TFIM_fermion} representations. The degeneracy is the spectrum is due to the remaining parity and momentum conservations which are not taken into account (see text). The parameters are $J=1.0$, $h=\sqrt{2}$, and $L=8$.}  
 \end{figure} 
 
 \noindent\emph{Code Analysis---}...
 \lstinputlisting[firstline=1, lastline=55]{example6.py}
 
 The complete code including the lines that produce Fig.~\ref{fig:example3} is available in Example Code~\ref{code:ex3}.
+
+
+\subsection{Free Particle Systems: the SSH Model}
+\label{subsec:free_particle}
+
+This example shows how to
+\begin{itemize}
+	\item construct free-particle Hamiltonians in real space,
+	\item implement translation invariance with a two-site unit cell and construct the single-particle Hamiltonian in momentum space in block-diagonal form,
+	\item compute non-equal time correlation functions,
+	\item ...
+\end{itemize}
+
+\noindent\emph{Physics Setup---}The Su-Schrieffer-Heeger (SSH) model of a free-particle on a dimerised chain is widely used to introduce the concept of edge states, topology, Berry phase, etc., in one spatial dimension. The Hamiltonian is given by
+\begin{eqnarray}
+H = \sum_{j=0}^{L-1} -(J+(-1)^j\delta J)\left(c_jc^\dagger_{j+1} - c^\dagger_{j}c_{j+1}\right) + \Delta(-1)^jn_j, 
+\label{eq:SSH}
+\end{eqnarray}
+where $\{c_i,c^\dagger_j\}=\delta _{ij}$ obey fermionic commutation relations. The uniform part of the hopping matrix element is $J$, $\delta J$ defines the bond dimerisation, and $\Delta$ is the staggered potential. We assume periodic boundary conditions.
+
+Below, we show how one can use QuSpin to study the physics of free fermions in the SSH chain. One way of doing this would be to work in the many-body (Fock space) basis, see Sec.~???. However, whenever the particles are non-interacting, the exponential scaling of the Hilbert space dimension with the number of lattice sites imposes an artificial limitation on the system sizes one can do. Luckily, with no interactions present, the many-body wave functions factorise in a product of single-particle states. Hence, it is possible to study the behaviour of many free bosons and fermions by simulating the physics of a single particle.
+
+Making use of translation invariance, a straightforward Fourier transformation to momentum space, $a_k = \sqrt{2/L}\sum_{j\ \mathrm{even}}^{L-1} \mathrm e^{-i k j}c_{j}$ and $b_k = \sqrt{2/L}\sum_{j\ \mathrm{odd}}^{L-1}\mathrm e^{-i k j} c_{j}$, casts the SSH Hamiltonian in the following form
+\begin{equation}
+H \!=\! \sum_{k\in\mathrm{BZ'}} (a^\dagger_k,b^\dagger_k)^t
+\left(\begin{array}{cc}
+\Delta & -(J+\delta J)\mathrm e^{-i k} - (J-\delta J)\mathrm e^{+i k} \\
+-(J+\delta J)\mathrm e^{+i k} - (J-\delta J)\mathrm e^{-i k} & -\Delta
+\end{array}
+\right)
+\left(\! \begin{array}{c}
+a_k\\
+b_k
+\end{array}
+\!\right),
+\end{equation}
+where the reduced Brillouin zone is defined as $\mathrm{BZ'}=[-\pi/2,\pi/2)$. We thus see that the Hamiltonian reduces further to a set of independent $2\times 2$ matrices. The spectrum of the SSH model is gapped, see Fig.~???.
+
+Since we are dealing with free fermions, the ground state is the Fermi sea, $|\mathrm{FS}\rangle$, defined by filling up the lowest band completely. We are interested in measuring the real-space non-equal time correlation function
+\begin{equation}
+C_{ij}(t) = \langle \mathrm{FS}|n_i(t)n_j(0)|\mathrm{FS}\rangle = \langle \mathrm{FS}(t)|n_i(0)\underbrace{U(t,0)n_j(0)|\mathrm{FS}\rangle}_{|\mathrm{nFS}(t)\rangle}.
+\end{equation}
+For simplicity, let us focus on a single unit cell. Figure~??? shows the time evolution of $C_{AA}(t)$ and $C_{AB}(t)$. 
+
+\noindent\emph{Code Analysis---}...
+\lstinputlisting[firstline=1, lastline=55]{example6.py}
+
+The complete code including the lines that produce Fig.~\ref{fig:example3} is available in Example Code~\ref{code:ex3}.
+
+
 
 \section{New Horizons for QuSpin}
 \label{sec:outro}

@@ -321,6 +321,51 @@ For simplicity, let us focus on a single unit cell. Figure~??? shows the time ev
 The complete code including the lines that produce Fig.~\ref{fig:example3} is available in Example Code~\ref{code:ex3}.
 
 
+\subsection{The Gross-Pitaevskii Equation and Nonlinear Time Evolution}
+\label{subsec:gen_evolve}
+
+This example shows how to
+\begin{itemize}
+	\item simulate time-dependent nonlinear equations of motion
+	\item use imaginary time dynamics to find a lowest energy configuration
+	\item ...
+\end{itemize}
+
+\noindent\emph{Physics Setup---}The Gross-Pitaevskii wave equation (GPE) has been shown to govern the physics of weakly-interacting bosonic systems. It constitutes the starting point for studying Bose-Einstein condensates, but can also appear in non-linear optics, and represents the natural description of Hamiltonian mechanics in the wave picture. One of its characteristic features is that it exhibits chaotic classical dynamics, a physical manifestation of the presence of a cubic non-linear term.
+
+Here, we study the time-dependent GPE on a one-dimensional lattice:
+\begin{eqnarray}
+i\partial_t\psi_j(t) = -J\left( \psi_{j-1}(t) + \psi_{j+1}(t)\right) + \frac{1}{2} \omega_\mathrm{trap}(t)(j-j_0)^2\psi_j(t) + U|\psi_j(t)|^2\psi_j(t),
+\label{eq:GPE}
+\end{eqnarray}
+where $J$ is the hopping matrix element, $\omega_\mathrm{trap}(t)=(\omega_f-\omega_i)t/t_\mathrm{ramp} + \omega_i$ -- the slowly-varying time-dependent harmonic trap frequency over a time scale $t_\mathrm{ramp}$, and $U$ -- the interaction strength. The lattice sites are labelled by $j=0,\dots,L-1$, and $j_0$ is the centre of the 1d chain. We set the lattice constant to unity, and use open boundary conditions.
+
+Whenever $U=0$, the system is non-interacting and the GPE reduces to the Heisenberg EOM for the bosonic field operator $\hat\psi_j(t)$. Thus, for the purposes of using QuSpin to simulate the GPE, it is instructive to cast Eq.~\eqref{eq:GPE} in the following generic form
+\begin{equation}
+i\partial_t\vec{\psi}(t) = H_\mathrm{sp}(t)\vec{\psi}(t) + U \vec{\psi}^*(t)\circ \vec{\psi}(t)\circ \vec{\psi}(t), 
+\end{equation}  
+where $[\vec{\psi}(t)]_j = \psi_j(t)$, and $\circ$ represents the element-wise multiplication 
+\begin{equation*}
+\vec{\psi}(t)\circ \vec{\phi}(t) = \bigg(\psi_0(t)\phi_0(t), \psi_1(t)\phi_1(t),\dots, \psi_{L-1}(t)\phi_{L-1}(t) \bigg)^t.
+\end{equation*}
+The time-dependent single-particle Hamiltonian in real space is represented as an $L\times L$ matrix, $H_\mathrm{sp}(t)$, which comprises the hopping term, and the harmonic trap.
+
+We want to initiate the time-evolution of the system at $t=0$ in its lowest energy state. To this end, we can define a `ground state' for the GPE equation, in terms of the configuration which minimises the energy of the system:
+\begin{eqnarray}
+\vec\psi_\mathrm{GS} &=& \inf_{\vec{\psi}} \bigg( \vec{\psi}^t H_\mathrm{sp}(0)\vec{\psi} + \frac{U}{2}\sum_{j=0}^{L-1}|\psi_j|^4\bigg),\nonumber\\
+&=&\inf_{\psi_j} \bigg(\sum_{j=0}^{L-1} -J(\psi_{j+1}^*\psi_j + \mathrm{c.c.}) + \frac{1}{2}\omega_\mathrm{trap}(0)|\psi_j|^2 + \frac{U}{2}|\psi_j|^4\bigg).
+\end{eqnarray} 
+One way to find the configuration $\vec\psi_\mathrm{GS}$, is to solve the GPE in imaginary time ($it\to \tau$), which induces exponential decay in all modes of the system, except for the lowest-energy state. In doing so, we keep the norm of the solution fixed:
+\begin{eqnarray}
+\partial_{\tau}\vec\varphi(\tau) &=& -\bigg[H_\mathrm{sp}(0)\vec\varphi(\tau) + U \vec\varphi^*(\tau)\circ \vec\varphi(\tau)\circ \vec\varphi(\tau)\bigg],\qquad ||\vec\varphi(\tau)||=\mathrm{const.},\nonumber\\
+\vec{\psi}_\mathrm{GS} &=& \lim_{\tau\to\infty}\vec\varphi(\tau)
+\end{eqnarray}
+Once we have the initial state $\vec\psi_\mathrm{GS}$, we evolve it according to the time-dependent GPE, Eq.~\eqref{eq:GPE}, and track down the time evolution of the condensate density $\rho_j(t)=|\psi_j(t)|^2$. Fig.~??? shows the result.
+
+\noindent\emph{Code Analysis---}...
+\lstinputlisting[firstline=1, lastline=55]{example6.py}
+
+The complete code including the lines that produce Fig.~\ref{fig:example3} is available in Example Code~\ref{code:ex3}.
 
 \section{New Horizons for QuSpin}
 \label{sec:outro}

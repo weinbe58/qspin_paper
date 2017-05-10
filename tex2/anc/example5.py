@@ -24,8 +24,8 @@ J=1.0 #uniform hopping
 deltaJ=0.1 # hopping difference
 Delta=0.0 # staggered potential
 # define site-coupling lists
-hop_pm=[[+J+deltaJ*(-1)**i,i,(i+1)%L] for i in range(L)] # PBC
-hop_mp=[[-J-deltaJ*(-1)**i,i,(i+1)%L] for i in range(L)] # PBC
+hop_pm=[[-J-deltaJ*(-1)**i,i,(i+1)%L] for i in range(L)] # PBC
+hop_mp=[[+J+deltaJ*(-1)**i,i,(i+1)%L] for i in range(L)] # PBC
 stagg_pot=[[Delta*(-1)**i,i] for i in range(L)]	
 # define basis
 basis=fermion_basis_1d(L,Nf=1)

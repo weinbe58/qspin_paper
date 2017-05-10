@@ -272,6 +272,53 @@ In the following, we show how to compute the spectra of the Hamiltonians in Eqs.
 
 The complete code including the lines that produce Fig.~\ref{fig:example3} is available in Example Code~\ref{code:ex3}.
 
+
+
+\subsection{Integrability Breaking in Higher spin transverse field ising model}
+
+This example shows how to:
+\begin{itemize}
+	\item construct Hamiltonians for Higher spin operators.
+	\item find ground state of a Hamiltonian
+	\item use obs\_vs\_time function with costume user defined generator to calculate the expectation value of operators as a function of time.
+	\item use the new functionality of the basis class to calculate the entanglement entropy for higher spin.
+\end{itemize}
+
+\emph{Physics Setup} In the previous section we introduced the TFIM and showed how one can solve the problem using the Jordan-Wigner transformation. This transformation allows one to solve the Hamiltonian exactly. The fact that this solution exists in deeply connected to the notion of Integrability which has implications of how the system responds to a periodic modulation [CITE]. For non-integrable system when periodic driving, energy is no longer conserved and so generically one would expect that the system will heat up to infinite temperature, while in an integrable system, even though energy is not conserved, there is still an extensive number of other conserved quantities which may be conserved under the drive. If this is the case, then the system will not heat up at long times. 
+
+defining two Hamiltonians:
+\begin{gather}
+	H_{zz} = -J_{zz}\sum_{i=0}^{L-1} S^z_iS^z_{i+1}\\
+	H_{x} = -h_x\sum_{i=0}^{L-1}S^x_i
+\end{gather}
+For both $S_i=1$ and $S_i=1/2$ operators, We will evolve the ground state of $H_{zz}$ with the following piecewise hamiltonian:
+
+\begin{equation}
+	H(t)=
+	\begin{cases}
+		
+	\end{cases}
+\end{equation}
+
+\subsection{Repulsively Bound Bosons on Translationally Invariant Ladder}
+
+This example shows how to:
+\begin{itemize}
+	\item construct Hamiltonians for bosonic systems
+	\item construct ladder Hamiltonians
+	\item using block\_tools module to evolve over several symmetry sectors at once using the block\_ops class
+\end{itemize}
+
+
+\subsection{Fermionic Many-body Localization}
+
+This example shows how to:
+\begin{itemize}
+	\item construct Hamiltonians for spinful fermions using the tensor\_basis class.
+	\item how to use ops\_dict class to construct Hamiltonians with varying parameters.
+	\item use new basis functionality to construct simple product states
+\end{itemize}
+
 \section{New Horizons for QuSpin}
 \label{sec:outro}
 

@@ -64,8 +64,8 @@ psi_2_t = evolve_gen(psi0_2,U1_2,U2_2,U3_2,nT)
 Obs_1_t = obs_vs_time(psi_1_t,times,dict(E=Hzz_1),return_state=True)
 Obs_2_t = obs_vs_time(psi_2_t,times,dict(E=Hzz_2),return_state=True)
 # calculate page entropy density
-s_p_1 = np.log(2)-2.0**(-L_1/2.0)/L_1
-s_p_2 = np.log(3)-3.0**(-L_2/2.0)/L_2
+s_p_1 = np.log(2)-2.0**(-L_1//2-L_1)/(2*(L_1//2))
+s_p_2 = np.log(3)-3.0**(-L_2//2-L_2)/(2*(L_2//2))
 # calculating the entanglement entropy density
 Sent_time_1 = basis_1.ent_entropy(Obs_1_t["psi_t"],sub_sys_A=range(L_1//2))["Sent_A"]/(L_1//2)
 Sent_time_2 = basis_2.ent_entropy(Obs_2_t["psi_t"],sub_sys_A=range(L_2//2))["Sent_A"]/(L_2//2)

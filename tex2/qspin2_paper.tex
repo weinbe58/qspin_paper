@@ -298,14 +298,32 @@ defining two Hamiltonians:
 	H_{zz} = -J_{zz}\sum_{i=0}^{L-1} S^z_iS^z_{i+1}\\
 	H_{x} = -h_x\sum_{i=0}^{L-1}S^x_i
 \end{gather}
-For both $S_i=1$ and $S_i=1/2$ operators, We will evolve the ground state of $H_{zz}$ with the following piecewise hamiltonian:
+For both $S_i=1$ and $S_i=1/2$ operators, We will evolve the ground state of $H_{zz}$ with the following piecewise periodic Hamiltonian:
 
 \begin{equation}
 	H(t)=
 	\begin{cases}
-		
+		\Omega H_x & 0 \le t < T/6\\
+		H_{zz} $ & T/6 \le t < 2T/3\\
+		-\Omega H_x & 2T/3\le t < T
 	\end{cases}
 \end{equation}
+where $\Omega$ is the driving frequency and $T$ is the period. In order to measure the heating we measure the expectation value of $H_{zz}$ as a function of time. This operator has a width of $2SL$ where $S$ is the spin on each size and so we define $Q$:
+\begin{equation}
+	Q(t) = \frac{\langle H_{zz}(t)\rangle+SL}{SL}
+\end{equation}
+such that an infinite temperature state has $Q=1$. Another measure of heating we will use is the entanglement entropy density
+\begin{equation}
+s_\mathrm{ent}(t) = -\frac{1}{|\mathrm{A}|}\mathrm{tr}_{\mathrm{A}}\left[\rho_\mathrm{A}(t)\log\rho_\mathrm{A}(t)\right], \qquad \rho_\mathrm{A}(t) = \mathrm{tr}_{\mathrm{A^c}} |\psi(t)\rangle\langle\psi(t)|
+\end{equation}
+of subsystem A, defined to contain the left half of the chain and $|\mathrm{A}|=L/2$. We denoted the reduced density matrix of subsystem A by $\rho_\mathrm{A}$, and $\mathrm{A^c}$ is the complement of A.
+
+\begin{figure}
+	\includegraphics[width=0.5\textwidth]{TFIM_Q.pdf}
+	\includegraphics[width=0.5\textwidth]{TFIM_S.pdf}
+	\caption{Comparing the dynamics of $Q(t)$ (left) and $s_\mathrm{ent}(t)$ (right) for $S=1$ (orange) and $S=1/2$ (blue). For $S=1$ and $S=1/2$ we take $L=11$ and $18$ respectively as to make sure the manybody Hilbert spaces have roughly the same number of state. $s_\mathrm{ent}$ is normalized by the Page entropy per site[CITE Page]. For both systems $\Omega=4$, $J_{zz}=1.0$, and $h_x=1.0$.}
+\end{figure}
+
 
 \subsection{Repulsively Bound Bosons on Translationally Invariant Ladder}
 

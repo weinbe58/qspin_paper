@@ -20,7 +20,7 @@ def evolve_gen(psi0,U1,U2,U3,nT):
 # frequency and period for driving.
 omega = 4
 T = 2*np.pi/omega 
-nT = 150 # number of periods to evolve to.
+nT = 200 # number of periods to evolve to.
 times = np.arange(0,nT+1,1)*T
 
 L_1 = 18 # length of chain for spin 1/2
@@ -63,11 +63,12 @@ psi_2_t = evolve_gen(psi0_2,U1_2,U2_2,U3_2,nT)
 # measure energy as a function of time
 Obs_1_t = obs_vs_time(psi_1_t,times,dict(E=Hzz_1),return_state=True)
 Obs_2_t = obs_vs_time(psi_2_t,times,dict(E=Hzz_2),return_state=True)
-
-sparse_args = dict(sparse=False,sparse_diag=False)
-Sent_time_1 = basis_1.ent_entropy(Obs_1_t["psi_t"],sub_sys_A=range(L_1//2),**sparse_args)["Sent_A"]/(L_1//2)
-Sent_time_2 = basis_2.ent_entropy(Obs_2_t["psi_t"],sub_sys_A=range(L_2//2),**sparse_args)["Sent_A"]/(L_2//2)
-
+# calculate page entropy density
+s_p_1 = np.log(2)-2.0**(-L_1/2.0)/L_1
+s_p_2 = np.log(3)-3.0**(-L_2/2.0)/L_2
+# calculating the entanglement entropy density
+Sent_time_1 = basis_1.ent_entropy(Obs_1_t["psi_t"],sub_sys_A=range(L_1//2))["Sent_A"]/(L_1//2)
+Sent_time_2 = basis_2.ent_entropy(Obs_2_t["psi_t"],sub_sys_A=range(L_2//2))["Sent_A"]/(L_2//2)
 
 #plotting results
 plt.plot(times/T,(Obs_1_t["E"]-E_1_min)/(-E_1_min),marker='.',markersize=5,label="$S=1/2$")
@@ -75,17 +76,16 @@ plt.plot(times/T,(Obs_2_t["E"]-E_2_min)/(-E_2_min),marker='.',markersize=5,label
 plt.grid()
 plt.ylabel("$Q(t)$",fontsize=20)
 plt.xlabel("$t/T$",fontsize=20)
-plt.legend(loc=0,fontsize=16)
-plt.savefig("example7_Q.pdf")
+plt.savefig("TFIM_Q.pdf")
 plt.figure()
 
-plt.plot(times/T,Sent_time_1,marker='.',markersize=5,label="$S=1/2$")
-plt.plot(times/T,Sent_time_2,marker='.',markersize=5,label="$S=1$")
+plt.plot(times/T,Sent_time_1/s_p_1,marker='.',markersize=5,label="$S=1/2$")
+plt.plot(times/T,Sent_time_2/s_p_2,marker='.',markersize=5,label="$S=1$")
 plt.grid()
-plt.ylabel("$S_{\mathrm{entanglement},L/2}(t)$",fontsize=20)
+plt.ylabel("$s_{\mathrm{ent}}(t)/s_\mathrm{page}$",fontsize=20)
 plt.xlabel("$t/T$",fontsize=20)
 plt.legend(loc=0,fontsize=16)
 
-plt.savefig("example7_S.pdf")
+plt.savefig("TFIM_S.pdf")
 plt.show()
 

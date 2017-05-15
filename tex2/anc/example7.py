@@ -9,16 +9,15 @@ import sys,os
 
 # user defined generator
 # generates stroboscopic dynamics 
-def evolve_gen(psi0,U1,U2,U3,nT):
+def evolve_gen(psi0,nT,*U_list):
 	yield psi0
-	for i in range(nT):
-		psi0 = U1.dot(psi0)
-		psi0 = U2.dot(psi0)
-		psi0 = U3.dot(psi0)
+	for i in range(nT): # loop over number of periods
+		for U in U_list: # loop over unitaries
+			psi0 = U.dot(psi0)
 		yield psi0
 
 # frequency and period for driving.
-omega = 4
+omega = 2
 T = 2*np.pi/omega 
 nT = 200 # number of periods to evolve to.
 times = np.arange(0,nT+1,1)*T
@@ -51,15 +50,13 @@ Hx_2  = hamiltonian([["+",hx_2],["-",hx_2]],[],basis=basis_2,dtype=np.float64,**
 psi0_1 = psi_1.ravel()
 psi0_2 = psi_2.ravel()
 # creating generators of time evolution
-U1_1 = exp_op(omega*Hx_1,a=-1j*T/6)
-U2_1 = exp_op(Hzz_1,a=-1j*3*T/6)
-U3_1 = exp_op(-omega*Hx_1,a=-1j*2*T/6)
-U1_2 = exp_op(omega*Hx_2,a=-1j*T/6)
-U2_2 = exp_op(Hzz_2,a=-1j*3*T/6)
-U3_2 = exp_op(-omega*Hx_2,a=-1j*2*T/6)
+U1_1 = exp_op(Hzz_1+omega*Hx_1,a=-1j*T/4)
+U2_1 = exp_op(Hzz_1-omega*Hx_1,a=-1j*T/2)
+U1_2 = exp_op(Hzz_2+omega*Hx_2,a=-1j*T/4)
+U2_2 = exp_op(Hzz_2-omega*Hx_2,a=-1j*T/2)
 # get generator objects to get time dependent states
-psi_1_t = evolve_gen(psi0_1,U1_1,U2_1,U3_1,nT)
-psi_2_t = evolve_gen(psi0_2,U1_2,U2_2,U3_2,nT)
+psi_1_t = evolve_gen(psi0_1,nT,U1_1,U2_1,U1_1)
+psi_2_t = evolve_gen(psi0_2,nT,U1_2,U2_2,U1_2)
 # measure energy as a function of time
 Obs_1_t = obs_vs_time(psi_1_t,times,dict(E=Hzz_1),return_state=True)
 Obs_2_t = obs_vs_time(psi_2_t,times,dict(E=Hzz_2),return_state=True)
@@ -82,7 +79,7 @@ plt.figure()
 plt.plot(times/T,Sent_time_1/s_p_1,marker='.',markersize=5,label="$S=1/2$")
 plt.plot(times/T,Sent_time_2/s_p_2,marker='.',markersize=5,label="$S=1$")
 plt.grid()
-plt.ylabel("$s_{\mathrm{ent}}(t)/s_\mathrm{page}$",fontsize=20)
+plt.ylabel("$s_{\mathrm{ent}}(t)/s_\mathrm{Page}$",fontsize=20)
 plt.xlabel("$t/T$",fontsize=20)
 plt.legend(loc=0,fontsize=16)
 

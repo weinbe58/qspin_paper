@@ -11,9 +11,9 @@ import matplotlib.animation as animation
 """ schematic of how the ladder lattic is set up
 
 coupling parameters:
--: t_par_1
-^: t_par_2
-|: t_perp
+-: J_par_1
+^: J_par_2
+|: J_perp
 
 ^1^3^5^7^9^
  | | | | |
@@ -26,7 +26,7 @@ translations (i -> i+2):
 -8-0-2-4-6-
 
 
-if t_par_1 same as t_par_2 then one can use parity
+if J_par_1 same as J_par_2 then one can use parity
 
 parity (i -> N - i):
 
@@ -36,26 +36,28 @@ parity (i -> N - i):
 -9-7-5-3-1-
 
 """
+np.random.seed(0)
 
-L = 5
+L = 6
 N = 2*L
-Nb = L
+nb = 0.5
+sps = 2
 
 
-t_par_1 = 1.0
-t_par_2 = 1.0
-t_perp =  1.0
-U = 2.0
-h=np.pi/2.0
+J_par_1 = 1.0
+J_par_2 = 1.0
+J_perp =  1.0
+U = 10.0
 
 
-basis = boson_basis_1d(N,Nb=Nb)
 
-int_list_2 = [[U**2,i,i] for i in range(N)]
+basis = boson_basis_1d(N,nb=nb,sps=sps)
+
+int_list_2 = [[U,i,i] for i in range(N)]
 int_list_1 = [[-U,i] for i in range(N)]
-hop_list = [[t_par_1,i,(i+2)%N] for i in range(0,N,2)]
-hop_list.extend([[t_par_2,i,(i+2)%N] for i in range(1,N,2)])
-hop_list.extend([[t_perp,i,i+1] for i in range(0,N,2)])
+hop_list = [[-J_par_1,i,(i+2)%N] for i in range(0,N,2)]
+hop_list.extend([[-J_par_2,i,(i+2)%N] for i in range(1,N,2)])
+hop_list.extend([[-J_perp,i,i+1] for i in range(0,N,2)])
 hop_list_hc = [[J.conjugate(),i,j] for J,i,j in hop_list]
 
 static = [
@@ -68,91 +70,98 @@ dynamic = []
 
 no_checks = dict(check_herm=False,check_symm=False,check_pcon=False)
 
-state = ["0" for i in range(N)]
-state[L] = str(Nb)
-# setting up initial state
-state_str = "".join(state)
-i0 = basis.index(state_str)
-
+i0 = np.random.randint(basis.Ns) # pick random state from basis set
 psi = np.zeros(basis.Ns,dtype=np.float64)
 psi[i0] = 1.0
-
+# print info about setup
+state_str = "".join(str(int((basis[i0]//basis.sps**i)%basis.sps)) for i in range(N))
 print("H-space size: {}, initial state: |{}>".format(basis.Ns,state_str))
-
 blocks=[]
 
 
-if t_par_1 == t_par_2:
+if J_par_1 == J_par_2:
 	for kblock in range(L//2+1):
 		for pblock in [-1,1]:
-			blocks.append(dict(Nb=Nb,a=2,kblock=kblock,pblock=pblock))
+			blocks.append(dict(nb=nb,sps=sps,a=2,kblock=kblock,pblock=pblock))
 else:
 	for kblock in range(L):
-		blocks.append(dict(Nb=Nb,a=2,kblock=kblock))
+		blocks.append(dict(nb=nb,sps=sps,a=2,kblock=kblock))
 
 
 
 
 U_block = block_ops(blocks,static,dynamic,boson_basis_1d,(N,),np.complex128,get_proj_kwargs=dict(pcon=True))
 
-start,stop,num = 0,10000,10001
-psi_t = U_block.expm(psi,start=start,stop=stop,num=num,iterate=True,block_diag=False,n_jobs=1)
+start,stop,num = 0,15,151
+psi_t = U_block.expm(psi,start=start,stop=stop,num=num,block_diag=False)
 
 
 # plotting movie
 state_str = np.array([int(s) for s in state_str])
-ind_start = np.argwhere(state_str>0)
+ind_start = np.argwhere(state_str>0).ravel()
+sub_sys_A = range(0,N,2) # half of chain is subsystem 
 # observables
-n = [hamiltonian([["n",[[1.0,i]]]],[],basis=basis,dtype=np.float64,**no_checks) for i in range(N)]
+n_list = [hamiltonian([["n",[[1.0,i]]]],[],basis=basis,dtype=np.float64,**no_checks) for i in range(N)]
 times = np.linspace(start,stop,num)
+
+
+ent_t = np.fromiter((basis.ent_entropy(psi,sub_sys_A=sub_sys_A)["Sent_A"]/L for psi in psi_t.T[:]),dtype=np.float64,count=num)
+expt_n_t = np.vstack([n.expt_value(psi_t).real for n in n_list]).T
+
+n_t = np.zeros((num,2,L))
+n_t[:,0,:] = expt_n_t[:,0::2]
+n_t[:,1,:] = expt_n_t[:,1::2]
+
+
+# plotting static figures
+
+fig, ax = plt.subplots(nrows=5,ncols=1)
+
+im=[]
+im_ind = []
+for i,t in enumerate(np.logspace(-1,np.log10(stop-1),5,base=10)):
+	j = times.searchsorted(t)
+	im_ind.append(j)
+	im.append(ax[i].imshow(n_t[j],cmap="hot",vmax=n_t.max(),vmin=0))
+	ax[i].tick_params(labelbottom=False,labelleft=False)
+
+cax = fig.add_axes([0.85, 0.1, 0.03, 0.8])
+fig.colorbar(im[2],cax)
+plt.savefig("boson_density.pdf")
+plt.figure()
+plt.plot(times,ent_t,lw=2)
+plt.plot(times[im_ind],ent_t[im_ind],marker="o",linestyle="",color="red")
+plt.xlabel("$t/J$",fontsize=20)
+plt.ylabel("$s_\mathrm{ent}(t)$",fontsize=20)
+plt.grid()
+plt.savefig("boson_entropy.pdf")
+plt.show()
+
+
 # setting up two plots to animate side by side
+"""
 fig, (ax1,ax2) = plt.subplots(1,2)
 fig.set_size_inches(10, 5)
-line, = ax1.plot([], [], lw=2)
+
 ax1.set_xlabel(r"$t/J$",fontsize=18)
-ax1.set_ylabel(r"$n_{L}$",fontsize=18)
-im = ax2.matshow(np.zeros((L,2)),cmap="hot",vmin=0,vmax=Nb)
-fig.colorbar(im)
+ax1.set_ylabel(r"$s_\mathrm{ent}$",fontsize=18)
 
 ax1.grid()
-xdata, ydata = [], []
+line1, = ax1.plot(times, ent_t, lw=2)
+line1.set_data([],[])
 
-def init(): # initialize movie frame
-	ax1.set_ylim(-0.1, Nb+.1)
-	ax1.set_xlim(0, 5)
 
-	del xdata[:]
-	del ydata[:]
-	line.set_data(xdata, ydata)
-	im.set_data(np.zeros((L,2)))
-	return im, line
+im = ax2.matshow(n_t[0],cmap="hot")
+fig.colorbar(im)
 
-def data_gen(t=0): # enerator of data used to update frame
-	for i,psi in enumerate(psi_t):
-		ns = np.fromiter((n[j].expt_value(psi).real for j in range(N)),count=N,dtype=np.float64)
-		n0 = ns[ind_start]
-		ns = ns.reshape((-1,2))
 
-		yield times[i],n0,ns
-
-def run(data): # function to update frame
-	t,n0,ns = data
-
-	xdata.append(t)
-	ydata.append(n0)
-
-	xmin, xmax = ax1.get_xlim()
-	ymin, ymax = ax1.get_xlim()
-	if t >= xmax: # update the time axis dynamically
-		ax1.set_xlim(xmin, 2*xmax)
-		ax1.figure.canvas.draw()
-
+def run(i): # function to update frame
 	# set new data for plots
-	line.set_data(xdata,ydata) 
-	im.set_data(ns)
+	line1.set_data(times[:i],ent_t[:i])
+	im.set_data(n_t[i])
 
-	return im, line
+	return im, line1
 
-ani = animation.FuncAnimation(fig, run, data_gen, blit=False, interval=50,
-								repeat=False, init_func=init)
+ani = animation.FuncAnimation(fig, run, range(num),interval=50)
 plt.show()
+"""

@@ -263,7 +263,7 @@ In the following, we show how to compute the spectra of the Hamiltonians in Eqs.
 
 \begin{figure}[t!]
 	\centering
-	\begin{subfigure}[b]{0.496\textwidth}
+	\begin{subfigure}[a]{0.496\textwidth}
 		\includegraphics[width=\textwidth]{JW_PBC.pdf}
 		\caption{negative spin inversion/PBC sector}
 	\end{subfigure}
@@ -281,71 +281,8 @@ The complete code including the lines that produce Fig.~\ref{fig:example3} is av
 
 
 
-\subsection{Integrability Breaking in Higher spin transverse field ising model}
-
-This example shows how to:
-\begin{itemize}
-	\item construct Hamiltonians for Higher spin operators.
-	\item find ground state of a Hamiltonian
-	\item use obs\_vs\_time function with costume user defined generator to calculate the expectation value of operators as a function of time.
-	\item use the new functionality of the basis class to calculate the entanglement entropy for higher spin.
-\end{itemize}
-
-\emph{Physics Setup} In the previous section we introduced the TFIM and showed how one can solve the problem using the Jordan-Wigner transformation. This transformation allows one to solve the Hamiltonian exactly. The fact that this solution exists in deeply connected to the notion of Integrability which has implications of how the system responds to a periodic modulation [CITE]. For non-integrable system when periodic driving, energy is no longer conserved and so generically one would expect that the system will heat up to infinite temperature, while in an integrable system, even though energy is not conserved, there is still an extensive number of other conserved quantities which may be conserved under the drive. If this is the case, then the system will not heat up at long times. 
-
-defining two Hamiltonians:
-\begin{gather}
-	H_{zz} = -J_{zz}\sum_{i=0}^{L-1} S^z_iS^z_{i+1}\\
-	H_{x} = -h_x\sum_{i=0}^{L-1}S^x_i
-\end{gather}
-For both $S_i=1$ and $S_i=1/2$ operators, We will evolve the ground state of $H_{zz}$ with the following piecewise periodic Hamiltonian:
-
-\begin{equation}
-	H(t)=
-	\begin{cases}
-		\Omega H_x & 0 \le t < T/6\\
-		H_{zz} $ & T/6 \le t < 2T/3\\
-		-\Omega H_x & 2T/3\le t < T
-	\end{cases}
-\end{equation}
-where $\Omega$ is the driving frequency and $T$ is the period. In order to measure the heating we measure the expectation value of $H_{zz}$ as a function of time. This operator has a width of $2SL$ where $S$ is the spin on each size and so we define $Q$:
-\begin{equation}
-	Q(t) = \frac{\langle H_{zz}(t)\rangle+SL}{SL}
-\end{equation}
-such that an infinite temperature state has $Q=1$. Another measure of heating we will use is the entanglement entropy density
-\begin{equation}
-s_\mathrm{ent}(t) = -\frac{1}{|\mathrm{A}|}\mathrm{tr}_{\mathrm{A}}\left[\rho_\mathrm{A}(t)\log\rho_\mathrm{A}(t)\right], \qquad \rho_\mathrm{A}(t) = \mathrm{tr}_{\mathrm{A^c}} |\psi(t)\rangle\langle\psi(t)|
-\end{equation}
-of subsystem A, defined to contain the left half of the chain and $|\mathrm{A}|=L/2$. We denoted the reduced density matrix of subsystem A by $\rho_\mathrm{A}$, and $\mathrm{A^c}$ is the complement of A.
-
-\begin{figure}
-	\includegraphics[width=0.5\textwidth]{TFIM_Q.pdf}
-	\includegraphics[width=0.5\textwidth]{TFIM_S.pdf}
-	\caption{Comparing the dynamics of $Q(t)$ (left) and $s_\mathrm{ent}(t)$ (right) for $S=1$ (orange) and $S=1/2$ (blue). For $S=1$ and $S=1/2$ we take $L=11$ and $18$ respectively as to make sure the manybody Hilbert spaces have roughly the same number of state. $s_\mathrm{ent}$ is normalized by the Page entropy per site[CITE Page]. For both systems $\Omega=4$, $J_{zz}=1.0$, and $h_x=1.0$.}
-\end{figure}
-
-
-\subsection{Repulsively Bound Bosons on Translationally Invariant Ladder}
-
-This example shows how to:
-\begin{itemize}
-	\item construct Hamiltonians for bosonic systems
-	\item construct ladder Hamiltonians
-	\item using block\_tools module to evolve over several symmetry sectors at once using the block\_ops class
-\end{itemize}
-
-
-\subsection{Fermionic Many-body Localization}
-
-This example shows how to:
-\begin{itemize}
-	\item construct Hamiltonians for spinful fermions using the tensor\_basis class.
-	\item how to use ops\_dict class to construct Hamiltonians with varying parameters.
-	\item use new basis functionality to construct simple product states
-\end{itemize}
-
-
 \subsection{Free Particle Systems: the SSH Model}
+
 \label{subsec:free_particle}
 
 This example shows how to
@@ -391,6 +328,80 @@ For simplicity, let us focus on a single unit cell. Figure~??? shows the time ev
 \lstinputlisting[firstline=1, lastline=55]{example6.py}
 
 The complete code including the lines that produce Fig.~\ref{fig:example3} is available in Example Code~\ref{code:ex3}.
+
+
+
+
+
+
+
+\subsection{Fermionic Many-body Localization}
+
+This example shows how to:
+\begin{itemize}
+	\item construct Hamiltonians for spinful fermions using the tensor\_basis class.
+	\item how to use ops\_dict class to construct Hamiltonians with varying parameters.
+	\item use new basis functionality to construct simple product states
+	\item use obs\_vs\_time functionality to measure observables as a function of time
+\end{itemize}
+
+A class of exciting new problems in the field of non-equalibrium physics are that of the Many-body localzation (MBL) transition. The MBL transition is a dynamical phase transition in the eigenstates of a many-body Hamiltonian. Driven primarily by quenched disorder, the transition occurs is distinguished by ergodic eigenstates in the weak disorder limit and non-ergodic eigenstates in the strong disorder limit. The MBL phase is reminiscent of integrable systems as one can construct quasi-local integrals of motion in the MBL phase, but these integrals of motion are much more robust in the sense that they are not sensitive to small perturbations are is the case in many classes of integrable systems[CITE MBL misc].
+
+Motivated by some recent experiments in cold atomic gasses [CITE Bloch MBL exp] we explore MBL in the context of fermions using QuSpin. The model we will consider is the Fermi-Hubbard model with quenched random disorder which has the following Hamiltonian:
+\begin{equation}
+	H = -t\sum_{\sigma,i=0}^{L-1} c^\dagger_{\sigma i}c_{\sigma i+1} - c_{\sigma i}c^\dagger_{\sigma i+1} +U\sum_{i=0}^L n_{\uparrow i}n_{\downarrow i} + \sum_{\sigma, i=0}^L V_i n_{\sigma i}\label{eq:FM_ham}
+\end{equation}
+where $c_{\sigma i}$ and $c^\dagger_{\sigma i}$ is a ferminoic creation and annihilation operators on site $i$ for spin $\sigma$ respectively. We will work in the sector of 1/4 filling for both up and down spins. Preparing an initial configuration of fermions of alternating spin on every other site, we will then measure the sublattice imbalance:
+\begin{equation}
+	I = (N_A-N_B)/N_\mathrm{tot}
+\end{equation}
+where $A$ and $B$ refer to the different sublattices of the chain, as a function of time while evolving with Hamiltonian~\eqref{eq:FH_ham}. If the Hamiltonian is ergodic then this quantity will decay to $0$ in the limit $t\rightarrow\infty$ as all of the sites should be occupied evenly while if the Hamiltonian is MBL then some memory of its initial condition will be retained, and therefore this quantity will be non-zero.
+
+Because the Hilbert space dimension grows so quickly for this Hamiltonian we will only consider the dynamics after a finite amount of time, and even with this it is a fairly long calculation to do $L>10$. 
+
+\noindent\emph{Code Analysis---}...
+\lstinputlisting[firstline=1, lastline=55]{example9.py}
+
+
+
+
+
+
+
+\subsection{Interacting Bosons on Translationally Invariant Ladder}
+
+This example shows how to:
+\begin{itemize}
+	\item construct Hamiltonians for bosonic systems
+	\item construct ladder Hamiltonians
+	\item using block\_tools module to evolve over several symmetry sectors at once using the block\_ops class
+	\item measure entanglement entropy of ladder system 
+\end{itemize}
+
+\noindent{\emph{Physics Setup---}}In this example we will use QuSpin to solve the dynamics of the Bose-Hubbard model (BHM) on a ladder geometry. The BHM is a minimal model of interacting bosons which is experimentally realizable in cold atom experiments [CITE]. The Hamiltonian is given by:
+\begin{equation}
+	H_\mathrm{BHM} = -J\sum_{\langle ij\rangle} a_i^\dagger a_j + \mathrm{h.c.} + U\sum_{i}n_i(n_i-1)\label{eq:BHM_ham}
+\end{equation} 
+where $a_i$ and $a^\dagger_i$ are bosonic creation and annihilation operators on site $i$ respectively and the sum $\langle ij\rangle$ is a sum over nearest neighbors on Ladder. We will consider a half filled ladder of length $L$ with $N=2L$ sites. We will perform a quench where the system starts out in a random product state and let it evolve with Hamiltonian~\eqref{eq:BHM_ham}. We will restrict the local Hilbert space to allow at most 2-particles on a site which is valid in the large $U$ limit. This model is not integrable and so we expect that the system will eventually thermalize so that the occupation is roughly uniform over the entire system. On top of measuring the local density we will also measure the entanglement entropy between the legs of the ladder.
+
+If we consider a translational invariant ladder that implies that the Hamiltonian factorizes into different many-body momentum blocks similar to what was discussed in Sec.~\ref{subsec:free_particle} but slightly different as we consider translations of the many-body fock states as opposed to the single particle states[CITE Anders review]. In this section instead of projecting the operators to momentum space as was done in Sec.~\ref{subsec:free_particle}, we will project the wavefunction to the different symmetry sectors and evolve each of the projections separately under the Hamiltonian for that symmetry sector. Then each of the Block wavefunctions are projected back to the local Fock space basis and summed to recover the evolve state which one can then look at local quantities like the density and entanglement.
+
+\begin{figure}[t!]
+	\begin{subfigure}[a]{0.496\textwidth}
+		\includegraphics[width=0.9\textwidth]{boson_entropy.pdf}
+		\caption{Entanglement entropy density between the two legs of the ladder as a function of time.}
+	\end{subfigure}
+	\begin{subfigure}[b]{0.496\textwidth}
+		\includegraphics[width=0.9\textwidth]{boson_density.pdf}
+		\caption{local density of bosons as a function of time. Later times appearing farther down the page.}
+	\end{subfigure}
+	\caption{Showing results from the quench in the BHM. plot (a) shows the half-ladder entanglement entropy density and plot (b) shows the local density on each site as a function of time. The red dots on the entanglement plot shows the time points where the density plots are taken. For this data was taken with $J=1$ and $U=10$.}
+\end{figure}
+
+\noindent\emph{Code Analysis---}...
+\lstinputlisting[firstline=1, lastline=55]{example8.py}
+
+
 
 
 \subsection{The Gross-Pitaevskii Equation and Nonlinear Time Evolution}
@@ -439,7 +450,56 @@ Once we have the initial state $\vec\psi_\mathrm{GS}$, we evolve it according to
 
 The complete code including the lines that produce Fig.~\ref{fig:example3} is available in Example Code~\ref{code:ex3}.
 
->>>>>>> a944abf73c38bc2c917c9bf9fafc275c144df96a
+
+
+\subsection{Integrability Breaking in Higher spin TFI model}
+
+This example shows how to:
+\begin{itemize}
+	\item construct Hamiltonians for Higher spin operators.
+	\item find ground state of a Hamiltonian
+	\item use obs\_vs\_time function with costume user defined generator to calculate the expectation value of operators as a function of time.
+	\item use the new functionality of the basis class to calculate the entanglement entropy for higher spin.
+\end{itemize}
+
+\noindent{\emph{Physics Setup---}} In the previous section we introduced the TFI model and showed how one can solve the problem using the Jordan-Wigner transformation. This transformation allows one to get an exact analytic solution to the Hamiltonian (when the system obeys translational invariance). The fact that this solution exists in deeply connected to the notion of Integrability which has implications of how the system responds to a periodic modulation [CITE]. For non-integrable system when periodic driving, energy is no longer conserved and so generically one would expect that the system will heat up to infinite temperature, while in an integrable system, even though energy is not conserved, there are an extensive number of other static conserved quantities which may be conserved under the drive. If this is the case, then the system will not heat up at long times, but instead reach some steady state. By simply taking the transverse field ising model and promoting the spin-1/2 operators to spin-1, there is no longer a simple mapping to a quadratic Hamiltonian and therefore the model is no longer integrable. Here we will show this explicitly by driving the two different systems and checking it they heat or not. To do this we will define two Hamiltonians
+\begin{equation}
+H_{zz} = -\sum_{i=0}^{L-1} S^z_iS^z_{i+1}, \qquad H_{x} = -\sum_{i=0}^{L-1}S^x_i
+\end{equation}
+and evolve the ferromagnetic ground state of $H_{zz}$ with the following piecewise periodic Hamiltonian:
+\begin{equation}
+H(t)=H_{zz} -\Omega\,\mathrm{sgn}\left(\cos(\Omega t)\right)H_x
+\end{equation}
+where $\Omega$ is the driving frequency and $T$ is the period. As the Hamiltonian obeys translation,parity and spin-inversion symmetries we will use this to speed up the evolution by working in the symmetry sector which contains the ground state. 
+
+In order to measure the difference in heating between spin-1 and spin-1/2 we measure the expectation value of $H_{zz}$ as a function of time. This operator has a symmetric spectrum and so following ref.[CITE heading papers] we define $Q$:
+\begin{equation}
+Q(t) =\left\langle\psi(t)\left\vert\frac{ 2\left(H_{zz}-E_\mathrm{min}\right)}{E_\mathrm{max}-E_\mathrm{min}}\right\vert\psi(t)\right\rangle=\left\langle\psi(t)\left\vert\frac{ H_{zz}-E_\mathrm{min}}{-E_\mathrm{min}}\right\vert\psi(t)\right\rangle
+\end{equation}
+where the last equality comes from the symmetry of the spectrum: $E_\mathrm{max}=-E_\mathrm{min}$. This quantity is defined such that an infinite temperature state has $Q=1$. Another measure of heating we will use is the entanglement entropy density
+\begin{equation}
+s_\mathrm{ent}(t) = -\frac{1}{|\mathrm{A}|}\mathrm{tr}_{\mathrm{A}}\left[\rho_\mathrm{A}(t)\log\rho_\mathrm{A}(t)\right], \qquad \rho_\mathrm{A}(t) = \mathrm{tr}_{\mathrm{A^c}} |\psi(t)\rangle\langle\psi(t)|
+\end{equation}
+of subsystem A, defined to contain the left half of the chain and $|\mathrm{A}|=L/2$. We denoted the reduced density matrix of subsystem A by $\rho_\mathrm{A}$, and $\mathrm{A^c}$ is the complement of A. 
+\begin{figure}
+	\begin{subfigure}[a]{0.496\textwidth}
+		\includegraphics[width=0.9\textwidth]{TFIM_Q.pdf}
+		\caption{$Q(t)$ for $t=nT$}
+	\end{subfigure}
+	\begin{subfigure}[b]{0.496\textwidth}
+		\includegraphics[width=0.9\textwidth]{TFIM_S.pdf}
+		\caption{$s_\mathrm{ent}(t)/s_\mathrm{Page}$ for $t=nT$}
+	\end{subfigure}
+	\caption{Comparing the dynamics of $Q(t)$ (a) and $s_\mathrm{ent}(t)$ (b) for $S=1$ (orange) and $S=1/2$ (blue) at stroboscopic times ($t=nT$). For $S=1$ and $S=1/2$ we take $L=11$ and $18$ respectively as to make sure the many-body Hilbert spaces have roughly the same number of state. $s_\mathrm{ent}$ is normalized by the Page entropy per site[CITE Page]. Note that for both systems $\Omega=4$.}
+\end{figure}
+
+\noindent\emph{Code Analysis---}...
+\lstinputlisting[firstline=1, lastline=55]{example7.py}
+
+The complete code including the lines that produce Fig.~\ref{fig:example3} is available in Example Code~\ref{code:ex3}.
+
+
+
 \section{New Horizons for QuSpin}
 \label{sec:outro}
 

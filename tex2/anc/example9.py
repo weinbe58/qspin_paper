@@ -1,17 +1,17 @@
 from __future__ import print_function, division
-import sys,os
-import numpy as np
-from numpy.random import uniform,choice
-from quspin.basis import tensor_basis,fermion_basis_1d
-from quspin.operators import hamiltonian,exp_op,ops_dict
-from quspin.tools.measurements import obs_vs_time
-from joblib import Parallel,delayed
-import matplotlib.pyplot as plt
-from time import time
+
+from quspin.operators import hamiltonian,exp_op,ops_dict # Hamiltonians and other operators
+from quspin.basis import tensor_basis,fermion_basis_1d # fermion and tensor Hilbert spaces
+from quspin.tools.measurements import obs_vs_time # function to calculating dynamics
+import numpy as np # general math functions
+from numpy.random import uniform,choice # tools for doing random sampling
+from joblib import Parallel,delayed # tools for doing
+from time import time # tool for calculating computation time
+import matplotlib.pyplot as plt # plotting
 
 # setting parameters for simulation
-n_jobs = 4 # number of cores to use in calculating realizations
-n_real = 100 # number of realizations
+n_jobs = 2 # number of cores to use in calculating realizations
+n_real = 1000 # number of realizations
 n_boot = 100*n_real # number of bootstrap realizations to calculate error
 # physical parameters
 L = 8 # system size
@@ -23,9 +23,7 @@ J = 1.0 # hopping strength
 U = 5.0 # interaction strength
 k = 0.1 # trap stiffness
 # range to evolve system
-start=0.0
-stop=35.0
-num=101
+start,stop,num=0.0,35.0,101
 # setting up basis
 N_up = N//2 + N % 2 # number of fermions with spin up
 N_down = N//2 # number of fermions with spin down
@@ -35,8 +33,8 @@ basis_down = fermion_basis_1d(L,Nf=N_down) # down basis
 basis = tensor_basis(basis_up,basis_down) # spinful fermsions
 # creating coupling lists
 i_mid = (L//2+1 if L%2 else L//2+0.5) # mid point on lattice
-hop_right = [[J,i,i+1] for i in range(L-1)] # hopping to the right
-hop_left = [[-J,i,i+1] for i in range(L-1)] # hopping to the left
+hop_right = [[-J,i,i+1] for i in range(L-1)] # hopping to the right OBC
+hop_left = [[J,i,i+1] for i in range(L-1)] # hopping to the left OBC
 int_list = [[U,i,i] for i in range(L)] # onsite interaction
 trap_list = [[0.5*k*(i-i_mid)**2,i] for i in range(L)] # harmonic trap
 # coupling list to create the sublattice imbalance observable
@@ -105,9 +103,9 @@ sq_fluc_gen_1 = ((bootstrap-I_1)**2 for bootstrap in bootstrap_gen_1)
 sq_fluc_gen_2 = ((bootstrap-I_2)**2 for bootstrap in bootstrap_gen_2)
 sq_fluc_gen_3 = ((bootstrap-I_3)**2 for bootstrap in bootstrap_gen_3) 
 # error is calculated as the squareroot of mean fluctuations
-dI_1 = np.sqrt(sum(sq_fluc_gen_1)/n_boot) 
-dI_2 = np.sqrt(sum(sq_fluc_gen_2)/n_boot) 
-dI_3 = np.sqrt(sum(sq_fluc_gen_3)/n_boot) 
+dI_1 = 2.0*np.sqrt(sum(sq_fluc_gen_1)/n_boot) 
+dI_2 = 2.0*np.sqrt(sum(sq_fluc_gen_2)/n_boot) 
+dI_3 = 2.0*np.sqrt(sum(sq_fluc_gen_3)/n_boot) 
 
 # plot imbalance with error bars
 fig = plt.figure()

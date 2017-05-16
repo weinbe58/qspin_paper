@@ -152,7 +152,12 @@
 \newcommand*{\cyan}{\textcolor{cyan}}
 \newcommand*{\green}{\textcolor{green}}
 
-
+\newcommand{\BHLcode}{example8.py}
+\newcommand{\MBLcode}{example9.py}
+\newcommand{\Spincode}{example7.py}
+\newcommand{\JWcode}{example6.py}
+\newcommand{\GPcode}{example4.py}
+\newcommand{\SSHcode}{example5_.py}
 
 \begin{document}
 % TODO: write your article's title here. 
@@ -281,46 +286,46 @@ In the following, we show how to compute the spectra of the Hamiltonians in Eqs.
 \end{figure} 
 
 \noindent\emph{Code Analysis---}We begin by loading the QuSpin operator and basis constructors, as well as some standard Python libraries. 
-\lstinputlisting[firstline=1, lastline=4]{example6.py}
+\lstinputlisting[firstline=1, lastline=4]{\JWcode}
 First, we define the models parameters.
-\lstinputlisting[firstline=5, lastline=8]{example6.py}
+\lstinputlisting[firstline=5, lastline=8]{\JWcode}
 We have to consider two cases when computing the spectrum, as discussed in the theory section above. In one case, the fermionic system has PBC, while the spins are constrained to the negative spin inversion symmetry sector, while in the second -- the fermion model has APBC and the spin model is considered in the positive spin inversion sector. To this end, we introduce the variables \texttt{zblock} $\in\{\pm 1\}$ and \texttt{PBC} $\in\{\pm 1\}$, where \texttt{PBC} $=-1$ denotes APBC. Note than the only meaningful combinations are $($\texttt{zblock}, \texttt{PBC}$)=(-1,1),(1,-1)$.
-\lstinputlisting[firstline=9, lastline=10]{example6.py}
+\lstinputlisting[firstline=9, lastline=10]{\JWcode}
 Within this loop, the code is divided to two independent parts: first, we compute the spectrum of the TFI system, and then -- that of the equivalent fermionic model. Let us discuss the spins. 
-\lstinputlisting[firstline=11, lastline=11]{example6.py}
+\lstinputlisting[firstline=11, lastline=11]{\JWcode}
 In QuSpin, operators are stored as sparse lists. These lists contain two parts: (i) the lattice sites on which the operator acts together with the coupling strength, which we call a \emph{site-coupling} list, and (ii) the types of the operators involved, i.e.~\emph{operator-string}. For example, the operator $\mathcal{O}=g\sum_{j=0}^{L-1}\sigma^\mu_j$ can be uniquely represented by the site-coupling list \texttt{[[g,0],[g,1],$\dots$,[g,L-1]]}, and the information that it is the Pauli matrix $\mu$. The components lists are nothing but the tuples of the field strength and the site index \texttt{[g,j]}. It is straightforward to generalise this to non-uniform fields \texttt{g$\to $g[j]}. Similarly, any two-body operator $\mathcal{O}=J_{zz}\sum_{j=0}^{L-1}\sigma^\mu_j\sigma^\nu_{j+1}$ can be fully represented by the two sites it acts on, and its coupling strength: \texttt{[J,j,j+1]}. We then stack up these elementary lists together into a the site-coupling list: \texttt{[[J,0,1],[J,1,2],$\dots$,[J,L-2,L-1],[J,L-1,0]]}. 
-\lstinputlisting[firstline=12, lastline=14]{example6.py}
+\lstinputlisting[firstline=12, lastline=14]{\JWcode}
 Notice the way we defined the periodic boundary condition for the spin-spin interaction using the modulo operator \texttt{\%}, which effectively puts a coupling between sites $L-1$ and $0$. We mention in passing that the above procedure generalises so one can define any multi-body local and nonlocal operator using QuSpin. 
 
-In order to specify the types of the on-site single-particle operators, we use operator strings. For instance, the transverse field operator $\mathcal{O}=g\sum_{j=0}^{L-1}\sigma^z_j$ becomes \texttt{['x',h\_field]}, while the two-body interaction is \texttt{['zz',J\_zz]}. It is important to notice that the order of the letters in the operator string corresponds to the order the operators are listed in the site-coupling lists. Putting everything into one final list yields:  
-\lstinputlisting[firstline=15, lastline=16]{example6.py}
-In QuSpin, the user can define both static and dynamic operators. Since this example does not require any time evolution, we postpone the explanation of how to use dynamic lists to Sec.~???, and use an empty list instead.
-\lstinputlisting[firstline=17, lastline=17]{example6.py}
+In order to specify the types of the on-site single-particle operators, we use operator strings. For instance, the transverse field operator $\mathcal{O}=g\sum_{j=0}^{L-1}\sigma^x_j$ becomes \texttt{['x',h\_field]}, while the two-body interaction is \texttt{['zz',J\_zz]}. It is important to notice that the order of the letters in the operator string corresponds to the order the operators are listed in the site-coupling lists. Putting everything into one final list yields:  
+\lstinputlisting[firstline=15, lastline=16]{\JWcode}
+In QuSpin, the user can define both static and dynamic operators. Since this example does not require any time evolution, we postpone the explanation of how to use dynamic lists to Sec.~\ref{subsec:GP_dynamics}, and use an empty list instead.
+\lstinputlisting[firstline=17, lastline=17]{\JWcode}
 The last step before we can construct the Hamiltonian is to build the basis for it. This is done using the basis constructors. For spin systems, we use \texttt{spin\_basis\_1d} which allows to use the operator strings \texttt{'z','+','-'}, and for spin-$1/2$ additionally \texttt{'x','y'}. The first and required argument is the number of sites $L$. Optional arguments are used to parse symmetry sectors. For instance, if we want to construct an operator in the spin-inversion block with quantum number $+1$, we can conveniently do this using the flag \texttt{zblock=1}.
-\lstinputlisting[firstline=18, lastline=19]{example6.py} 
+\lstinputlisting[firstline=18, lastline=19]{\JWcode} 
 Having specified the static and dynamic lists, as well as the basis, building up the Hamiltonian is a one-liner, using the \texttt{hamiltonian} constructor. The first and second compulsory arguments are the static and dynamic list, respectively. Optional arguments include the \texttt{basis}, and the precision or data type \texttt{dtype}. If no basis is passed, the constructor uses \texttt{spin\_basis\_1d} by default. The default data type is \texttt{np.complex128}.
-\lstinputlisting[firstline=20, lastline=21]{example6.py} 
+\lstinputlisting[firstline=20, lastline=21]{\JWcode} 
 The Hamiltonian is stored as a sparse matrix for efficiency. It can be cast to a full array for a more convenient inspection using the attribute \texttt{H.toarray()}. To calculate its spectrum, we use the attribute $H.eigenvalsh()$, which returns all eigenvalues. Other attributes for diagonalisation were discussed in Example 0 [PUT link to github], c.f.~Ref.~\cite{weinberg_17_quspin}.
-\lstinputlisting[firstline=22, lastline=23]{example6.py}
+\lstinputlisting[firstline=22, lastline=23]{\JWcode}
 
 Let us now move to the second part of the loop which defines the fermionic $p$-wave superconductor. We start by defining the site-coupling list local potential
-\lstinputlisting[firstline=24, lastline=26]{example6.py}
+\lstinputlisting[firstline=24, lastline=26]{\JWcode}
 Let us ficus on the case of periodic boundary conditions \texttt{PBC=1} first. 
-\lstinputlisting[firstline=27, lastline=27]{example6.py}
-In the fermion model, we have two types of two-body terms: hopping terms $c^\dagger_{i}c_{i+1} - c_{i}c^\dagger_{i+1}$, and pairing terms $c^\dagger_{i}c^\dagger_{i+1} - c_{i}c_{i+1}$. While QuSpin allows any ordering of the operators, for te sake of completeness we set a convention: the site indices grows to the right. Du to the opposite signs in the terms resulting from the fermion statistics, we have to code the site-coupling lists for all four terms separately. This is analogous to the spin-spin interaction above:
-\lstinputlisting[firstline=28, lastline=32]{example6.py}
+\lstinputlisting[firstline=27, lastline=27]{\JWcode}
+In the fermion model, we have two types of two-body terms: hopping terms $c^\dagger_{i}c_{i+1} - c_{i}c^\dagger_{i+1}$, and pairing terms $c^\dagger_{i}c^\dagger_{i+1} - c_{i}c_{i+1}$. While QuSpin allows any ordering of the operators, for te sake of completeness we set a convention: the site indices grows to the right. Do to the opposite signs in the terms resulting from the fermion statistics, we have to code the site-coupling lists for all four terms separately. This is analogous to the spin-spin interaction above:
+\lstinputlisting[firstline=28, lastline=32]{\JWcode}
 To construct a fermionic operator, we make use of the fermion basis constructor \texttt{fermion\_basis\_1d}. This Once again, we pass the number of sites \texttt{L}. As we explained in the analysis above, we need to consider all odd particle number sectors in the case of PBC. This is done by specifying the particle number sector \texttt{Nf}. 
-\lstinputlisting[firstline=33, lastline=34]{example6.py}
+\lstinputlisting[firstline=33, lastline=34]{\JWcode}
 
 In the case of APBC, we first construct all two-body site-coupling lists as if the boundaries were open, and supplement the APBC links in the end:
-\lstinputlisting[firstline=35, lastline=45]{example6.py}
+\lstinputlisting[firstline=35, lastline=45]{\JWcode}
 The definition of the basis is the same, except that this time, we need all even particle number sectors:
-\lstinputlisting[firstline=46, lastline=47]{example6.py}
+\lstinputlisting[firstline=46, lastline=47]{\JWcode}
 
 As before, we need to specify the type of operators that go in the Hamiltonian using operator string lists. The \texttt{fermion\_basis\_1d} class accepts the following strings \texttt{'+','-','n'}, and additionally the particle-hole symmetrised density operator \texttt{'z'} $=n-1/2$. The static and dynamic lists read as
-\lstinputlisting[firstline=48, lastline=50]{example6.py}
-Constructing and diagonalising the fermion Hamiltonian is the same as for the spin-$1/2$ system. Note that one can disable the automatic built-in checks for particle conservation \texttt{pcon=False} and all other symmetries \texttt{check\_symm=False} if one wishes to suppress the checks. 
-\lstinputlisting[firstline=51, lastline=55]{example6.py}
+\lstinputlisting[firstline=48, lastline=50]{\JWcode}
+Constructing and diagonalising the fermion Hamiltonian is the same as for the spin-$1/2$ system. Note that one can disable the automatic built-in checks for particle conservation \texttt{check\_pcon=False} and all other symmetries \texttt{check\_symm=False} if one wishes to suppress the checks. 
+\lstinputlisting[firstline=51, lastline=55]{\JWcode}
 
 The complete code including the lines that produce Fig.~\ref{fig:JW} is available in Example Code~\ref{code:ex4}.
 
@@ -328,7 +333,7 @@ The complete code including the lines that produce Fig.~\ref{fig:JW} is availabl
 
 \subsection{Free Particle Systems: the SSH Model}
 
-\label{subsec:free_particle}
+\label{subsec:SSH_model}
 
 This example shows how to
 \begin{itemize}
@@ -370,7 +375,7 @@ C_{ij}(t) = \langle \mathrm{FS}|n_i(t)n_j(0)|\mathrm{FS}\rangle = \langle \mathr
 For simplicity, let us focus on a single unit cell. Figure~??? shows the time evolution of $C_{AA}(t)$ and $C_{AB}(t)$. 
 
 \noindent\emph{Code Analysis---}...
-\lstinputlisting[firstline=1, lastline=55]{example6.py}
+\lstinputlisting[firstline=1, lastline=55]{\JWcode}
 
 The complete code including the lines that produce Fig.~\ref{fig:example3} is available in Example Code~\ref{code:ex3}.
 
@@ -381,6 +386,7 @@ The complete code including the lines that produce Fig.~\ref{fig:example3} is av
 
 
 \subsection{Fermionic Many-body Localization}
+\label{subsec:Fermion_MBL}
 
 This example shows how to:
 \begin{itemize}
@@ -394,18 +400,24 @@ A class of exciting new problems in the field of non-equalibrium physics are tha
 
 Motivated by some recent experiments in cold atomic gasses [CITE Bloch MBL exp] we explore MBL in the context of fermions using QuSpin. The model we will consider is the Fermi-Hubbard model with quenched random disorder which has the following Hamiltonian:
 \begin{equation}
-	H = -t\sum_{\sigma,i=0}^{L-1} c^\dagger_{\sigma i}c_{\sigma i+1} - c_{\sigma i}c^\dagger_{\sigma i+1} +U\sum_{i=0}^L n_{\uparrow i}n_{\downarrow i} + \sum_{\sigma, i=0}^L V_i n_{\sigma i}\label{eq:FM_ham}
+	H = -J\sum_{\sigma,i=0}^{L-1} c^\dagger_{\sigma i}c_{\sigma i+1} - c_{\sigma i}c^\dagger_{\sigma i+1} +U\sum_{i=0}^L n_{\uparrow i}n_{\downarrow i} + \sum_{\sigma, i=0}^L V_i n_{\sigma i}\label{eq:FH_ham}
 \end{equation}
 where $c_{\sigma i}$ and $c^\dagger_{\sigma i}$ is a ferminoic creation and annihilation operators on site $i$ for spin $\sigma$ respectively. We will work in the sector of 1/4 filling for both up and down spins. Preparing an initial configuration of fermions of alternating spin on every other site, we will then measure the sublattice imbalance:
 \begin{equation}
 	I = (N_A-N_B)/N_\mathrm{tot}
 \end{equation}
-where $A$ and $B$ refer to the different sublattices of the chain, as a function of time while evolving with Hamiltonian~\eqref{eq:FH_ham}. If the Hamiltonian is ergodic then this quantity will decay to $0$ in the limit $t\rightarrow\infty$ as all of the sites should be occupied evenly while if the Hamiltonian is MBL then some memory of its initial condition will be retained, and therefore this quantity will be non-zero.
+where $A$ and $B$ refer to the different sublattices of the chain and $N$ is the particle number operator. evolving with Hamiltonian~\eqref{eq:FH_ham} we will calculate its value which will tell us something about the ergodicity(or lack there of) of the Hamiltonian. If the Hamiltonian is ergodic then this quantity will decay to $0$ in the limit $t\rightarrow\infty$ as one would expect in equilibrium while if the Hamiltonian is MBL then some memory of its initial condition will be retained, and therefore this quantity will be non-zero even at infinite times.
 
 Because the Hilbert space dimension grows so quickly for this Hamiltonian we will only consider the dynamics after a finite amount of time, and even with this it is a fairly long calculation to do $L>10$. 
 
+\begin{figure}[t!]
+	\centering
+	\includegraphics[width=0.5\textwidth]{fermion_MBL.pdf}
+	\caption{Sublattice imbalance $I$ as a function of time averaged over 100 disorder realizations for different disorder strengths. This data was taken on a chain of length $L=8$.}
+\end{figure}
+
 \noindent\emph{Code Analysis---}...
-\lstinputlisting[firstline=1, lastline=55]{example9.py}
+\lstinputlisting[firstline=1, lastline=55]{\MBLcode}
 
 
 
@@ -413,14 +425,15 @@ Because the Hilbert space dimension grows so quickly for this Hamiltonian we wil
 
 
 
-\subsection{Interacting Bosons on Translationally Invariant Ladder}
+\subsection{Bose-Hubbard Model on Translationally Invariant Ladder}
+\label{subsec:Bose_Ladder}
 
 This example shows how to:
 \begin{itemize}
-	\item construct Hamiltonians for bosonic systems
-	\item construct ladder Hamiltonians
-	\item using block\_tools module to evolve over several symmetry sectors at once using the block\_ops class
-	\item measure entanglement entropy of ladder system 
+	\item construct Hamiltonians for bosonic systems.
+	\item construct ladder Hamiltonians.
+	\item using block\_ops class to evolve over several symmetry sectors at once.
+	\item measure entanglement entropy of ladder.
 \end{itemize}
 
 \noindent{\emph{Physics Setup---}}In this example we will use QuSpin to solve the dynamics of the Bose-Hubbard model (BHM) on a ladder geometry. The BHM is a minimal model of interacting bosons which is experimentally realizable in cold atom experiments [CITE]. The Hamiltonian is given by:
@@ -429,9 +442,9 @@ This example shows how to:
 \end{equation} 
 where $a_i$ and $a^\dagger_i$ are bosonic creation and annihilation operators on site $i$ respectively and the sum $\langle ij\rangle$ is a sum over nearest neighbors on Ladder. We will consider a half filled ladder of length $L$ with $N=2L$ sites. We will perform a quench where the system starts out in a random product state and let it evolve with Hamiltonian~\eqref{eq:BHM_ham}. We will restrict the local Hilbert space to allow at most 2-particles on a site which is valid in the large $U$ limit. This model is not integrable and so we expect that the system will eventually thermalize so that the occupation is roughly uniform over the entire system. On top of measuring the local density we will also measure the entanglement entropy between the legs of the ladder.
 
-If we consider a translational invariant ladder that implies that the Hamiltonian factorizes into different many-body momentum blocks similar to what was discussed in Sec.~\ref{subsec:free_particle} but slightly different as we consider translations of the many-body fock states as opposed to the single particle states[CITE Anders review]. In this section instead of projecting the operators to momentum space as was done in Sec.~\ref{subsec:free_particle}, we will project the wavefunction to the different symmetry sectors and evolve each of the projections separately under the Hamiltonian for that symmetry sector. Then each of the Block wavefunctions are projected back to the local Fock space basis and summed to recover the evolve state which one can then look at local quantities like the density and entanglement.
-
+If we consider a translational invariant ladder that implies the Hamiltonian factorizes into different many-body momentum blocks similar to what was discussed in Sec.~\ref{subsec:SSH_model} but slightly different as we consider translations of the many-body fock states as opposed to the single particle states[CITE Anders review]. In this section instead of projecting the operators to momentum space as was done in Sec.~\ref{subsec:SSH_model}, we will project the wavefunction to the different symmetry sectors and evolve each of the projections separately under the Hamiltonian for that symmetry sector. Then each of the Block wavefunctions are projected back to the local Fock space basis and summed to recover the evolve state which one can then look at local quantities like the density and entanglement.
 \begin{figure}[t!]
+	\centering
 	\begin{subfigure}[a]{0.496\textwidth}
 		\includegraphics[width=0.9\textwidth]{boson_entropy.pdf}
 		\caption{Entanglement entropy density between the two legs of the ladder as a function of time.}
@@ -443,14 +456,24 @@ If we consider a translational invariant ladder that implies that the Hamiltonia
 	\caption{Showing results from the quench in the BHM. plot (a) shows the half-ladder entanglement entropy density and plot (b) shows the local density on each site as a function of time. The red dots on the entanglement plot shows the time points where the density plots are taken. For this data was taken with $J=1$ and $U=10$.}
 \end{figure}
 
-\noindent\emph{Code Analysis---}...
-\lstinputlisting[firstline=1, lastline=55]{example8.py}
-
-
+\noindent\emph{Code Analysis---} Just as in the previous examples we start out our python script by loading some essential modules needed for the calculation
+\lstinputlisting[firstline=3, lastline=6]{\BHLcode}
+Next we set up the model parameters defining the length of the ladder \texttt{L} chain number of sites \texttt{N=2*L} as well as filling factor for the bosons \texttt{nb}, and the maximum number of states per site \texttt{sps}. The hopping matrix elements $J_\perp$, $J_{\parallel,1}$, and $J_{\parallel,2}$ (see Fig.~\ref{fig:BHL_geometry}\cyan{create figure showing ladder and couplings etc...}), correspond to the python script are variables \texttt{J\_perp}, \texttt{J\_par\_1}, and \texttt{J\_par\_2} respectively.
+\lstinputlisting[firstline=44, lastline=52]{\BHLcode} Next we set up the times at which we would like to solve the Schrödinger equation. Due to the same restrictions on the exponential solver discussed Sec .~\ref{subsec:Fermion_MBL} we will only consider time points which are linearly spaced defined by the variables \texttt{start},\texttt{stop}, and \texttt{num}
+\lstinputlisting[firstline=53, lastline=55]{\BHLcode}
+For bosonic systems we have \texttt{'+'},\texttt{'-'}, and \texttt{'n'} as possible operators to use. In order to set up the Hubbard local interaction we must define two coupling lists for the $U\sum_{i} n_i^2$ and the $-U\sum_{i} n_i$:
+\lstinputlisting[firstline=56, lastline=58]{\BHLcode}
+We also define the hopping lists
+\lstinputlisting[firstline=59, lastline=63]{\BHLcode}
+where we use the \texttt{[...].extend([...])} method to concatenate two lists together\footnote{Note that the \texttt{extend} function is done inplace so if you try to do \texttt{new\_list=list.extend(other\_list)}, \texttt{new\_list} will be \texttt{None} and \texttt{list} will have all of the elements of \texttt{other\_list} appended to it.}. The way the ladder is defined, the even sites correspond to the bottom side while the odds sites are the top part of the ladder, therefore the hopping on the bottom/top runge is defined by \texttt{[J\_par\_...,i,(i+2)\%N]}, while hopping from top to bottom is defined by \texttt{[J\_perp,i,(i+1)\%N]}. Finally we can define the static and dynamic lists
+\lstinputlisting[firstline=64, lastline=71]{\BHLcode}
+which we will not use to construct a \texttt{hamiltonian} object but instead we will use the \texttt{block\_ops} class. The purpose of \texttt{block\_ops} is to provide a simple interface for solving the Schrödinger equation when an initial state may not obey the symmetries of the Hamiltonian which is generating the dynamics. We have seen an example of this in Sec.~\ref{subsec:SSH_model} when trying to measure non-equal time correlation functions of local operators, while in this section we explicitly start out with a state which does not obey translational invariance. Before we construct the \texttt{block\_ops} let us first define a few things which will be used to construct the \texttt{block\_ops} object
+\lstinputlisting[firstline=72, lastline=82]{\BHLcode}
+Firstly, \texttt{blocks} is a list of dictionaries which define the different symmetry sectors to evolve the initial state over\footnote{\texttt{block\_ops} will not evolve a particular symmetry sector if the projection is 0.}.
 
 
 \subsection{The Gross-Pitaevskii Equation and Nonlinear Time Evolution}
-\label{subsec:gen_evolve}
+\label{subsec:GP_dynamics}
 
 This example shows how to
 \begin{itemize}
@@ -491,7 +514,7 @@ One way to find the configuration $\vec\psi_\mathrm{GS}$, is to solve the GPE in
 Once we have the initial state $\vec\psi_\mathrm{GS}$, we evolve it according to the time-dependent GPE, Eq.~\eqref{eq:GPE}, and track down the time evolution of the condensate density $\rho_j(t)=|\psi_j(t)|^2$. Fig.~??? shows the result.
 
 \noindent\emph{Code Analysis---}...
-\lstinputlisting[firstline=1, lastline=55]{example6.py}
+\lstinputlisting[firstline=1, lastline=55]{\JWcode}
 
 The complete code including the lines that produce Fig.~\ref{fig:example3} is available in Example Code~\ref{code:ex3}.
 
@@ -539,7 +562,7 @@ of subsystem A, defined to contain the left half of the chain and $|\mathrm{A}|=
 \end{figure}
 
 \noindent\emph{Code Analysis---}...
-\lstinputlisting[firstline=1, lastline=55]{example7.py}
+\lstinputlisting[firstline=1, lastline=55]{\Spincode}
 
 The complete code including the lines that produce Fig.~\ref{fig:example3} is available in Example Code~\ref{code:ex3}.
 
@@ -718,7 +741,7 @@ This work was supported by ???
 	In this appendix, we give the complete python scripts for the dix examples discussed in Sec.~\ref{sec:examples}. In case the reader has trouble with the TAB spaces when copying from the code environments below, the scripts can be downloaded from github at: \center{ \href{https://github.com/weinbe58/QuSpin/tree/master/examples}{https://github.com/weinbe58/QuSpin/tree/master/examples}}
 	
 	
-	\lstinputlisting[label=code:ex4,caption=The Spectrum of the Transverse Field Ising Model and the Jordan-Wigner Transformation]{example6.py}
+	\lstinputlisting[label=code:ex4,caption=The Spectrum of the Transverse Field Ising Model and the Jordan-Wigner Transformation]{\JWcode}
 	\newpage
 	%\lstinputlisting[label=code:ex1,caption=Adiabatic Control of Parameters in MBL Phases]{example1.py}
 	%\newpage

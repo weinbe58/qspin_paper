@@ -1,5 +1,4 @@
 from __future__ import print_function, division
-
 import sys,os
 import numpy as np
 from numpy.random import uniform,choice
@@ -10,15 +9,16 @@ from joblib import Parallel,delayed
 import matplotlib.pyplot as plt
 from time import time
 
-
-
 # setting parameters for simulation
-n_jobs = 2 # number of cores to use in calculating realizations
-n_real = 30 # number of realizations
+n_jobs = 4 # number of cores to use in calculating realizations
+n_real = 100 # number of realizations
+n_boot = 100*n_real # number of bootstrap realizations to calculate error
 # physical parameters
-L = 10 # system size
+L = 8 # system size
 N = L//2 # number of particles
-w = 3.0 # disorder strength
+w1 = 1.0 # disorder strength
+w2 = 4.0
+w3 = 10.0 
 J = 1.0 # hopping strength
 U = 5.0 # interaction strength
 k = 0.1 # trap stiffness
@@ -62,7 +62,7 @@ I = hamiltonian([["n|",sublat_list],["|n",sublat_list]],[],basis=basis,**no_chec
 # strings which represent the initial state
 s_up = "".join("1000" for i in range(N_up))
 s_down = "".join("0010" for i in range(N_down))
-print("initial state: |{:s}>(x)|{:s}>".format(s_up,s_down))
+print("H-space size: {:d}, initial state: |{:s}>(x)|{:s}>".format(basis.Ns,s_up,s_down))
 # basis.index accepts strings and returns the index 
 # which corresponds to that state in the basis list
 i_0 = basis.index(s_up,s_down)
@@ -79,7 +79,7 @@ def realization(H_dict,I,psi_0,disorder,start,stop,num,i):
 	# parameters defined in the list
 	H = H_dict.tohamiltonian(parameters)
 	# use exp_op to get the evolution operator
-	U = exp_op(H,a=-1j,start=start,stop=stop,num=num,endpoint=True)
+	U = exp_op(H,a=-1j,start=start,stop=stop,num=num,endpoint=True,iterate=True)
 	psi_t = U.dot(psi_0) # get generator of time evolution
 	# use obs_vs_time to evaluate the dynamics
 	obs_t = obs_vs_time(psi_t,U.grid,dict(I=I))
@@ -89,19 +89,35 @@ def realization(H_dict,I,psi_0,disorder,start,stop,num,i):
 	return obs_t["I"]
 
 # machinery for doing parallel realizations loop
-I_data = np.vstack(Parallel(n_jobs=n_jobs)(delayed(realization)(H_dict,I,psi_0,uniform(-w,w,size=L),start,stop,num,i) for i in range(n_real)))
+I_data_1 = np.vstack(Parallel(n_jobs=n_jobs)(delayed(realization)(H_dict,I,psi_0,uniform(-w1,w1,size=L),start,stop,num,i) for i in range(n_real)))
+I_data_2 = np.vstack(Parallel(n_jobs=n_jobs)(delayed(realization)(H_dict,I,psi_0,uniform(-w2,w2,size=L),start,stop,num,i) for i in range(n_real)))
+I_data_3 = np.vstack(Parallel(n_jobs=n_jobs)(delayed(realization)(H_dict,I,psi_0,uniform(-w3,w3,size=L),start,stop,num,i) for i in range(n_real)))
 # calculating mean and error via bootstrap sampling
-I = I_data.mean(axis=0) # get mean value of I
-n_boot = 100*n_real
-bootstrap_gen = (I_data[choice(n_real,n_real)].mean(axis=0) for i in range(n_boot)) # generate bootstrap samples
-sq_fluc_gen = ((bootstrap-I)**2 for bootstrap in bootstrap_gen) # generate the fluctuations about the mean of I
-dI = np.sqrt(sum(sq_fluc_gen)/n_boot) # error is calculated as the squareroot of mean fluctuations
+I_1 = I_data_1.mean(axis=0) # get mean value of I
+I_2 = I_data_2.mean(axis=0) 
+I_3 = I_data_3.mean(axis=0) 
+# generate bootstrap samples
+bootstrap_gen_1 = (I_data_1[choice(n_real,n_real)].mean(axis=0) for i in range(n_boot)) 
+bootstrap_gen_2 = (I_data_2[choice(n_real,n_real)].mean(axis=0) for i in range(n_boot)) 
+bootstrap_gen_3 = (I_data_3[choice(n_real,n_real)].mean(axis=0) for i in range(n_boot)) 
+# generate the fluctuations about the mean of I
+sq_fluc_gen_1 = ((bootstrap-I_1)**2 for bootstrap in bootstrap_gen_1) 
+sq_fluc_gen_2 = ((bootstrap-I_2)**2 for bootstrap in bootstrap_gen_2)
+sq_fluc_gen_3 = ((bootstrap-I_3)**2 for bootstrap in bootstrap_gen_3) 
+# error is calculated as the squareroot of mean fluctuations
+dI_1 = np.sqrt(sum(sq_fluc_gen_1)/n_boot) 
+dI_2 = np.sqrt(sum(sq_fluc_gen_2)/n_boot) 
+dI_3 = np.sqrt(sum(sq_fluc_gen_3)/n_boot) 
+
 # plot imbalance with error bars
 fig = plt.figure()
 plt.xlabel("$t/J$",fontsize=18)
 plt.ylabel("$\mathcal{I}$",fontsize=18)
 plt.grid(True)
 plt.tick_params(labelsize=16)
-plt.errorbar(times,I,dI,marker=".")
-fig.savefig('example9.pdf', bbox_inches='tight')
+plt.errorbar(times,I_1,dI_1,marker=".",label="w={:.2f}".format(w1))
+plt.errorbar(times,I_2,dI_2,marker=".",label="w={:.2f}".format(w2))
+plt.errorbar(times,I_3,dI_3,marker=".",label="w={:.2f}".format(w3))
+plt.legend(loc=0)
+fig.savefig('fermion_MBL.pdf', bbox_inches='tight')
 plt.show()

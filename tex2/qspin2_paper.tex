@@ -413,7 +413,7 @@ Because the Hilbert space dimension grows so quickly for this Hamiltonian we wil
 \begin{figure}[t!]
 	\centering
 	\includegraphics[width=0.5\textwidth]{fermion_MBL.pdf}
-	\caption{Sublattice imbalance $I$ as a function of time averaged over 100 disorder realizations for different disorder strengths. This data was taken on a chain of length $L=8$.}
+	\caption{Sublattice imbalance $I$ as a function of time averaged over 1000 disorder realizations for different disorder strengths. This data was taken on a chain of length $L=8$.}
 \end{figure}
 
 \noindent\emph{Code Analysis---}...
@@ -457,19 +457,27 @@ If we consider a translational invariant ladder that implies the Hamiltonian fac
 \end{figure}
 
 \noindent\emph{Code Analysis---} Just as in the previous examples we start out our python script by loading some essential modules needed for the calculation
-\lstinputlisting[firstline=3, lastline=6]{\BHLcode}
+\lstinputlisting[firstline=2, lastline=5]{\BHLcode}
 Next we set up the model parameters defining the length of the ladder \texttt{L} chain number of sites \texttt{N=2*L} as well as filling factor for the bosons \texttt{nb}, and the maximum number of states per site \texttt{sps}. The hopping matrix elements $J_\perp$, $J_{\parallel,1}$, and $J_{\parallel,2}$ (see Fig.~\ref{fig:BHL_geometry}\cyan{create figure showing ladder and couplings etc...}), correspond to the python script are variables \texttt{J\_perp}, \texttt{J\_par\_1}, and \texttt{J\_par\_2} respectively.
-\lstinputlisting[firstline=44, lastline=52]{\BHLcode} Next we set up the times at which we would like to solve the Schrödinger equation. Due to the same restrictions on the exponential solver discussed Sec .~\ref{subsec:Fermion_MBL} we will only consider time points which are linearly spaced defined by the variables \texttt{start},\texttt{stop}, and \texttt{num}
-\lstinputlisting[firstline=53, lastline=55]{\BHLcode}
+\lstinputlisting[firstline=38, lastline=46]{\BHLcode} Next we set up the times at which we would like to solve the Schrödinger equation. Due to the same restrictions on the exponential solver discussed Sec .~\ref{subsec:Fermion_MBL} we will only consider time points which are linearly spaced defined by the variables \texttt{start},\texttt{stop}, and \texttt{num}
+\lstinputlisting[firstline=47, lastline=49]{\BHLcode}
 For bosonic systems we have \texttt{'+'},\texttt{'-'}, and \texttt{'n'} as possible operators to use. In order to set up the Hubbard local interaction we must define two coupling lists for the $U\sum_{i} n_i^2$ and the $-U\sum_{i} n_i$:
-\lstinputlisting[firstline=56, lastline=58]{\BHLcode}
+\lstinputlisting[firstline=50, lastline=52]{\BHLcode}
 We also define the hopping lists
-\lstinputlisting[firstline=59, lastline=63]{\BHLcode}
-where we use the \texttt{[...].extend([...])} method to concatenate two lists together\footnote{Note that the \texttt{extend} function is done inplace so if you try to do \texttt{new\_list=list.extend(other\_list)}, \texttt{new\_list} will be \texttt{None} and \texttt{list} will have all of the elements of \texttt{other\_list} appended to it.}. The way the ladder is defined, the even sites correspond to the bottom side while the odds sites are the top part of the ladder, therefore the hopping on the bottom/top runge is defined by \texttt{[J\_par\_...,i,(i+2)\%N]}, while hopping from top to bottom is defined by \texttt{[J\_perp,i,(i+1)\%N]}. Finally we can define the static and dynamic lists
-\lstinputlisting[firstline=64, lastline=71]{\BHLcode}
-which we will not use to construct a \texttt{hamiltonian} object but instead we will use the \texttt{block\_ops} class. The purpose of \texttt{block\_ops} is to provide a simple interface for solving the Schrödinger equation when an initial state may not obey the symmetries of the Hamiltonian which is generating the dynamics. We have seen an example of this in Sec.~\ref{subsec:SSH_model} when trying to measure non-equal time correlation functions of local operators, while in this section we explicitly start out with a state which does not obey translational invariance. Before we construct the \texttt{block\_ops} let us first define a few things which will be used to construct the \texttt{block\_ops} object
-\lstinputlisting[firstline=72, lastline=82]{\BHLcode}
-Firstly, \texttt{blocks} is a list of dictionaries which define the different symmetry sectors to evolve the initial state over\footnote{\texttt{block\_ops} will not evolve a particular symmetry sector if the projection is 0.}.
+\lstinputlisting[firstline=53, lastline=57]{\BHLcode}
+where we use the \texttt{list\_1.extend(list\_2)} method to concatenate two lists together\footnote{Note that the \texttt{extend} function is done inplace so if you try to do \texttt{new\_list=list\_1.extend(list\_2)}, \texttt{new\_list} will be \texttt{None} and \texttt{list\_1} will have all of the elements of \texttt{list\_2} appended to it.}. The way the ladder is defined, the even sites correspond to the bottom side while the odds sites are the top part of the ladder, therefore the hopping on the bottom/top runge is defined by \texttt{[J\_par\_...,i,(i+2)\%N]}, while hopping from top to bottom is defined by \texttt{[J\_perp,i,(i+1)\%N]}. Finally we can define the static and dynamic lists which we will not use to construct a \texttt{hamiltonian} object but instead we will use the \texttt{block\_ops} class.
+\lstinputlisting[firstline=58, lastline=65]{\BHLcode}
+ The purpose of \texttt{block\_ops} is to provide a simple interface for solving the Schrödinger equation when an initial state may not obey the symmetries of the Hamiltonian which is generating the dynamics. We have seen an example of this in Sec.~\ref{subsec:SSH_model} when trying to measure non-equal space-time correlation functions of local operators in a translationally invariant system, while in this section we explicitly start out with a state which does not obey translational invariance. To construct the \texttt{block\_ops} object we use the follow set of code
+\lstinputlisting[firstline=66, lastline=72]{\BHLcode}
+Firstly, \texttt{blocks} is a list of dictionaries which define the different symmetry sectors to evolve the initial state over\footnote{\texttt{block\_ops} will not evolve a particular symmetry sector if the projection is 0.}. Secondly \texttt{basis\_args} and \texttt{basis\_kwargs} define optional arguments which apply to every symmetry sector. Finally \texttt{get\_proj\_kwargs} contains the optional arguments to construct the projectors\footnote{In this case setting \texttt{pcon=True} means that the projector takes the state from the symmetry reduced basis to the fixed particle number basis}. For more information about this class we refer the user to the Documentation. Finally we define the initial state and the local density operators using the \texttt{boson\_basis\_1d} class.
+\lstinputlisting[firstline=73, lastline=85]{\BHLcode}
+Next we can calculate the time dependent states by using the \texttt{expm} function of the \texttt{block\_ops} class
+\lstinputlisting[firstline=86, lastline=88]{\BHLcode}
+We define this function to have almost identical arguments as that of the \texttt{exp\_op} class, but with some major exceptions. For one, because the hamiltonian factorizes the evolution over each block can be done separately (e.g. just trivially loop through them sequentially), but in some cases where there are a lot of small blocks like in a single particle Hamiltonian, then it actually makes sense to calculate the matrix exponential in block diagonal form which is why we added the optional argument \texttt{block\_diag} which toggles between these two options. Another option we have put in allows the user to spawn multiply python processes to do split up the work of doing the calculations for different blocks simultaneously, by setting \texttt{n\_jobs} to be greater than 1. On most systems these processes will be distributed over multiple CPUs which can speed up the calculations if the resources are there. This also works on conjunction with the \texttt{block\_diag} where each process creates its own block diagonal matrix for the calculation. Once all the calculations for each block are completed the results are then combined and projected to the local Fock basis. Finally, with the time dependent states calculated we can calculate the expectation values and entanglement entropy. 
+\lstinputlisting[firstline=89, lastline=93]{\BHLcode}
+In the newer versions of QuSpin we have moved the entanglement entropy calculations to the basis classes themselves (keeping of course backwards compatible functions from older versions), the rational being that this calculation is highly dependent on the type of system one is studying. Here we show how to use to use the basis function to calculate the entanglement entropy but this function can also calculate the reduced density matrix and its eigenvalues for pure and mixed states. Once again we refer the reader to the Documentation to learn more about how to use this function. 
+
+
 
 
 \subsection{The Gross-Pitaevskii Equation and Nonlinear Time Evolution}

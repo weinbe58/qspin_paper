@@ -79,8 +79,8 @@ n_i_0=n_i.matrix_ele(psi_0,psi_0,diagonal=True) # expectation of n_i at t=0
 correlators=np.zeros(t.shape+psi_0.shape[1:])
 
 for i, (psi,psi_n) in enumerate( zip(psi_t,psi_n_t) ):
-	correlators[i,:]= ( n_f.matrix_ele(psi,psi_n,diagonal=True) \
-						 - n_f.matrix_ele(psi, psi,diagonal=True)*n_i_0  ).real
+	correlators[i,:]= (   n_f.matrix_ele(psi,psi_n,diagonal=True) \
+					    - n_f.matrix_ele(psi,psi,diagonal=True)*n_i_0  ).real
 
 
 

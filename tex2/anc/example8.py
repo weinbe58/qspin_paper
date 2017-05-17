@@ -1,15 +1,11 @@
 from __future__ import print_function, division
-
 from quspin.operators import hamiltonian # Hamiltonians and operators
 from quspin.basis import boson_basis_1d # bosonic Hilbert space
 from quspin.tools.block_tools import block_ops # tool for doing dynamics over symmetry blocks
 import numpy as np # general math functions
-
 import matplotlib.pyplot as plt # plotting
 import matplotlib.animation as animation # animating movie of dynamics
-
 """ schematic of how the ladder lattic is set up
-
 coupling parameters:
 -: J_par_1
 ^: J_par_2
@@ -25,7 +21,6 @@ translations (i -> i+2):
    |   |   |   |   | 
  - 8 - 0 - 2 - 4 - 6 -
 
-
 if J_par_1 same as J_par_2 then one can use parity
 
 regular chain parity (i -> N - i):
@@ -37,7 +32,6 @@ regular chain parity (i -> N - i):
 combination of two ladder parity operators!
 
 ladder parity operators to come soon!
-
 """
 # initial see for random number generator
 np.random.seed(0) # seed is 0 to produce plots from QuSpin2 paper
@@ -69,61 +63,40 @@ static = [
 			["n",int_list_1] # -U n_i
 		]
 dynamic = [] # no dynamic operators
-# creating list which contains the blocks
-# which the initial state will get projected on to.
-blocks=[dict(kblock=kblock) for kblock in range(L)]
-# tuple containing manditory arguments for boson_basis_1d
-baisis_args = (N,) 
-# optional arguements for boson_basis_1d which are the same for all blocks
-basis_kwargs = dict(nb=nb,sps=sps,a=2)
-# optional arguments for boson_basis_1d.get_proj
-# the function which calculates the projector from the
-# symmetry reduced basis to the non-symmetry reduced basis
-# this option is to set it so that th
-get_proj_kwargs = dict(pcon=True)
-# creating block_ops object to symmetry block calculation.
+##### creating block_ops object
+blocks=[dict(kblock=kblock) for kblock in range(L)] # blocks to project on to
+baisis_args = (N,) # boson_basis_1d manditory arguments
+basis_kwargs = dict(nb=nb,sps=sps,a=2) # boson_basis_1d optional args
+get_proj_kwargs = dict(pcon=True) # set projection to full particle basis
 U_block = block_ops(blocks,static,dynamic,boson_basis_1d,baisis_args,np.complex128,
 					basis_kwargs=basis_kwargs,get_proj_kwargs=get_proj_kwargs)
-
-# setting up basis for local fock basis
+##### setting up basis for local fock basis
 basis = boson_basis_1d(N,nb=nb,sps=sps)
-# set up initial state
+##### set up initial state
 i0 = np.random.randint(basis.Ns) # pick random state from basis set
 psi = np.zeros(basis.Ns,dtype=np.float64)
 psi[i0] = 1.0
-# print info about setup
+##### print info about setup
 state_str = "".join(str(int((basis[i0]//basis.sps**i)%basis.sps)) for i in range(N))
 print("total H-space size: {}, initial state: |{}>".format(basis.Ns,state_str))
-
-# calculating the evolved states
+##### calculating the evolved states
 n_jobs = 4 # increase this to see if calculation runs faster!
 psi_t = U_block.expm(psi,start=start,stop=stop,num=num,block_diag=False,n_jobs=n_jobs)
-
-
+##### setting up observables
 sub_sys_A = range(0,N,2) # bottom side of ladder 
-# observables
 no_checks = dict(check_herm=False,check_symm=False,check_pcon=False)
 n_list = [hamiltonian([["n",[[1.0,i]]]],[],basis=basis,dtype=np.float64,**no_checks) for i in range(N)]
-
-# calculating entanglement entropy one state at a time 
-# this is more memory efficient and will only very slightly
-# slow down the calculation
-ent_t = np.fromiter((basis.ent_entropy(psi,sub_sys_A=sub_sys_A)["Sent_A"]/L for psi in psi_t.T[:]),dtype=np.float64,count=num)
-# ent_entropy also is also vectorized for small system sizes with lots of time points. 
-# ent_t = basis.ent_entropy(psi_t,sub_sys_A=sub_sys_A)["Sent_A"]/L
-
-# calculate the expectation value of the local density as a function of time.
+##### calculating entanglement entropy 
+ent_gen = (basis.ent_entropy(psi,sub_sys_A=sub_sys_A)["Sent_A"]/L for psi in psi_t.T[:])
+ent_t = np.fromiter(ent_gen,dtype=np.float64,count=num)
 expt_n_t = np.vstack([n.expt_value(psi_t).real for n in n_list]).T
-
 # reshape data for plotting
 n_t = np.zeros((num,2,L))
 n_t[:,0,:] = expt_n_t[:,0::2]
 n_t[:,1,:] = expt_n_t[:,1::2]
-
 # plotting static figures
-#"""
+"""
 fig, ax = plt.subplots(nrows=5,ncols=1)
-
 im=[]
 im_ind = []
 for i,t in enumerate(np.logspace(-1,np.log10(stop-1),5,base=10)):
@@ -131,7 +104,6 @@ for i,t in enumerate(np.logspace(-1,np.log10(stop-1),5,base=10)):
 	im_ind.append(j)
 	im.append(ax[i].imshow(n_t[j],cmap="hot",vmax=n_t.max(),vmin=0))
 	ax[i].tick_params(labelbottom=False,labelleft=False)
-
 cax = fig.add_axes([0.85, 0.1, 0.03, 0.8])
 fig.colorbar(im[2],cax)
 plt.savefig("boson_density.pdf")
@@ -143,32 +115,23 @@ plt.ylabel("$s_\mathrm{ent}(t)$",fontsize=20)
 plt.grid()
 plt.savefig("boson_entropy.pdf")
 plt.show()
-#"""
-
-# setting up two plots to animate side by side
 """
+# setting up two plots to animate side by side
+#"""
 fig, (ax1,ax2) = plt.subplots(1,2)
 fig.set_size_inches(10, 5)
-
 ax1.set_xlabel(r"$t/J$",fontsize=18)
 ax1.set_ylabel(r"$s_\mathrm{ent}$",fontsize=18)
-
 ax1.grid()
 line1, = ax1.plot(times, ent_t, lw=2)
 line1.set_data([],[])
-
-
 im = ax2.matshow(n_t[0],cmap="hot")
 fig.colorbar(im)
-
-
 def run(i): # function to update frame
 	# set new data for plots
 	line1.set_data(times[:i],ent_t[:i])
 	im.set_data(n_t[i])
-
 	return im, line1
-
 ani = animation.FuncAnimation(fig, run, range(num),interval=50)
 plt.show()
-"""
+#"""

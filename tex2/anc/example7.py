@@ -6,7 +6,6 @@ from quspin.basis import spin_basis_1d
 from quspin.tools.measurements import obs_vs_time
 import matplotlib.pyplot as plt
 import sys,os
-
 # user defined generator
 # generates stroboscopic dynamics 
 def evolve_gen(psi0,nT,*U_list):
@@ -15,22 +14,19 @@ def evolve_gen(psi0,nT,*U_list):
 		for U in U_list: # loop over unitaries
 			psi0 = U.dot(psi0)
 		yield psi0
-
 # frequency and period for driving.
 omega = 2
 T = 2*np.pi/omega 
 nT = 200 # number of periods to evolve to.
 times = np.arange(0,nT+1,1)*T
-
 L_1 = 18 # length of chain for spin 1/2
 L_2 = 11 # length of chain for spin 1
-
+###### setting up basis ######
 basis_1 = spin_basis_1d(L_1,S="1/2",kblock=0,pblock=1,zblock=1) # spin 1/2 basis
 basis_2 = spin_basis_1d(L_2,S="1"  ,kblock=0,pblock=1,zblock=1) # spin 1 basis
 # print information about the basis
 print("S = {S:3s}, L = {L:2d}, Size of H-space: {Ns:d}".format(S="1/2",L=L_1,Ns=basis_1.Ns))
 print("S = {S:3s}, L = {L:2d}, Size of H-space: {Ns:d}".format(S="1"  ,L=L_2,Ns=basis_2.Ns))
-
 # setting up coupling lists
 Jzz_1 = [[-1.0,i,(i+1)%L_1] for i in range(L_1)]
 hx_1  = [[-1.0,i] for i in range(L_1)]
@@ -66,7 +62,6 @@ s_p_2 = np.log(3)-3.0**(-L_2//2-L_2)/(2*(L_2//2))
 # calculating the entanglement entropy density
 Sent_time_1 = basis_1.ent_entropy(Obs_1_t["psi_t"],sub_sys_A=range(L_1//2))["Sent_A"]/(L_1//2)
 Sent_time_2 = basis_2.ent_entropy(Obs_2_t["psi_t"],sub_sys_A=range(L_2//2))["Sent_A"]/(L_2//2)
-
 #plotting results
 plt.plot(times/T,(Obs_1_t["E"]-E_1_min)/(-E_1_min),marker='.',markersize=5,label="$S=1/2$")
 plt.plot(times/T,(Obs_2_t["E"]-E_2_min)/(-E_2_min),marker='.',markersize=5,label="$S=1$")
@@ -75,14 +70,11 @@ plt.ylabel("$Q(t)$",fontsize=20)
 plt.xlabel("$t/T$",fontsize=20)
 plt.savefig("TFIM_Q.pdf")
 plt.figure()
-
 plt.plot(times/T,Sent_time_1/s_p_1,marker='.',markersize=5,label="$S=1/2$")
 plt.plot(times/T,Sent_time_2/s_p_2,marker='.',markersize=5,label="$S=1$")
 plt.grid()
 plt.ylabel("$s_{\mathrm{ent}}(t)/s_\mathrm{Page}$",fontsize=20)
 plt.xlabel("$t/T$",fontsize=20)
 plt.legend(loc=0,fontsize=16)
-
 plt.savefig("TFIM_S.pdf")
 plt.show()
-

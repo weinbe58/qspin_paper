@@ -1,5 +1,4 @@
 from __future__ import print_function, division
-
 from quspin.operators import hamiltonian,exp_op,ops_dict # Hamiltonians and other operators
 from quspin.basis import tensor_basis,fermion_basis_1d # fermion and tensor Hilbert spaces
 from quspin.tools.measurements import obs_vs_time # function to calculating dynamics
@@ -8,7 +7,6 @@ from numpy.random import uniform,choice # tools for doing random sampling
 from joblib import Parallel,delayed # tools for doing
 from time import time # tool for calculating computation time
 import matplotlib.pyplot as plt # plotting
-
 # setting parameters for simulation
 n_jobs = 2 # number of cores to use in calculating realizations
 n_real = 1000 # number of realizations
@@ -85,7 +83,6 @@ def realization(H_dict,I,psi_0,disorder,start,stop,num,i):
 	print("realization {}/{} completed in {:.2f} s".format(i+1,n_real,time()-ti))
 	# return observable values.
 	return obs_t["I"]
-
 # machinery for doing parallel realizations loop
 I_data_1 = np.vstack(Parallel(n_jobs=n_jobs)(delayed(realization)(H_dict,I,psi_0,uniform(-w1,w1,size=L),start,stop,num,i) for i in range(n_real)))
 I_data_2 = np.vstack(Parallel(n_jobs=n_jobs)(delayed(realization)(H_dict,I,psi_0,uniform(-w2,w2,size=L),start,stop,num,i) for i in range(n_real)))
@@ -106,7 +103,6 @@ sq_fluc_gen_3 = ((bootstrap-I_3)**2 for bootstrap in bootstrap_gen_3)
 dI_1 = 2.0*np.sqrt(sum(sq_fluc_gen_1)/n_boot) 
 dI_2 = 2.0*np.sqrt(sum(sq_fluc_gen_2)/n_boot) 
 dI_3 = 2.0*np.sqrt(sum(sq_fluc_gen_3)/n_boot) 
-
 # plot imbalance with error bars
 fig = plt.figure()
 plt.xlabel("$t/J$",fontsize=18)

@@ -1,28 +1,19 @@
-from __future__ import print_function, division
-
-import sys,os
-import argparse
-
-qspin_path = os.path.join(os.getcwd(),"../")
-sys.path.insert(0,qspin_path)
-
 from quspin.operators import hamiltonian,exp_op # Hamiltonians and operators
 from quspin.basis import fermion_basis_1d # Hilbert space spin basis
 from quspin.tools.block_tools import block_diag_hamiltonian # block diagonalisation tool
 import numpy as np # generic math functions
 import matplotlib.pyplot as plt
-try: # import python 3 zip function in python 2 and pass if python 3
+try: # import python 3 zip function in python 2 and pass if using python 3
     import itertools.izip as zip
 except ImportError:
     pass 
-	
-
-
-# define model params
-L=64 # system size
-J=1.0 #uniform hopping
-deltaJ=0.1 # hopping difference
+##### define model parameters #####
+L=4 # system size
+J=1.0 # uniform hopping contribution
+deltaJ=0.1 # bond dimerisation
 Delta=0.0 # staggered potential
+beta=1.0/100.0 # set inverse temperature for Fermi-Dirac distribution
+##### construct single-particle Hamiltonian #####
 # define site-coupling lists
 hop_pm=[[-J-deltaJ*(-1)**i,i,(i+1)%L] for i in range(L)] # PBC
 hop_mp=[[+J+deltaJ*(-1)**i,i,(i+1)%L] for i in range(L)] # PBC
@@ -34,61 +25,54 @@ blocks=[dict(Nf=1,kblock=i,a=2) for i in range(L//2)]
 # define static and dynamic lists
 static=[["+-",hop_pm],["-+",hop_mp],['n',stagg_pot]]
 dynamic=[]
-#### calculate Hamiltonian
+# build real-space Hamiltonian
 H=hamiltonian(static,dynamic,basis=basis,dtype=np.float64)
+# diagonalise real-space Hamiltonian
 E,V=H.eigh()
-# define Fourier transform and momentum-space Hamiltonian
-FT,Hblock = block_diag_hamiltonian(blocks,static,dynamic,fermion_basis_1d,basis_args,np.complex128,get_proj_kwargs=dict(pcon=True))
+# compute Fourier transform and momentum-space Hamiltonian
+FT,Hblock = block_diag_hamiltonian(blocks,static,dynamic,fermion_basis_1d,basis_args,np.complex128
+									,get_proj_kwargs=dict(pcon=True))
+# diagonalise momentum-space Hamiltonian
 Eblock,Vblock=Hblock.eigh()
-
-plt.scatter(np.arange(L),E)
-plt.show()
-
+##### prepare the density observables and initial states #####
 # construct Fermi sea
 psi_0=Vblock
-
-
-
-
-
-# construct operator n_{j=0} and n_{j=L/2}
+# construct operators $n_{j=0}$
 n_i_static=[['n',[[1.0,0]]]]
 n_i=hamiltonian(n_i_static,[],basis=basis,dtype=np.float64,check_herm=False,check_pcon=False)
+# construct operators $n_{j=L/2}$
 n_f_static=[['n',[[1.0,L//2]]]]
 n_f=hamiltonian(n_f_static,[],basis=basis,dtype=np.float64,check_herm=False,check_pcon=False)
-# transform n_j to momentum space
+# transform n_j operators to momentum space
 n_i=n_i.rotate_by(FT,generator=False)
 n_f=n_f.rotate_by(FT,generator=False)
-
-
-# evaluate nonequal time correlator <FS|n_f(t) n_i(0)|FS>
+##### evaluate nonequal time correlator <FS|n_f(t) n_i(0)|FS> #####
+# define time vector
 t=np.linspace(0.0,90.0,901)
+# calcualte state acted an by n_i
 psi_n_0=n_i.dot(psi_0)
-
-# evolve via exp_op class (sometimes faster )
+# construct time-evolution operator using exp_op class (sometimes faster)
 U = exp_op(Hblock,a=-1j,start=t.min(),stop=t.max(),num=len(t),iterate=True)
+# evolve states
 psi_t=U.dot(psi_0)
 psi_n_t = U.dot(psi_n_0)
-
-# evolve using Hamiltonian class
+# alternative method for time evolution  using Hamiltonian class
 #psi_t=Hblock.evolve(psi_0,0.0,t,iterate=True)
 #psi_n_t=Hblock.evolve(psi_n_0,0.0,t,iterate=True)
-
 # compute correlator
-n_i_0=n_i.matrix_ele(psi_0,psi_0,diagonal=True) # expectation of n_i at t=0
+n_i_0=n_i.matrix_ele(psi_0,psi_0,diagonal=False) # expectation of n_i at t=0
+# preallocate variable
 correlators=np.zeros(t.shape+psi_0.shape[1:])
-
+# loop over the time-evolved states
 for i, (psi,psi_n) in enumerate( zip(psi_t,psi_n_t) ):
-	correlators[i,:]= (   n_f.matrix_ele(psi,psi_n,diagonal=True) \
-					    - n_f.matrix_ele(psi,psi,diagonal=True)*n_i_0  ).real
+	correlators[i,:]=(  n_f.matrix_ele(psi,psi_n,diagonal=True) \
+					   -n_f.matrix_ele(psi,psi,diagonal=True)*n_i_0  ).real
+# evaluate correlator at finite temperature
+correlator = (correlators/(np.exp(beta*E)+1.0)).sum(axis=-1)
+##### plot data #####
+#plt.scatter(np.arange(L),E)
+#plt.show()
 
-
-
-
-
-# evaluate thermal expectation value
-T=1.0 # set temperature for Fermi-Dirac distribution
-correlator = (correlators/(np.exp(E/T)+1.0)).sum(axis=-1) 
 plt.plot(t,correlator)
 plt.show()
 

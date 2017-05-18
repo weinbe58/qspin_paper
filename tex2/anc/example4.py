@@ -33,7 +33,7 @@ static=[["+-",hopping],["-+",hopping]]
 dynamic=[['n',trap,ramp,ramp_args]]
 # define basis
 basis = boson_basis_1d(L,Nb=1,sps=2)
-#### calculate Hamiltonian
+# build Hamiltonian
 Hsp=hamiltonian(static,dynamic,basis=basis,dtype=np.float64)
 E,V=Hsp.eigsh(time=0.0,k=1,which='SA')
 ##### imaginary-time evolution to compute GS of GPE #####

@@ -8,7 +8,7 @@ try: # import python 3 zip function in python 2 and pass if using python 3
 except ImportError:
     pass 
 ##### define model parameters #####
-L=4 # system size
+L=100 # system size
 J=1.0 # uniform hopping contribution
 deltaJ=0.1 # bond dimerisation
 Delta=0.0 # staggered potential
@@ -63,12 +63,15 @@ psi_n_t = U.dot(psi_n_0)
 n_i_0=n_i.matrix_ele(psi_0,psi_0,diagonal=False) # expectation of n_i at t=0
 # preallocate variable
 correlators=np.zeros(t.shape+psi_0.shape[1:])
+expectations=np.zeros(t.shape+psi_0.shape[1:])
 # loop over the time-evolved states
 for i, (psi,psi_n) in enumerate( zip(psi_t,psi_n_t) ):
-	correlators[i,:]=(  n_f.matrix_ele(psi,psi_n,diagonal=True) \
-					   -n_f.matrix_ele(psi,psi,diagonal=True)*n_i_0  ).real
+	correlators[i,:]=n_f.matrix_ele(psi,psi_n,diagonal=True).real
+	expectations[i,:]=n_f.matrix_ele(psi,psi,diagonal=True)
 # evaluate correlator at finite temperature
-correlator = (correlators/(np.exp(beta*E)+1.0)).sum(axis=-1)
+n_FD=1.0/(np.exp(beta*E)+1.0)
+print((n_FD*correlators).sum(axis=-1).shape, (n_FD*expectations).sum(axis=-1).shape, (n_FD*n_i_0).sum().shape)
+correlator = (n_FD*correlators).sum(axis=-1) - (n_FD*expectations).sum(axis=-1)*(n_FD*n_i_0).sum()
 ##### plot data #####
 #plt.scatter(np.arange(L),E)
 #plt.show()

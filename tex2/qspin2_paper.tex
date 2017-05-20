@@ -458,17 +458,42 @@ Because the Hilbert space dimension grows so quickly for this Hamiltonian we wil
 \begin{figure}[t!]
 	\centering
 	\includegraphics[width=0.5\textwidth]{fermion_MBL.pdf}
-	\caption{Sublattice imbalance $I$ as a function of time averaged over 1000 disorder realizations for different disorder strengths. This data was taken on a chain of length $L=8$.}
+	\caption{Sublattice imbalance $I$ as a function of time averaged over 100 disorder realizations for different disorder strengths. This data was taken on a chain of length $L=8$.}
 \end{figure}
 
-\noindent\emph{Code Analysis---}...
-\lstinputlisting[firstline=1, lastline=55]{\MBLcode}
+\noindent\emph{Code Analysis---} Once again we start out by loading a set of libraries we will need to procede with the calculation of the MBL fermions. 
+\lstinputlisting[firstline=2, lastline=7]{\MBLcode}
+Some of these libraries and functions we have seen before but in this example we introduce the \texttt{ops\_dict} which defines an operator which can be parameterized by many parameters as opposed to the Hamiltonian which is only parameterized by time. Also, in this script we will be doing many different disordered realisations in one simulations, therefore we will use \texttt{NumPy}'s random number library to produce the random sampling. We load \texttt{uniform} to generate the uniformly distributed random potential as well as \texttt{choice} which we will use to estimate the uncertainties of the disorder averages using a bootstrap re-sampling procedure which we will explain later. In order to time how long each realization takes we will use the \texttt{time} function from python's \texttt{time} library. After importing all the required libraries and function we set up the parameters for the simulation including number of realizations, and physical parameters \texttt{J}, \text{U}, number of up and down fermions etc.
+\lstinputlisting[firstline=9, lastline=24]{\MBLcode}
+Next we can set up the basis, introducing here the \texttt{tensor\_basis} class. The \texttt{tensor\_basis} class takes $n$ basis objects which it then uses to construct the matrix elements in 
+\begin{equation}
+\mathcal{H} = \mathcal{H}_1\otimes\mathcal{H}_2\otimes\cdots\otimes\mathcal{H}_n.
+\end{equation}
+Here we will consider the case where we have two Hilbert spaces, one for fermions with spin up and one for fermions with spin down\footnote{to construct a \texttt{tensor\_basis} object in general: \texttt{t\_basis = tensor\_basis(basis\_1,basis\_2,...,basis\_n)}}. 
+\lstinputlisting[firstline=25, lastline=28]{\MBLcode}
+Next we can set up the coupling and operator lists
+\lstinputlisting[firstline=29, lastline=51]{\MBLcode}
+Notice here that the \texttt{"|"} characters is used to separate the operators which belong to the up (left side of tensor product) and down (right side of tensor product) Hilbert spaces in the tensor product. If no string in present the operator is assumed to be the identity. The index list, on the other hand, does not have to have anything separating the two sides of the tensor product it is assumed that the character lines up with the correct site index when the "|" characters are removed. 
+The last lines of the code above we define a python \texttt{dictionary} object for which we add static operator lists as values in the dictionary indexed by a particular string or key. This dictionary is what gets passed into the \texttt{ops\_dict} class which for each key in the dictioanry constructs the operator listed in the state list for that key. Then when one would like to evaluate this operator at a particular set of parameters one uses another dictionary where the same keys index a number which multiples the operator stored at that same key. In this way one can now parameterize the many-body operator in more complicated ways. In this case we define a key for the Hubbard hamiltonian and then keys for the local density operator for both up and down spins on each site. In this way we can then construct any disordered Hamiltonian by specify the disorder at each site. 
+\lstinputlisting[firstline=52, lastline=56]{\MBLcode}
+Here the \texttt{ops\_dict} class is constructed in almost an identical manner as a \texttt{hamiltonian} object with the excpetion that there is no dynamic operators. Next we must construct our initial state with the fermions dispersed over the lattice on every other site. To get the index of the state which this corresponds to one can use the \texttt{index} function of the tensor basis. This function takes a string or integer representing the product state for each of the hilbert spaces and then searches to find the total product state and returns the index which corresponds to this state. 
+\lstinputlisting[firstline=57, lastline=63]{\MBLcode}
 
+Now that the operators are all set up, next we define a function which given a disorder realization of the local potential will calculate the dynamics of $\mathcal{I}$. The syntax to define a function is as follows:
+\lstinputlisting[firstline=66, lastline=69]{\MBLcode}
+The first task is to construct a hamiltonian from the disorder list \texttt{disorder} which is as simple as:
+\lstinputlisting[firstline=69, lastline=75]{\MBLcode}
+using the \texttt{tohamiltonian} function of \texttt{H\_dict}. Once the hamiltonian has been constructed we can construct the \texttt{exp\_op} object out of it and use it to create the generator of time dependent states
+\lstinputlisting[firstline=76, lastline=81]{\MBLcode}
+The function ends by printing the time of executing and returing the value for $I$ as a function of time for this realization
+\lstinputlisting[firstline=82, lastline=85]{\MBLcode}
 
+Now we are all set to run the disorder realizations for the different disorder strengths which in principle can be spilt up over multiple simulations but for completeness we do all of the calculations in one script. 
+\lstinputlisting[firstline=86, lastline=88]{\MBLcode}
+Which after this we then calculate the average and the error using bootstrap re-sampling (See Appendix\ref{app:bootstrap})
+\lstinputlisting[firstline=89, lastline=95]{\MBLcode}
 
-
-
-
+The complete code including the lines that produce Fig.~\ref{fig:example3} is available in Example Code~\ref{code:ex5}.
 
 \subsection{Bose-Hubbard Model on Translationally Invariant Ladder}
 \label{subsec:Bose_Ladder}
@@ -481,7 +506,7 @@ This example shows how to:
 	\item measure entanglement entropy of ladder.
 \end{itemize}
 
-\noindent{\emph{Physics Setup---}}In this example we will use QuSpin to solve the dynamics of the Bose-Hubbard model (BHM) on a ladder geometry. The BHM is a minimal model of interacting bosons which is experimentally realizable in cold atom experiments [CITE]. The Hamiltonian is given by:
+\noindent{\emph{Physics Setup---}} In this example we will use QuSpin to solve the dynamics of the Bose-Hubbard model (BHM) on a ladder geometry. The BHM is a minimal model of interacting bosons which is experimentally realizable in cold atom experiments [CITE]. The Hamiltonian is given by:
 \begin{equation}
 	H_\mathrm{BHM} = -J\sum_{\langle ij\rangle} a_i^\dagger a_j + \mathrm{h.c.} + U\sum_{i}n_i(n_i-1)\label{eq:BHM_ham}
 \end{equation} 

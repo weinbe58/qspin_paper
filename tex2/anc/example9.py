@@ -25,7 +25,7 @@ N_down = N//2 # number of fermions with spin down
 ##### building the two basis to tensor together
 basis_up = fermion_basis_1d(L,Nf=N_up) # up basis
 basis_down = fermion_basis_1d(L,Nf=N_down) # down basis
-basis = tensor_basis(basis_up,basis_down) # spinful fermsions
+basis = tensor_basis(basis_up,basis_down) # spinful fermions
 ##### setting up physical problem
 # creating coupling lists
 hop_right = [[-J,i,i+1] for i in range(L-1)] # hopping to the right OBC

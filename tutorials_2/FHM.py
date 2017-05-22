@@ -17,8 +17,8 @@ print(basis)
 # define site-coupling lists
 hop_right=[[-J,i,(i+1)%L] for i in range(L)] #PBC
 hop_left= [[+J,i,(i+1)%L] for i in range(L)] #PBC 
-pot=[[-mu-0.5*U,i] for i in range(L)] # -\mu \sum_j n_{j \sigma}
-interact=[[0.5*U,i,i] for i in range(L)] # U/2 \sum_j n_{j,up} n_{j,down}
+pot=[[-mu,i] for i in range(L)] # -\mu \sum_j n_{j \sigma}
+interact=[[U,i,i] for i in range(L)] # U/2 \sum_j n_{j,up} n_{j,down}
 # define static and dynamic lists
 static=[
 		['+-|',hop_left],  # up hop left

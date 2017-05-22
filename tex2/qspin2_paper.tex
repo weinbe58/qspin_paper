@@ -354,7 +354,7 @@ Below, we show how one can use QuSpin to study the physics of free fermions in t
 
 Making use of translation invariance, a straightforward Fourier transformation to momentum space, $a_k = \sqrt{2/L}\sum_{j\ \mathrm{even}}^{L-1} \mathrm e^{-i k j}c_{j}$ and $b_k = \sqrt{2/L}\sum_{j\ \mathrm{odd}}^{L-1}\mathrm e^{-i k j} c_{j}$, casts the SSH Hamiltonian in the following form
 \begin{equation}
-H \!=\! \sum_{k\in\mathrm{BZ'}} (a^\dagger_k,b^\dagger_k)^t
+H \!=\! \sum_{k\in\mathrm{BZ'}} (a^\dagger_k,b^\dagger_k)
 \left(\begin{array}{cc}
 \Delta & -(J+\delta J)\mathrm e^{-i k} - (J-\delta J)\mathrm e^{+i k} \\
 -(J+\delta J)\mathrm e^{+i k} - (J-\delta J)\mathrm e^{-i k} & -\Delta
@@ -398,7 +398,7 @@ Defining the fermion basis with the help of the constructor \texttt{fermion\_bas
 We then build the real-valued SSH Hamiltonian in real space by passing the static and dynamic lists, as well as the basis ad the data type, and diagonalise it.
 \lstinputlisting[firstline=26, lastline=29]{\SSHcode}
 
-For translation invariant single-particle models, however, the user might prefer to use momentum space, where the Hamiltonian becomes block diagonal, as we showed above. This can be achieved using QuSpin's \texttt{block\_tools}. The idea behind it is simple: the main purpose is to create the full Hamiltonian in block-diagonal form, where the blocks correspond to pre-defined quantum numbers. In our case, we would like to use momentum or \texttt{kblock}'s. Note that the unit cell in the SSH model contains two sites, which we encode using the variable \texttt{a=2}. Thus, we can create a list of dictionaries \texttt{blocks}, each element of which defines a single symmetry block. If we combine all blocks, we exhaust the full Hilbert space. All other basis arguments, such as the system size, we store in the variable \texttt{basis\_args}. We mention in passing that this procedure is independent of the symmetry, and can e done using all symmetries supported by QuSpin, not only translation.
+For translation invariant single-particle models, however, the user might prefer to use momentum space, where the Hamiltonian becomes block diagonal, as we showed above. This can be achieved using QuSpin's \texttt{block\_tools}. The idea behind it is simple: the main purpose is to create the full Hamiltonian in block-diagonal form, where the blocks correspond to pre-defined quantum numbers. In our case, we would like to use momentum or \texttt{kblock}'s. Note that the unit cell in the SSH model contains two sites, which we encode using the variable \texttt{a=2}. Thus, we can create a list of dictionaries \texttt{blocks}, each element of which defines a single symmetry block. If we combine all blocks, we exhaust the full Hilbert space. All other basis arguments, such as the system size, we store in the variable \texttt{basis\_args}. We mention in passing that this procedure is independent of the symmetry, and can be done using all symmetries supported by QuSpin, not only translation.
 \lstinputlisting[firstline=30, lastline=33]{\SSHcode}
 To create the block-diagonal Hamiltonian, we invoke the \texttt{block\_diag\_hamiltonian} method. It takes both requires and optional arguments, and returns the transformation which block-diagonalises the Hamiltonian (in our case the Fourier transform) and the block-diagonal Hamiltonian object. Required arguments, in order of appearance, are the \texttt{blocks}, the \texttt{static} and \texttt{dynamic} lists, the basis constructor, \texttt{basis\_args}, and the data type. Since we expect the Hamiltonian to contain the Fourier factors $\exp(-ik)$, we know to choose a complex data type. \texttt{block\_diag\_hamiltonian} also accepts some optional arguments, such as the flags for disabling the automatic built-in symmetry checks. More about this function can be found in the documentation, cf.~App.~\ref{app:doc}.
 \lstinputlisting[firstline=34, lastline=36]{\SSHcode}
@@ -445,9 +445,9 @@ A class of exciting new problems in the field of non-equalibrium physics are tha
 
 Motivated by some recent experiments in cold atomic gasses [CITE Bloch MBL exp] we explore MBL in the context of fermions using QuSpin. The model we will consider is the Fermi-Hubbard model with quenched random disorder which has the following Hamiltonian:
 \begin{equation}
-	H = -J\sum_{\sigma,i=0}^{L-1} c^\dagger_{\sigma i}c_{\sigma i+1} - c_{\sigma i}c^\dagger_{\sigma i+1} +U\sum_{i=0}^L n_{\uparrow i}n_{\downarrow i} + \sum_{\sigma, i=0}^L V_i n_{\sigma i}\label{eq:FH_ham}
+	H = -J\sum_{i=0,\sigma}^{L-2} \left(c^\dagger_{i\sigma}c_{i+1,\sigma} - c_{i\sigma}c^\dagger_{i+1,\sigma}\right) +U\sum_{i=0}^{L-1} n_{i\uparrow }n_{i\downarrow } + \sum_{i=0,\sigma}^{L-1} V_i n_{i\sigma}\label{eq:FH_ham}
 \end{equation}
-where $c_{\sigma i}$ and $c^\dagger_{\sigma i}$ is a ferminoic creation and annihilation operators on site $i$ for spin $\sigma$ respectively. We will work in the sector of 1/4 filling for both up and down spins. Preparing an initial configuration of fermions of alternating spin on every other site, we will then measure the sublattice imbalance:
+where $c_{\sigma i}$ and $c^\dagger_{\sigma i}$ is a fermionic creation and annihilation operators on site $i$ for spin $\sigma$ respectively. We will work in the sector of 1/4 filling for both up and down spins. Preparing an initial configuration of fermions of alternating spin on every other site, we will then measure the sublattice imbalance:
 \begin{equation}
 	I = (N_A-N_B)/N_\mathrm{tot}
 \end{equation}

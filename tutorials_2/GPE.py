@@ -16,14 +16,14 @@ sites=np.arange(L)-j0
 J=1.0 # hopping
 U=1.0 # Bose-Hubbard interaction strength
 # dynamic parameters
-omega_trap_i=0.001 # initial chemical potential
-omega_trap_f=0.0001 # final chemical potential
+kappa_trap_i=0.001 # initial chemical potential
+kappa_trap_f=0.0001 # final chemical potential
 t_ramp=40.0/J # set total ramp time
 # ramp protocol
-def ramp(t,omega_trap_i,omega_trap_f,t_ramp):
-	return  (omega_trap_f - omega_trap_i)*t/t_ramp + omega_trap_i
+def ramp(t,kappa_trap_i,kappa_trap_f,t_ramp):
+	return  (kappa_trap_f - kappa_trap_i)*t/t_ramp + kappa_trap_i
 # ramp protocol parameters
-ramp_args=[omega_trap_i,omega_trap_f,t_ramp]
+ramp_args=[kappa_trap_i,kappa_trap_f,t_ramp]
 #
 ##### construct single-particle Hamiltonian #####
 # define site-coupling lists
@@ -100,12 +100,12 @@ for i,psi in enumerate(psi_t):
 	# compute energy
 	E=(Hsp.matrix_ele(psi,psi,time=t[i]) + 0.5*U*np.sum(np.abs(psi)**4) ).real
 	# compute trap
-	omega_trap=ramp(t[i],omega_trap_i,omega_trap_f,t_ramp)*(sites)**2
+	kappa_trap=ramp(t[i],kappa_trap_i,kappa_trap_f,t_ramp)*(sites)**2
 	# plot wave function
 	plt.plot(sites, abs(psi0)**2, color='r',marker='s',alpha=0.2
 								,label='$|\\psi_{\\mathrm{GS},j}|^2$')
 	plt.plot(sites, abs(psi)**2, color='b',marker='o',label='$|\\psi_j(t)|^2$')
-	plt.plot(sites, omega_trap,'--',color='g',label='$\\mathrm{trap}$')
+	plt.plot(sites, kappa_trap,'--',color='g',label='$\\mathrm{trap}$')
 	plt.ylim([-0.01,max(abs(psi0)**2)+0.01])
 	plt.xlabel('$\\mathrm{lattice\\ sites}$',fontsize=14)
 	plt.title('$Jt=%0.2f,\\ E(t)-E_\\mathrm{GS}=%0.4fJ$'%(t[i],E-E_GS),fontsize=14)
@@ -128,12 +128,12 @@ for i,psi in enumerate(psi_sp_t):
 	# compute energy
 	E=Hsp.matrix_ele(psi,psi,time=t[i]).real
 	# compute trap
-	omega_trap=ramp(t[i],omega_trap_i,omega_trap_f,t_ramp)*(sites)**2
+	kappa_trap=ramp(t[i],kappa_trap_i,kappa_trap_f,t_ramp)*(sites)**2
 	# plot wave function
 	plt.plot(sites, abs(psi0)**2, color='r',marker='s',alpha=0.2
 								,label='$|\\psi_{\\mathrm{GS},j}|^2$')
 	plt.plot(sites, abs(psi)**2, color='b',marker='o',label='$|U(t,0)|\\psi_{\\mathrm{GS},j}\\rangle|^2$')
-	plt.plot(sites, omega_trap,'--',color='g',label='$\\mathrm{trap}$')
+	plt.plot(sites, kappa_trap,'--',color='g',label='$\\mathrm{trap}$')
 	plt.ylim([-0.01,2*max(abs(phi0)**2)+0.01])
 	plt.xlabel('$\\mathrm{lattice\\ sites}$',fontsize=14)
 	plt.title('$Jt=%0.2f,\\ E(t)-E_\\mathrm{GS}=%0.4fJ$'%(t[i],E-E_GS),fontsize=14)

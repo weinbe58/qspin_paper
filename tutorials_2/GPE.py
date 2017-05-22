@@ -40,7 +40,7 @@ E,V=Hsp.eigsh(time=0.0,k=1,which='SA')
 #
 #########################################################
 ##### imaginary-time evolution to compute GS of GPE #####
-#########################################################
+################################################### ######
 def GPE_imag_time(tau,phi,Hsp,U):
 	"""
 	This function solves the real-valued GPE in imaginary time:

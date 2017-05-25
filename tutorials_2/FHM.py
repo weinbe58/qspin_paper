@@ -32,4 +32,4 @@ static=[
 dynamic=[]
 # build Hamiltonian
 no_checks = dict(check_pcon=False,check_symm=False,check_herm=False)
-H=hamiltonian(static,dynamic,basis=basis,dtype=np.float64,check_pcon=False)
+H=hamiltonian(static,dynamic,basis=basis,dtype=np.float64,**no_checks)

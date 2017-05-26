@@ -430,70 +430,81 @@ The complete code including the lines that produce Fig.~\ref{fig:example3} is av
 
 
 
-\subsection{Fermionic Many-body Localization}
+\subsection{Many-Body Localization in the Fermi-Hubbard Model}
 \label{subsec:Fermion_MBL}
 
 This example shows how to:
 \begin{itemize}
-	\item construct Hamiltonians for spinful fermions using the tensor\_basis class.
-	\item how to use ops\_dict class to construct Hamiltonians with varying parameters.
+	\item construct Hamiltonians for spinful fermions using the \texttt{tensor\_basis} class.
+	\item how to use \texttt{ops\_dict()} class to construct Hamiltonians with varying parameters.
 	\item use new basis functionality to construct simple product states
-	\item use obs\_vs\_time functionality to measure observables as a function of time
+	\item use \texttt{obs\_vs\_time} functionality to measure observables as a function of time
 \end{itemize}
 
-A class of exciting new problems in the field of non-equalibrium physics are that of the Many-body localzation (MBL) transition. The MBL transition is a dynamical phase transition in the eigenstates of a many-body Hamiltonian. Driven primarily by quenched disorder, the transition occurs is distinguished by ergodic eigenstates in the weak disorder limit and non-ergodic eigenstates in the strong disorder limit. The MBL phase is reminiscent of integrable systems as one can construct quasi-local integrals of motion in the MBL phase, but these integrals of motion are much more robust in the sense that they are not sensitive to small perturbations are is the case in many classes of integrable systems[CITE MBL misc].
+A class of exciting new problems in the field of non-equalibrium physics is that of Many-body localised (MBL) models. The MBL transition is a dynamical phase transition in the eigenstates of a many-body Hamiltonian. Driven primarily by quenched disorder, the transition is distinguished by the system having ergodic eigenstates in the weak disorder limit and non-ergodic eigenstates in the strong disorder limit. The MBL phase is reminiscent of integrable systems as one can construct quasi-local integrals of motion, but these integrals of motion are much more robust in the sense that they are not sensitive to small perturbations as is the case in many classes of integrable systems[CITE MBL misc].
 
-Motivated by some recent experiments in cold atomic gasses [CITE Bloch MBL exp] we explore MBL in the context of fermions using QuSpin. The model we will consider is the Fermi-Hubbard model with quenched random disorder which has the following Hamiltonian:
+Motivated by recent experiments in cold atomic gasses [CITE Bloch MBL \cyan{I think there are a few others too}] we explore MBL in the context of fermions using QuSpin. The model we will consider is the Fermi-Hubbard model with quenched random disorder which has the following Hamiltonian:
 \begin{equation}
 	H = -J\sum_{i=0,\sigma}^{L-2} \left(c^\dagger_{i\sigma}c_{i+1,\sigma} - c_{i\sigma}c^\dagger_{i+1,\sigma}\right) +U\sum_{i=0}^{L-1} n_{i\uparrow }n_{i\downarrow } + \sum_{i=0,\sigma}^{L-1} V_i n_{i\sigma}\label{eq:FH_ham}
 \end{equation}
-where $c_{\sigma i}$ and $c^\dagger_{\sigma i}$ is a fermionic creation and annihilation operators on site $i$ for spin $\sigma$ respectively. We will work in the sector of 1/4 filling for both up and down spins. Preparing an initial configuration of fermions of alternating spin on every other site, we will then measure the sublattice imbalance:
+where $c_{i\sigma }$ and $c^\dagger_{i\sigma }$ are the fermionic creation and annihilation operators on site $i$ for spin $\sigma$, respectively. We will work in the sector of $1/4$ filling for both up and down spins. Preparing an initial configuration of fermions of alternating spin on every other site, we will then measure the sublattice imbalance [CITE exp]:
 \begin{equation}
 	I = (N_A-N_B)/N_\mathrm{tot}
 \end{equation}
-where $A$ and $B$ refer to the different sublattices of the chain and $N$ is the particle number operator. evolving with Hamiltonian~\eqref{eq:FH_ham} we will calculate its value which will tell us something about the ergodicity(or lack there of) of the Hamiltonian. If the Hamiltonian is ergodic then this quantity will decay to $0$ in the limit $t\rightarrow\infty$ as one would expect in equilibrium while if the Hamiltonian is MBL then some memory of its initial condition will be retained, and therefore this quantity will be non-zero even at infinite times.
+where $A$ and $B$ refer to the different sublattices of the chain and $N$ is the particle number. Evolving the initial state under the Hamiltonian~\eqref{eq:FH_ham} we will calculate the time dependence of the imbalance which will give us information about the ergodicity of the Hamiltonian (or the lack thereof). If the Hamiltonian is ergodic then this quantity will decay to $0$ in the limit $t\rightarrow\infty$ as one would expect due to thermalising dynamics, while if the Hamiltonian is MBL then some memory of its initial state will be retained, and therefore th imbalance will remain non-zero even at infinite times.
 
-Because the Hilbert space dimension grows so quickly for this Hamiltonian we will only consider the dynamics after a finite amount of time, and even with this it is a fairly long calculation to do $L>10$. 
+Because the Hilbert space dimension grows so quickly for this Hamiltonian with the lattice size, we will only consider the dynamics after a finite amount of time, and even with this it is a fairly long calculation to do, \cyan{due to, (say which parts take longest time)} 
 
 \begin{figure}[t!]
 	\centering
 	\includegraphics[width=0.5\textwidth]{fermion_MBL.pdf}
-	\caption{Sublattice imbalance $I$ as a function of time averaged over 100 disorder realizations for different disorder strengths. This data was taken on a chain of length $L=8$.}
+	\caption{\label{fig:MBL} Sublattice imbalance $I$ as a function of time, averaged over $100$ disorder realizations for different disorder strengths. This data was taken on a chain of length $L=8$.}
 \end{figure}
 
-\noindent\emph{Code Analysis---} Once again we start out by loading a set of libraries we will need to procede with the calculation of the MBL fermions. 
-\lstinputlisting[firstline=2, lastline=7]{\MBLcode}
-Some of these libraries and functions we have seen before but in this example we introduce the \texttt{ops\_dict} which defines an operator which can be parameterized by many parameters as opposed to the Hamiltonian which is only parameterized by time. Also, in this script we will be doing many different disordered realisations in one simulations, therefore we will use \texttt{NumPy}'s random number library to produce the random sampling. We load \texttt{uniform} to generate the uniformly distributed random potential as well as \texttt{choice} which we will use to estimate the uncertainties of the disorder averages using a bootstrap re-sampling procedure which we will explain later. In order to time how long each realization takes we will use the \texttt{time} function from python's \texttt{time} library. After importing all the required libraries and function we set up the parameters for the simulation including number of realizations, and physical parameters \texttt{J}, \text{U}, number of up and down fermions etc.
-\lstinputlisting[firstline=9, lastline=24]{\MBLcode}
-Next we can set up the basis, introducing here the \texttt{tensor\_basis} class. The \texttt{tensor\_basis} class takes $n$ basis objects which it then uses to construct the matrix elements in 
+\noindent\emph{Code Analysis---} Once again we start out by loading a set of libraries which we need to proceed with the simulation of MBL fermions. 
+\lstinputlisting[firstline=2, lastline=7, firstnumber=1]{\MBLcode}
+While we already encountered most of these libraries and functions, in this example we introduce the \texttt{ops\_dict()} class which defines an operator, parametrized by multiple parameters, as opposed to the Hamiltonian which is only parametrized by time. Also, since this example requires us to do many different disorder realisations, we use \texttt{NumPy}'s random number library to do random sampling. We load \texttt{uniform} to generate the uniformly distributed random potential as well as \texttt{choice} which we use to estimate the uncertainties of the disorder averages using a bootstrap re-sampling procedure which we explain below \cyan{below, or in App.?}. In order to time how long each realization takes, we use the \texttt{time} function from python's \texttt{time} library. 
+
+After importing all the required libraries and functions we set up the parameters for the simulation including the number of realizations \texttt{n\_real}, and the physical couplings \texttt{J}, \text{U}, the number of up and down fermions, etc.
+\lstinputlisting[firstline=10, lastline=24, firstnumber=10]{\MBLcode}
+Next we set up the basis, introducing here the \texttt{tensor\_basis} constructor class. In its full-fledged generality, \texttt{tensor\_basis} takes $n$ basis objects which it then uses to construct the matrix elements in the tensor product space: 
 \begin{equation}
 \mathcal{H} = \mathcal{H}_1\otimes\mathcal{H}_2\otimes\cdots\otimes\mathcal{H}_n.
 \end{equation}
-Here we will consider the case where we have two Hilbert spaces, one for fermions with spin up and one for fermions with spin down\footnote{to construct a \texttt{tensor\_basis} object in general: \texttt{t\_basis = tensor\_basis(basis\_1,basis\_2,...,basis\_n)}}. 
-\lstinputlisting[firstline=25, lastline=28]{\MBLcode}
-Next we can set up the coupling and operator lists
-\lstinputlisting[firstline=29, lastline=51]{\MBLcode}
-Notice here that the \texttt{"|"} characters is used to separate the operators which belong to the up (left side of tensor product) and down (right side of tensor product) Hilbert spaces in the tensor product. If no string in present the operator is assumed to be the identity. The index list, on the other hand, does not have to have anything separating the two sides of the tensor product it is assumed that the character lines up with the correct site index when the "|" characters are removed. 
-The last lines of the code above we define a python \texttt{dictionary} object for which we add static operator lists as values in the dictionary indexed by a particular string or key. This dictionary is what gets passed into the \texttt{ops\_dict} class which for each key in the dictioanry constructs the operator listed in the state list for that key. Then when one would like to evaluate this operator at a particular set of parameters one uses another dictionary where the same keys index a number which multiples the operator stored at that same key. In this way one can now parameterize the many-body operator in more complicated ways. In this case we define a key for the Hubbard hamiltonian and then keys for the local density operator for both up and down spins on each site. In this way we can then construct any disordered Hamiltonian by specify the disorder at each site. 
-\lstinputlisting[firstline=52, lastline=56]{\MBLcode}
-Here the \texttt{ops\_dict} class is constructed in almost an identical manner as a \texttt{hamiltonian} object with the excpetion that there is no dynamic operators. Next we must construct our initial state with the fermions dispersed over the lattice on every other site. To get the index of the state which this corresponds to one can use the \texttt{index} function of the tensor basis. This function takes a string or integer representing the product state for each of the hilbert spaces and then searches to find the total product state and returns the index which corresponds to this state. 
-\lstinputlisting[firstline=57, lastline=63]{\MBLcode}
+Here we consider the case of two Hilbert spaces, $\mathcal{H} = \mathcal{H}_1\otimes\mathcal{H}_2$, one for fermions with spin up and one for spin-down fermions\footnote{to construct a \texttt{tensor\_basis} object in general: \texttt{t\_basis = tensor\_basis(basis\_1,basis\_2,...,basis\_n)}}. One disadvantage of using the tensor basis is that it does not allow for the use of symmetries, beyond particle-conservation (magnetisation in the case of spin systems). \cyan{we'll have to change this later when we have the ladder classes}. 
+\lstinputlisting[firstline=26, lastline=30,firstnumber=26]{\MBLcode}
+The next step in the procedure is to set up the site-coupling and operator lists:
+\lstinputlisting[firstline=32, lastline=47,firstnumber=32]{\MBLcode}
+Notice here that the \texttt{"|"} character is used to separate the operators which belong to the up (left side of tensor product) and down (right side of tensor product) Hilbert spaces in \texttt{basis}. If no string in present the operator is assumed to be the identity \texttt{'I'}. The site-coupling list, on the other hand, does not require separating the two sides of the tensor product, as it is assumed that the operator string lines up with the correct site index when the \texttt{'|'} character is removed. 
 
-Now that the operators are all set up, next we define a function which given a disorder realization of the local potential will calculate the dynamics of $\mathcal{I}$. The syntax to define a function is as follows:
-\lstinputlisting[firstline=66, lastline=69]{\MBLcode}
-The first task is to construct a hamiltonian from the disorder list \texttt{disorder} which is as simple as:
-\lstinputlisting[firstline=69, lastline=75]{\MBLcode}
-using the \texttt{tohamiltonian} function of \texttt{H\_dict}. Once the hamiltonian has been constructed we can construct the \texttt{exp\_op} object out of it and use it to create the generator of time dependent states
-\lstinputlisting[firstline=76, lastline=81]{\MBLcode}
-The function ends by printing the time of executing and returing the value for $I$ as a function of time for this realization
-\lstinputlisting[firstline=82, lastline=85]{\MBLcode}
+In the last couple of lines defining model (see below), we create a python \texttt{dictionary} object in which we add static operator lists as \texttt{values}, indexed by a particular string known as the corresponding \texttt{key}. This dictionary, which we refer to as \texttt{operator\_dict}, is then passed into the \texttt{ops\_dict()} class which, for each \texttt{key} in \texttt{operator\_dict}, constructs the operator listed in the site-coupling list for that \texttt{key}. When one wants to evaluate this operator for a particular set of parameters, one uses a second dictionary (see \texttt{params\_dict} below \cyan{give line number}) with the same keys as \texttt{operator\_dict}: the value corresponding to each key in the \texttt{params\_dict} multiples the operator stored at that same key in \texttt{operator\_dict}. This allows one to parametrize many-body operators in more complicated and general ways. In the present example, we define a key for the Fermi-Hubbard Hamiltonian, and then, as we need to change the disorder strength in between realisations, we also define keys for the local density operator for both up and down spins on each site. By doing this, we can then construct any disordered Hamiltonian by specify the disorder at each site, and changing its value from one realisation to another.
+\lstinputlisting[firstline=48, lastline=54,firstnumber=48]{\MBLcode}
+ 
 
-Now we are all set to run the disorder realizations for the different disorder strengths which in principle can be spilt up over multiple simulations but for completeness we do all of the calculations in one script. 
-\lstinputlisting[firstline=86, lastline=88]{\MBLcode}
-Which after this we then calculate the average and the error using bootstrap re-sampling (See Appendix\ref{app:bootstrap})
-\lstinputlisting[firstline=89, lastline=95]{\MBLcode}
+The \texttt{ops\_dict()} class constructs operators in almost an identical manner as a \texttt{hamiltonian()} class with the exception that there is no dynamic list. Next, we construct our initial state with the fermions dispersed over the lattice on every other site. To get the index of the \texttt{basis} state which this initial state corresponds to, one can use the \texttt{index} function of the \texttt{tensor\_basis} class. This function takes a string or integer representing the product state for each of the Hilbert spaces and then searches to find the full product state, returning the corresponding index. We can then create an empty array \texttt{psi\_0} of dimension the total Hilbert space size, and insert unity at the index corresponding to the initial state. This allows us to easily define the many-body product state used in the rest of the simulation.
+\lstinputlisting[firstline=56, lastline=69,firstnumber=56]{\MBLcode}
 
-The complete code including the lines that produce Fig.~\ref{fig:example3} is available in Example Code~\ref{code:ex5}.
+Now that the operators are all set up, we can proceed with the simulation of the dynamics. First, we define a function which, given a disorder realization of the local potential, calculates the time evolution of $\mathcal{I}(t)$. We shall guide the reader through this function step by step. The syntax for this begins as follows:
+\lstinputlisting[firstline=71, lastline=74,firstnumber=71]{\MBLcode}
+The first step is to construct the Hamiltonian from the \texttt{disorder} list which is as simple as
+\lstinputlisting[firstline=75, lastline=81,firstnumber=75]{\MBLcode}
+using the \texttt{tohamiltonian()} method of \texttt{H\_dict} class, which accepts as argument the dictionary \texttt{params\_dict}, which shares the same keys as \texttt{operator\_dict}, but whose values are determined by the \texttt{disorder} list which changes from one realisation to another. 
+
+Once the Hamiltonian has been constructed we want to time-evolve the initial state with it. To this end, we use the fact that, for time-independent Hamiltonians, the time-evolution operator coincides with the matrix exponential $\exp(-itH)$. In QuSpin, a convenient way to define matrix exponentials is offered by the \texttt{exp\_op} class. Given an operator $A$ , it calculates $\exp(atA)$ for any complex-valued number $a$. The time grid for $t$ is specified using the optional arguments \texttt{start}, \texttt{stop} and \texttt{num}. If the latter are omitted, default is $t=1$. The \texttt{exp\_op} objects are either a list of arrays, the elements of which correspond to the operator $\exp(atA)$ at the times defined or, if \texttt{iterate=True} a generator for this list is returned. Here, we use \texttt{exp\_op} to create a generator list containing the time-evolved states as follows
+\lstinputlisting[firstline=82, lastline=84,firstnumber=82]{\MBLcode}
+
+To calculate the expectation value of the imbalance operator in time, we use the \texttt{obs\_vs\_time} function. Since the usage of this function was extensively discussed in Example2 and Example3 of Ref.~\cite{weinberg_17_quspin}, here we only mention that it accepts a (collection of) state(s) [or a generator] \texttt{psi\_t}, a time vector \texttt{t}, and a dictionary \texttt{dict(I=I)}, whose values are the observables to calculate the expectation value of. The function returns a dictionary, the keys of which correspond to the keys every observable was defined under.
+\lstinputlisting[firstline=85, lastline=87,firstnumber=85]{\MBLcode}
+
+The function ends by printing the time of executing and returning the value for $I$ as a function of time for this realization
+\lstinputlisting[firstline=88, lastline=91,firstnumber=88]{\MBLcode}
+
+Now we are all set to run the disorder realizations for the different disorder strengths which in principle can be spilt up over multiple simulations, e.g.~using \texttt{joblib} [c.f.~Example2 from Ref.~\cite{weinberg_17_quspin}] but for completeness we do all of the calculations in one script. 
+\lstinputlisting[firstline=93, lastline=95,firstnumber=93]{\MBLcode}
+Last, we calculate the average and its error bars using bootstrap re-sampling \cyan{(See Appendix\ref{app:bootstrap})}
+\lstinputlisting[firstline=96, lastline=102,firstnumber=96]{\MBLcode}
+
+The complete code including the lines that produce Fig.~\ref{fig:MBL} is available in Example Code~\ref{code:ex6}.
 
 \subsection{Bose-Hubbard Model on Translationally Invariant Ladder}
 \label{subsec:Bose_Ladder}
@@ -849,8 +860,8 @@ This work was supported by ???
 	\newpage
 	\lstinputlisting[label=code:ex5,caption=Free Particle Systems: the Fermionic SSH Chain]{\SSHcode}
 	\newpage
-	%\lstinputlisting[label=code:ex2,caption=Heating in Periodically Driven Spin Chains]{example2.py}
-	%\newpage
+	\lstinputlisting[label=code:ex6,caption=Many-Body Localisation in the Fermi-Hubbard Model]{\MBLcode}
+	\newpage
 	\lstinputlisting[label=code:ex8,caption=The Gross-Pitaevskii Equation and Nonlinear Time Evolution]{\GPcode}
 	
 	

@@ -506,24 +506,27 @@ Last, we calculate the average and its error bars using bootstrap re-sampling \c
 
 The complete code including the lines that produce Fig.~\ref{fig:MBL} is available in Example Code~\ref{code:ex6}.
 
-\subsection{Bose-Hubbard Model on Translationally Invariant Ladder}
+\subsection{The Bose-Hubbard Model on Translationally Invariant Ladder}
 \label{subsec:Bose_Ladder}
 
 This example shows how to:
 \begin{itemize}
-	\item construct Hamiltonians for bosonic systems.
-	\item construct ladder Hamiltonians.
-	\item using block\_ops class to evolve over several symmetry sectors at once.
-	\item measure entanglement entropy of ladder.
+	\item construct interacting Hamiltonians for bosonic systems.
+	\item construct a Hamiltonian on a ladder geometry.
+	\item use the \texttt{block\_ops} class to evolve over several symmetry sectors at once.
+	\item measure the entanglement entropy of a state on the ladder.
 \end{itemize}
 
-\noindent{\emph{Physics Setup---}} In this example we will use QuSpin to solve the dynamics of the Bose-Hubbard model (BHM) on a ladder geometry. The BHM is a minimal model of interacting bosons which is experimentally realizable in cold atom experiments [CITE]. The Hamiltonian is given by:
+\noindent{\emph{Physics Setup---}} In this example we use QuSpin to simulate the dynamics of the Bose-Hubbard model (BHM) on a ladder geometry. The BHM is a minimal model for interacting lattice bosons which is most often experimentally realizable in cold atom experiments [CITE]. The Hamiltonian is given by
 \begin{equation}
-	H_\mathrm{BHM} = -J\sum_{\langle ij\rangle} a_i^\dagger a_j + \mathrm{h.c.} + U\sum_{i}n_i(n_i-1)\label{eq:BHM_ham}
+	H_\mathrm{BHM} = -J\sum_{\langle ij\rangle} \left(a_i^\dagger a_j + \mathrm{h.c.}\right) + \frac{U}{2}\sum_{i}n_i(n_i-1)
+	\label{eq:BHM_ham}
 \end{equation} 
-where $a_i$ and $a^\dagger_i$ are bosonic creation and annihilation operators on site $i$ respectively and the sum $\langle ij\rangle$ is a sum over nearest neighbors on Ladder. We will consider a half filled ladder of length $L$ with $N=2L$ sites. We will perform a quench where the system starts out in a random product state and let it evolve with Hamiltonian~\eqref{eq:BHM_ham}. We will restrict the local Hilbert space to allow at most 2-particles on a site which is valid in the large $U$ limit. This model is not integrable and so we expect that the system will eventually thermalize so that the occupation is roughly uniform over the entire system. On top of measuring the local density we will also measure the entanglement entropy between the legs of the ladder.
+where $a_i$ and $a^\dagger_i$ are bosonic creation and annihilation operators on site $i$ respectively and the sum $\langle ij\rangle$ is a sum over nearest neighbors on the ladder. We consider a half filled ladder of length $L$ with $N=2L$ sites and cylindrical boundary condition along the ladder leg direction. Since we are interested in the limit $U/J\gg 1$, we restrict the local Hilbert space to allow at most two particles per site, effectively using a total of three states per site.  
 
-If we consider a translational invariant ladder that implies the Hamiltonian factorizes into different many-body momentum blocks similar to what was discussed in Sec.~\ref{subsec:SSH_model} but slightly different as we consider translations of the many-body fock states as opposed to the single particle states[CITE Anders review]. In this section instead of projecting the operators to momentum space as was done in Sec.~\ref{subsec:SSH_model}, we will project the wavefunction to the different symmetry sectors and evolve each of the projections separately under the Hamiltonian for that symmetry sector. Then each of the Block wavefunctions are projected back to the local Fock space basis and summed to recover the evolve state which one can then look at local quantities like the density and entanglement.
+The system is initialised in a random product state, and then evolved with the Hamiltonian~\eqref{eq:BHM_ham}.  Since the BHM is non-integrable, we expect that the system eventually thermalizes so that the occupation is roughly uniform over the entire system. Besides the local density, we also measure the entanglement entropy between the two legs of the ladder.
+
+As we consider a translational invariant ladder, the Hilbert space factorizes into subspaces corresponding to the different many-body momentum blocks. This is similar to what was discussed in Sec.~\ref{subsec:SSH_model} for the SSH model, but slightly different as we consider translations of the \emph{many-body} Fock states as opposed to the single particle states~\cite{anders10}. In certain cases, it happens that, even though the Hamiltonian features symmetries, the initial state does not obey them, as is the case in the present example, due to the initial state being a random product state. Thus, in this section we project the wavefunction to the different symmetry sectors and evolve each of the projections separately under the Hamiltonian for that symmetry sector. After the evolution, each of these block wavefunctions is transformed back to the local Fock space basis, and summed up to recover the properly evolved the initial state. We can then measure quantities such as the on-site density and the entanglement entropy. \cyan{Figure~\ref{fig:BHM} shows...}
 \begin{figure}[t!]
 	\centering
 	\begin{subfigure}[a]{0.496\textwidth}
@@ -534,7 +537,7 @@ If we consider a translational invariant ladder that implies the Hamiltonian fac
 		\includegraphics[width=0.9\textwidth]{boson_density.pdf}
 		\caption{local density of bosons as a function of time. Later times appearing farther down the page.}
 	\end{subfigure}
-	\caption{Showing results from the quench in the BHM. plot (a) shows the half-ladder entanglement entropy density and plot (b) shows the local density on each site as a function of time. The red dots on the entanglement plot shows the time points where the density plots are taken. For this data was taken with $J=1$ and $U=10$.}
+	\caption{\label{fig:BHM}} Quantities measured in the BHM: (a) the leg-to-leg entanglement entropy density and (b) the local density on each site as a function of time. The red dots on the entanglement plot shows the time points at which the snapshots of the local density are taken. The parameters are $J=1$, $U=10$, and $L=6$.}
 \end{figure}
 
 \noindent\emph{Code Analysis---} Just as in the previous examples we start out our python script by loading some essential modules needed for the calculation

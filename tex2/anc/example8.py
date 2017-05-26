@@ -5,34 +5,7 @@ from quspin.tools.block_tools import block_ops # tool for doing dynamics over sy
 import numpy as np # general math functions
 import matplotlib.pyplot as plt # plotting
 import matplotlib.animation as animation # animating movie of dynamics
-""" schematic of how the ladder lattic is set up
-coupling parameters:
--: J_par_1
-^: J_par_2
-|: J_perp
-
-^ 1 ^ 3 ^ 5 ^ 7 ^ 9 ^
-  |   |   |   |   |
-- 0 - 2 - 4 - 6 - 8 -
-
-translations (i -> i+2):
-
- ^ 9 ^ 1 ^ 3 ^ 5 ^ 7 ^
-   |   |   |   |   | 
- - 8 - 0 - 2 - 4 - 6 -
-
-if J_par_1 same as J_par_2 then one can use parity
-
-regular chain parity (i -> N - i):
-
- - 8 - 6 - 4 - 2 - 0 - 
-   |   |   |   |   | 
- - 9 - 7 - 5 - 3 - 1 -
-
-combination of two ladder parity operators!
-
-ladder parity operators to come soon!
-"""
+#
 # initial see for random number generator
 np.random.seed(0) # seed is 0 to produce plots from QuSpin2 paper
 # setting up parameters of simulation
@@ -118,7 +91,6 @@ plt.savefig("boson_entropy.pdf")
 plt.show()
 """
 # setting up two plots to animate side by side
-#"""
 fig, (ax1,ax2) = plt.subplots(1,2)
 fig.set_size_inches(10, 5)
 ax1.set_xlabel(r"$t/J$",fontsize=18)
@@ -135,4 +107,32 @@ def run(i): # function to update frame
 	return im, line1
 ani = animation.FuncAnimation(fig, run, range(num),interval=50)
 plt.show()
-#"""
+#
+""" schematic of how the ladder lattic is set up
+coupling parameters:
+-: J_par_1
+^: J_par_2
+|: J_perp
+
+^ 1 ^ 3 ^ 5 ^ 7 ^ 9 ^
+  |   |   |   |   |
+- 0 - 2 - 4 - 6 - 8 -
+
+translations (i -> i+2):
+
+ ^ 9 ^ 1 ^ 3 ^ 5 ^ 7 ^
+   |   |   |   |   | 
+ - 8 - 0 - 2 - 4 - 6 -
+
+if J_par_1 same as J_par_2 then one can use parity
+
+regular chain parity (i -> N - i):
+
+ - 8 - 6 - 4 - 2 - 0 - 
+   |   |   |   |   | 
+ - 9 - 7 - 5 - 3 - 1 -
+
+combination of two ladder parity operators!
+
+ladder parity operators to come soon!
+"""

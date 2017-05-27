@@ -1,11 +1,12 @@
-from __future__ import print_function, division
+from __future__ import print_function, division #import python 3 functions
 from quspin.operators import hamiltonian # Hamiltonians and operators
 from quspin.basis import boson_basis_1d # bosonic Hilbert space
-from quspin.tools.block_tools import block_ops # tool for doing dynamics over symmetry blocks
+from quspin.tools.block_tools import block_ops # dynamics in symmetry blocks
 import numpy as np # general math functions
 import matplotlib.pyplot as plt # plotting
 import matplotlib.animation as animation # animating movie of dynamics
 #
+##### define model parameters
 # initial see for random number generator
 np.random.seed(0) # seed is 0 to produce plots from QuSpin2 paper
 # setting up parameters of simulation
@@ -20,15 +21,18 @@ U = 10.0 # Hubbard interaction
 # setting up parameters for evolution
 start,stop,num = 0,30,301 # 0.1 equally spaced points
 times = np.linspace(start,stop,num)
+#
+##### set up Hamiltonian and observables
+# define site-coupling lists
 # U n_i(n_i-1) interaction
-int_list_2 = [[U,i,i] for i in range(N)] # U n_i^2
-int_list_1 = [[-U,i] for i in range(N)] # -U n_i
+int_list_2 = [[0.5*U,i,i] for i in range(N)] # U n_i^2
+int_list_1 = [[-0.5*U,i] for i in range(N)] # -U n_i
 # setting up hopping lists
 hop_list = [[-J_par_1,i,(i+2)%N] for i in range(0,N,2)] # PBC bottom 
 hop_list.extend([[-J_par_2,i,(i+2)%N] for i in range(1,N,2)]) # PBC top
 hop_list.extend([[-J_perp,i,i+1] for i in range(0,N,2)]) # perp hopping
 hop_list_hc = [[J.conjugate(),i,j] for J,i,j in hop_list]
-# setting up static list
+# set up static and dynamic lists
 static = [
 			["+-",hop_list], # hopping
 			["-+",hop_list_hc], # hopping h.c.
@@ -36,7 +40,7 @@ static = [
 			["n",int_list_1] # -U n_i
 		]
 dynamic = [] # no dynamic operators
-# creating block_ops object
+# create block_ops object
 blocks=[dict(kblock=kblock) for kblock in range(L)] # blocks to project on to
 baisis_args = (N,) # boson_basis_1d manditory arguments
 basis_kwargs = dict(nb=nb,sps=sps,a=2) # boson_basis_1d optional args
@@ -46,7 +50,6 @@ U_block = block_ops(blocks,static,dynamic,boson_basis_1d,baisis_args,np.complex1
 # setting up basis for local fock basis
 basis = boson_basis_1d(N,nb=nb,sps=sps)
 # setting up observables
-sub_sys_A = range(0,N,2) # bottom side of ladder 
 no_checks = dict(check_herm=False,check_symm=False,check_pcon=False)
 n_list = [hamiltonian([["n",[[1.0,i]]]],[],basis=basis,dtype=np.float64,**no_checks) for i in range(N)]
 # set up initial state
@@ -56,10 +59,12 @@ psi[i0] = 1.0
 # print info about setup
 state_str = "".join(str(int((basis[i0]//basis.sps**i)%basis.sps)) for i in range(N))
 print("total H-space size: {}, initial state: |{}>".format(basis.Ns,state_str))
+##### do time evolution
 # calculating the evolved states
-n_jobs = 1 # increase this to see if calculation runs faster!
+n_jobs = 1 # paralelisation: increase to see if calculation runs faster!
 psi_t = U_block.expm(psi,start=start,stop=stop,num=num,block_diag=False,n_jobs=n_jobs)
 # calculating entanglement entropy 
+sub_sys_A = range(0,N,2) # bottom side of ladder 
 gen = (basis.ent_entropy(psi,sub_sys_A=sub_sys_A)["Sent_A"]/L for psi in psi_t.T[:])
 ent_t = np.fromiter(gen,dtype=np.float64,count=num)
 # calculating the local densities as a function of time

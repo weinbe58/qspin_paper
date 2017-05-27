@@ -1,3 +1,8 @@
+import sys,os,argparse,time
+qspin_path = os.path.join(os.getcwd(),"../../QuSpin_dev")
+sys.path.insert(0,qspin_path)
+
+
 from quspin.operators import hamiltonian # Hamiltonians and operators
 from quspin.basis import boson_basis_1d # Hilbert space spin basis
 import numpy as np # generic math functions

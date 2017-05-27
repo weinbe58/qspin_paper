@@ -207,7 +207,7 @@ We present a major update to QuSpin, \emph{SciPostPhys.2.1.003}, -- an open-sour
 \vspace{10pt}
 
 
-\section{What can QuSpin be Useful for?}
+\section{Which Problems can I Study with QuSpin?}
 \label{sec:intro}
 
 \cyan{
@@ -537,12 +537,12 @@ As we consider a translational invariant ladder, the Hilbert space factorizes in
 		\includegraphics[width=0.9\textwidth]{boson_density.pdf}
 		\caption{local density of bosons as a function of time. Later times appearing farther down the page.}
 	\end{subfigure}
-	\caption{\label{fig:BHM}} Quantities measured in the BHM: (a) the leg-to-leg entanglement entropy density and (b) the local density on each site as a function of time. The red dots on the entanglement plot shows the time points at which the snapshots of the local density are taken. The parameters are $J=1$, $U=10$, and $L=6$.}
+	\caption{\label{fig:BHM} Quantities measured in the BHM: (a) the leg-to-leg entanglement entropy density and (b) the local density on each site as a function of time. The red dots on the entanglement plot shows the time points at which the snapshots of the local density are taken. The parameters are $J=1$, $U=10$, and $L=6$.}
 \end{figure}
 
-\noindent\emph{Code Analysis---} Just as in the previous examples we start out our python script by loading some essential modules needed for the calculation
-\lstinputlisting[firstline=2, lastline=5]{\BHLcode}
-Next we set up the model parameters defining the length of the ladder \texttt{L} chain number of sites \texttt{N=2*L} as well as filling factor for the bosons \texttt{nb}, and the maximum number of states per site \texttt{sps}. The hopping matrix elements $J_\perp$, $J_{\parallel,1}$, and $J_{\parallel,2}$ (see Fig.~\ref{fig:BHL_geometry}\cyan{create figure showing ladder and couplings etc...}), correspond to the python script are variables \texttt{J\_perp}, \texttt{J\_par\_1}, and \texttt{J\_par\_2} respectively.
+\noindent\emph{Code Analysis---}Let us now show how one can simulate this system using QuSpin. Following the code structure of the previous examples, we begin by loading the modules needed for the computation:
+\lstinputlisting[firstline=1, lastline=5, firstnumber=1]{\BHLcode}
+Next, we set up the model parameters defining the length of the ladder \texttt{L}. the total number of sites in the chain \texttt{N=2*L}, as well as the filling factor for the bosons \texttt{nb}, and the maximum number of states per site (i.e.~the local on-site Hilbert space dimension) \texttt{sps}. The hopping matrix elements $J_\perp$, $J_{\parallel,1}$, and $J_{\parallel,2}$ (see Fig.~\ref{fig:BHL_geometry}\cyan{create figure showing ladder and couplings etc...}) correspond to the python script variables \texttt{J\_perp}, \texttt{J\_par\_1}, and \texttt{J\_par\_2}, respectively. The on-site interaction is denoted by \texttt{U}.
 \lstinputlisting[firstline=38, lastline=46]{\BHLcode} Next we set up the times at which we would like to solve the Schrödinger equation. Due to the same restrictions on the exponential solver discussed Sec .~\ref{subsec:Fermion_MBL} we will only consider time points which are linearly spaced defined by the variables \texttt{start},\texttt{stop}, and \texttt{num}
 \lstinputlisting[firstline=47, lastline=49]{\BHLcode}
 For bosonic systems we have \texttt{'+'},\texttt{'-'}, and \texttt{'n'} as possible operators to use. In order to set up the Hubbard local interaction we must define two coupling lists for the $U\sum_{i} n_i^2$ and the $-U\sum_{i} n_i$:
@@ -571,18 +571,17 @@ This example shows how to
 \begin{itemize}
 	\item simulate time-dependent nonlinear equations of motion
 	\item use imaginary time dynamics to find a lowest energy configuration
-	\item ...
 \end{itemize}
 
-\noindent\emph{Physics Setup---}The Gross-Pitaevskii wave equation (GPE) has been shown to govern the physics of weakly-interacting bosonic systems. It constitutes the starting point for studying Bose-Einstein condensates, but can also appear in non-linear optics, and represents the natural description of Hamiltonian mechanics in the wave picture. One of its characteristic features is that it exhibits chaotic classical dynamics, a physical manifestation of the presence of a cubic non-linear term.
+\noindent\emph{Physics Setup---}The Gross-Pitaevskii wave equation (GPE) has been shown to govern the physics of weakly-interacting bosonic systems. It constitutes the starting point for studying Bose-Einstein condensates, but can also appear in non-linear optics, and represents the natural description of Hamiltonian mechanics in the wave picture. One of its interesting features is that it can exhibits chaotic classical dynamics, a physical manifestation of the presence of a cubic non-linear term.
 
 Here, we study the time-dependent GPE on a one-dimensional lattice:
 \begin{eqnarray}
-i\partial_t\psi_j(t) &=& -J\left( \psi_{j-1}(t) + \psi_{j+1}(t)\right) + \frac{1}{2}\omega_\mathrm{trap}(t)(j-j_0)^2\psi_j(t) + U|\psi_j(t)|^2\psi_j(t), \nonumber \\
-\omega_\mathrm{trap}(t)&=&(\omega_f-\omega_i)t/t_\mathrm{ramp}+ \omega_i
+i\partial_t\psi_j(t) &=& -J\left( \psi_{j-1}(t) + \psi_{j+1}(t)\right) + \frac{1}{2}\kappa_\mathrm{trap}(t)(j-j_0)^2\psi_j(t) + U|\psi_j(t)|^2\psi_j(t), \nonumber \\
+\kappa_\mathrm{trap}(t)&=&(\kappa_f-\kappa_i)t/t_\mathrm{ramp}+ \kappa_i
 \label{eq:GPE}
 \end{eqnarray}
-where $J$ is the hopping matrix element, $\omega_\mathrm{trap}(t)$ -- the slowly-varying time-dependent harmonic trap `frequency' over a time scale $t_\mathrm{ramp}$, and $U$ -- the interaction strength. The lattice sites are labelled by $j=0,\dots,L-1$, and $j_0$ is the centre of the 1d chain. We set the lattice constant to unity, and use open boundary conditions.
+where $J$ is the hopping matrix element, $\kappa_\mathrm{trap}(t)$ -- the harmonic trap strength which varies slowly in time over a scale $t_\mathrm{ramp}$, and $U$ -- the mean-field interaction strength. The lattice sites are labelled by $j=0,\dots,L-1$, and $j_0$ is the centre of the 1d chain. We set the lattice constant to unity, and use open boundary conditions.
 
 Whenever $U=0$, the system is non-interacting and the GPE reduces to the Heisenberg EOM for the bosonic field operator $\hat\psi_j(t)$. Thus, for the purposes of using QuSpin to simulate the GPE, it is instructive to cast Eq.~\eqref{eq:GPE} in the following generic form
 \begin{equation}
@@ -596,49 +595,49 @@ The time-dependent single-particle Hamiltonian in real space is represented as a
 
 We want to initiate the time-evolution of the system at $t=0$ in its lowest energy state. To this end, we can define a `ground state' for the GPE equation, in terms of the configuration which minimises the energy of the system:
 \begin{eqnarray}
-\vec\psi_\mathrm{GS} &=& \inf_{\vec{\psi}} \bigg( \vec{\psi}^t H_\mathrm{sp}(0)\vec{\psi} + \frac{U}{2}\sum_{j=0}^{L-1}|\psi_j|^4\bigg),\nonumber\\
-&=&\inf_{\psi_j} \bigg(\sum_{j=0}^{L-1} -J(\psi_{j+1}^*\psi_j + \mathrm{c.c.}) + \frac{1}{2}\omega_\mathrm{trap}(0)|\psi_j|^2 + \frac{U}{2}|\psi_j|^4\bigg).
+\vec\psi_\mathrm{GS} &=& \inf_{\vec{\psi}} \bigg( {\vec{\psi}}^t H_\mathrm{sp}(0)\vec{\psi} + \frac{U}{2}\sum_{j=0}^{L-1}|\psi_j|^4\bigg),\nonumber\\
+&=&\inf_{\psi_j} \bigg(-J\sum_{j=0}^{L-2} (\psi_{j+1}^*\psi_j + \mathrm{c.c.}) + \frac{1}{2}\kappa_\mathrm{trap}(0)\sum_{j=0}^{L-1}(j-j_0)^2|\psi_j|^2 + \frac{U}{2}\sum_{j=0}^{L-1}|\psi_j|^4\bigg).
 \end{eqnarray} 
-One way to find the configuration $\vec\psi_\mathrm{GS}$, is to solve the GPE in imaginary time ($it\to \tau$), which induces exponential decay in all modes of the system, except for the lowest-energy state. In doing so, we keep the norm of the solution fixed:
+One way to find the configuration $\vec\psi_\mathrm{GS}$, is to solve the GPE in imaginary time ($it\to \tau$), which induces exponential decay in all modes of the system, which singles out the lowest-energy state in the longer run. In doing so, we keep the norm of the solution fixed:
 \begin{eqnarray}
 \label{eq:GPE_imag}
-\partial_{\tau}\vec\varphi(\tau) &=& -\bigg[H_\mathrm{sp}(0)\vec\varphi(\tau) + U \vec\varphi^*(\tau)\circ \vec\varphi(\tau)\circ \vec\varphi(\tau)\bigg],\qquad ||\vec\varphi(\tau)||=\mathrm{const.},\nonumber\\
+\partial_{\tau}\vec\varphi(\tau) &=& -\bigg[H_\mathrm{sp}(0)\vec\varphi(\tau) + U {\vec\varphi}^*(\tau)\circ \vec\varphi(\tau)\circ \vec\varphi(\tau)\bigg],\qquad ||\vec\varphi(\tau)||=\mathrm{const.},\nonumber\\
 \vec{\psi}_\mathrm{GS} &=& \lim_{\tau\to\infty}\vec\varphi(\tau)
 \end{eqnarray}
 Once we have the initial state $\vec\psi_\mathrm{GS}$, we evolve it according to the time-dependent GPE, Eq.~\eqref{eq:GPE}, and track down the time evolution of the condensate density $\rho_j(t)=|\psi_j(t)|^2$. Fig.~??? shows the result.
 
-\noindent\emph{Code Analysis---}In the following, we demonstrate how one can code the above physics using QuSpin. As usual, we begin by loading the necessary packages
-\lstinputlisting[firstline=1, lastline=6]{\GPcode}
-Next, we define the model parameters. We distinguish between static parameters and dynamic parameters -- those involved in the trap widening.
-\lstinputlisting[firstline=7, lastline=21]{\GPcode}
-In order to do time evolution, we define the trap widening protocol from Eq.~\eqref{eq:GPE}. Since we want to make use of QuSpin's time-dependent operator features, the first argument must be the time vector, followed by all protocol parameters. These same parameters are then listed in the variable \texttt{ramp\_args}.
-\lstinputlisting[firstline=22, lastline=26]{\GPcode}
-With this, we are ready to construct the single-particle Hamiltonian. The first step is to define the site-coupling lists, and the static and dynamic lists. Note that the dynamic list, which defines the harmonic potential in the single-particle Hamiltonian, contains four elements: apart from the operator string and the corresponding site-coupling list, the third and fourth elements are the time-dependent function \texttt{ramp} and its arguments \texttt{ramp\_args} in this order.
-\lstinputlisting[firstline=27, lastline=33]{\GPcode}
-To create a single-particle Hamiltonian, we choose to use the bosonic basis constructor \texttt{boson\_basis\_1d} specifying the number sector to \texttt{Nb=1} boson for the entire lattice, and a local Hilbert space of \texttt{sps=2} states per site (empty and filled). 
-\lstinputlisting[firstline=34, lastline=35]{\GPcode}
-Then we call the \texttt{hamiltonian} constructor to build the single-particle matrix. We can obtain the single-particle ground state without fully diagonalising the matrix by using the sparse diagonalisation attribute \texttt{Hsp.eigsh()}, with the options \texttt{k=1} and \texttt{'which'='SA'} which specify taking only one state starting from the bottom of the spectrum, i.e.~the ground state.	
-\lstinputlisting[firstline=36, lastline=38]{\GPcode}
-The next step in the program is to compute the ground state of the GPE using imaginary time evolution from Eq.~\eqref{eq:GPE_imag}. To this end, we first define the function \texttt{GPE\_imag\_time} which evaluate the RHS. It is required that the first argument for this function is (imaginary) time \texttt{tau}, followed by the state \texttt{phi}. All other arguments, such as the single-particle Hamiltonian and the interaction strength are listed last. Similar to before, we store these optional arguments in a list which we call \texttt{GPE\_params}. 
-\lstinputlisting[firstline=39, lastline=47]{\GPcode}
-Any initial value problem requires us to pick an initial state. In the case of imaginary evolution, this state can often be arbitrary, but needs to possess the same symmetries as the true GPE ground state. Here, we choose the ground state of the single-particle Hamiltonian for an initial state, and normalise it to one particle per site. We also define the imaginary time vector \texttt{tau}. This array has to contain sufficiently long times so that we make sure we obtain the long imaginary time limit $\tau\to\infty$, as required by Eq.~\eqref{eq:GPE_imag}. Since imaginary time evolution is not unitary, QuSpin will be normalising the vector every $\tau$-step. Thus, one also needs to make sure these steps are small enough to avoid convergence problems of the ODE solver.
-\lstinputlisting[firstline=48, lastline=51]{\GPcode}
-Performing imaginary time evolution is done using the \texttt{evolve()} method of the \texttt{measurements} tool. This function accepts an initial state \texttt{phi0}, initial time \texttt{tau[0]}, and a time vector \texttt{tau} and solves the user-defined ODE \texttt{GPE\_imag\_time}. The parameters of the ODE are passed using the keyword argument \texttt{f\_params=GPE\_params}. To ensure the normalisation of the state at each $\tau$-step we use the flag \texttt{imag\_time=True}. Real-valued output can be specified by \texttt{real=True}. Last, we request \texttt{evolve()} to create a generator object using the keyword argument \texttt{iterate=True}. Many of the keyword arguments of \texttt{evolve()} are the same as in the \texttt{H.evolve()} method of the \texttt{hamiltonian class}: for instance, one can choose a specific SciPy solver and its arguments, or the solver's absolute and relative tolerance. We refer the interested reader to the documentation, cf.~App.~\ref{app:doc}.
-\lstinputlisting[firstline=52, lastline=54]{\GPcode}
+\noindent\emph{Code Analysis---}In the following, we demonstrate how one can code the above physics using QuSpin. As usual, we begin by loading the necessary packages:
+\lstinputlisting[firstline=1, lastline=5, firstnumber=1]{\GPcode}
+Next, we define the model parameters. We distinguish between static parameters and dynamic parameters -- those involved in the time-dependent trap widening.
+\lstinputlisting[firstline=7, lastline=21, firstnumber=7]{\GPcode}
+In order to do time evolution, we code up the trap widening protocol from Eq.~\eqref{eq:GPE} in the function \texttt{ramp}. Since we want to make use of QuSpin's time-dependent operator features, the first argument must be the time \texttt{t}, followed by all protocol parameters. These same parameters are then explicitly stored in the variable \texttt{ramp\_args}.
+\lstinputlisting[firstline=22, lastline=26, firstnumber=22]{\GPcode}
+With this, we are ready to construct the single-particle Hamiltonian $H_\mathrm{sp}(t)$. The first step is to define the site-coupling lists, and the static and dynamic lists. Note that the dynamic list, which defines the harmonic potential in the single-particle Hamiltonian, contains four elements: apart from the operator string and the corresponding site-coupling list, the third and fourth elements are the time-dependent function \texttt{ramp} and its argument list \texttt{ramp\_args}, and this order is crucial.
+\lstinputlisting[firstline=28, lastline=34, firstnumber=28]{\GPcode}
+To create the single-particle Hamiltonian, we choose to use the bosonic basis constructor \texttt{boson\_basis\_1d} specifying the number sector to \texttt{Nb=1} boson for the entire lattice, and a local Hilbert space of \texttt{sps=2} states per site (empty and filled). 
+\lstinputlisting[firstline=35, lastline=36, firstnumber=35]{\GPcode}
+Then we call the \texttt{hamiltonian} constructor to build the single-particle matrix. We can obtain the single-particle ground state without fully diagonalising this matrix, by using the sparse diagonalisation attribute \texttt{Hsp.eigsh()}. The \texttt{eigsh()} routine accepts the optional flags \texttt{k=1} and \texttt{'which'='SA'} which restrict the routine to find the first eigenstate starting from the bottom of the spectrum, i.e.~the ground state.	
+\lstinputlisting[firstline=37, lastline=39, firstnumber=37]{\GPcode}
+Having set up the Hsmiltonian, the next step in the simulation is to compute the ground state of the GPE using imaginary time evolution from Eq.~\eqref{eq:GPE_imag}. To this end, we first define the function \texttt{GPE\_imag\_time} which evaluate the RHS. It is required that the first argument for this function is (imaginary) time \texttt{tau}, followed by the state \texttt{phi}. All other arguments, such as the single-particle Hamiltonian and the interaction strength are listed last. Note that we evaluate the time-dependent Hamiltonian at \texttt{time=0}, since we are interested in finding the GPE GS for the initial trap coniguration $\kappa_i$. Similar to before, we store these optional arguments in a list which we call \texttt{GPE\_params}. 
+\lstinputlisting[firstline=41, lastline=49, firstnumber=41]{\GPcode}
+Any initial value problem requires us to pick an initial state. In the case of imaginary evolution, this state can often be arbitrary, but needs to possess the same symmetries as the true GPE ground state. Here, we choose the ground state of the single-particle Hamiltonian for an initial state, and normalise it to one particle per site. We also define the imaginary time vector \texttt{tau}. This array has to contain sufficiently long times so that we make sure we end up in the long imaginary time limit $\tau\to\infty$, as required by Eq.~\eqref{eq:GPE_imag}. Since imaginary time evolution is not unitary, QuSpin will be normalising the vector every $\tau$-step. Thus, one also needs to make sure these steps are small enough to avoid convergence problems with the ODE solver.
+\lstinputlisting[firstline=50, lastline=53,, firstnumber=50]{\GPcode}
+Performing imaginary time evolution is done using the \texttt{evolve()} method of the \texttt{measurements} tool. This function accepts an initial state \texttt{phi0}, initial time \texttt{tau[0]}, and a time vector \texttt{tau} and solves any user-defined ODE, here \texttt{GPE\_imag\_time}. The parameters of the ODE are passed using the keyword argument \texttt{f\_params=GPE\_params}. To ensure the normalisation of the state at each $\tau$-step we use the flag \texttt{imag\_time=True}. Real-valued output can be specified by \texttt{real=True}. Last, we request \texttt{evolve()} to create a generator object using the keyword argument \texttt{iterate=True}. Many of the keyword arguments of \texttt{evolve()} are the same as in the \texttt{H.evolve()} method of the \texttt{hamiltonian} class: for instance, one can choose a specific SciPy solver and its arguments, or the solver's absolute and relative tolerance. We refer the interested reader to the documentation, cf.~App.~\ref{app:doc}.
+\lstinputlisting[firstline=54, lastline=56, firstnumber=54]{\GPcode}
 Looping over the generator \texttt{phi\_tau} we have access to the solution, which we display in a form of a movie:
-\lstinputlisting[firstline=55, lastline=72]{\GPcode}
-Last, we use our GPE ground state, to time-evolve it in real time according to the trap widening protocol hard-coded into the single-particle Hamiltonian. We proceed analogously -- first we define the real-time GPE and the time vector. In defining the GPE function, we split the ODE into a time-independent static part and a time-dependent dynamic part. The single-particle Hamiltonian for the former is accessed using the \texttt{hamiltonian} attribute \texttt{Hsp.static} which returns a sparse matrix. We can then manually add the non-linear cubic mean-field interaction term. In order to access the time-dependent part of the Hamiltonian, and evaluate it, we loop over the dynamic list \texttt{Hsp.dynamic}, reading off the corresponding operator \texttt{Hd} together with the time-dependent function \texttt{f} which multiplies it, and its arguments \texttt{f\_args}. Last, we multiply the final output vector by the Schr\"odinger $-i$, which ensures the unitarity of for real-time evolution.
-\lstinputlisting[firstline=73, lastline=86]{\GPcode}
-To perform real-time evolution we once again use the \texttt{evolve()} function. This time, however, since the solution of the GPE is anticipated to be complex-valued, and because we do not do imaginary time, we do not need to pass the flags \texttt{real} and \texttt{imag\_time}. Instead, we decided to show the flags for the relative and absolute tolerance of the solver. 
-\lstinputlisting[firstline=87, lastline=88]{\GPcode}
+\lstinputlisting[firstline=58, lastline=75, firstnumber=75]{\GPcode}
+Last, we use our GPE ground state, to time-evolve it in real time according to the trap widening protocol \texttt{ramp}, hard-coded into the single-particle Hamiltonian. We proceed analogously -- first we define the real-time GPE and the time vector. In defining the GPE function, we split the ODE into a time-independent static part and a time-dependent dynamic part. The single-particle Hamiltonian for the former is accessed using the \texttt{hamiltonian} attribute \texttt{Hsp.static} which returns a SciPy sparse array. We can then manually add the non-linear cubic mean-field interaction term. In order to access the time-dependent part of the Hamiltonian, and evaluate it, we loop over the dynamic list \texttt{Hsp.dynamic}, which is a list consisting of the corresponding operator \texttt{Hd} together with the time-dependent function \texttt{f} which multiplies it, and its arguments \texttt{f\_args}. In the very end, we multiply the final output vector by the Schr\"odinger $-i$, which ensures the unitarity of real-time evolution.
+\lstinputlisting[firstline=77, lastline=90, firstnumber=77]{\GPcode}
+To perform the real-time evolution explicitly we once again use the \texttt{evolve()} function. This time, however, since the solution of the GPE is anticipated to be complex-valued, and because we do not do imaginary time, we do not need to pass the flags \texttt{real} and \texttt{imag\_time}. Instead, we decided to show the flags for the relative and absolute tolerance of the solver. 
+\lstinputlisting[firstline=91, lastline=92, firstnumber=91]{\GPcode}
 Finally, we can enjoy the movie displaying real-time evolution
-\lstinputlisting[firstline=89, lastline=107]{\GPcode}
+\lstinputlisting[firstline=94, lastline=112,, firstnumber=94]{\GPcode}
 
 The complete code including the lines that produce Fig.~\ref{fig:example8} is available in Example Code~\ref{code:ex8}.
 
 
 
-\subsection{Integrability Breaking and Thermalising Dynamics the Spin-$1$ TFI Model}
+\subsection{Integrability Breaking and Thermalising Dynamics in the Spin-$1$ Transverse-Field Ising Model}
 
 This example shows how to:
 \begin{itemize}

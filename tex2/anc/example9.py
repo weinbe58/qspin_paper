@@ -74,8 +74,8 @@ def real(H_dict,I,psi_0,w,t,i):
 	ti = time() # start timing function for duration of reach realisation
 	# create a parameter list which specifies the onsite potential with disorder
 	params_dict=dict(H0=1)
-	for i in range(L):
-		params_dict["n"+str(i)] = uniform(-w,w)
+	for j in range(L):
+		params_dict["n"+str(j)] = uniform(-w,w)
 	# using the parameters dictionary construct a hamiltonian object with those
 	# parameters defined in the list
 	H = H_dict.tohamiltonian(params_dict)
@@ -108,5 +108,6 @@ plt.ylabel("$\mathcal{I}$",fontsize=18)
 plt.grid(True)
 plt.tick_params(labelsize=16)
 plt.legend(loc=0)
+plt.tight_layout()
 plt.savefig('fermion_MBL.pdf', bbox_inches='tight')
 plt.show()

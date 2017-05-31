@@ -3,7 +3,7 @@ from quspin.basis import fermion_basis_1d # Hilbert space fermion basis
 from quspin.tools.block_tools import block_diag_hamiltonian # block diagonalisation
 import numpy as np # generic math functions
 import matplotlib.pyplot as plt # plotting library
-try: # import python 3 zip function in python 2 and pass if using python 3
+try: # import python 3 zip function in python 2 and pass if already using python 3
     import itertools.izip as zip
 except ImportError:
     pass 
@@ -53,7 +53,7 @@ n_2=n_2.rotate_by(FT,generator=False)
 ##### evaluate nonequal time correlator <FS|n_2(t) n_1(0)|FS> #####
 # define time vector
 t=np.linspace(0.0,90.0,901)
-# calcualte state acted an by n_1
+# calcualte state acted on by n_1
 n_psi0=n_1.dot(psi0)
 # construct time-evolution operator using exp_op class (sometimes faster)
 U = exp_op(Hblock,a=-1j,start=t.min(),stop=t.max(),num=len(t),iterate=True)

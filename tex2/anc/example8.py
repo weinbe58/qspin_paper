@@ -17,7 +17,7 @@ sps = 3 # number of states per site
 J_par_1 = 1.0 # top side of ladder hopping
 J_par_2 = 1.0 # bottom side of ladder hopping
 J_perp =  0.5 # rung hopping
-U = 10.0 # Hubbard interaction
+U = 20.0 # Hubbard interaction
 #
 ##### set up Hamiltonian and observables
 # define site-coupling lists

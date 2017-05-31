@@ -193,7 +193,7 @@ Department of Physics, Boston University, \\
 
 \section*{Abstract}
 {\bf 
-We present a major update to QuSpin, \emph{SciPostPhys.2.1.003}, -- an open-source Python package for exact diagonalization and quantum dynamics of arbitrary boson, fermion and spin many-body systems, supporting the use of various symmetries in one dimension and (imaginary) time evolution following a user-specified driving protocol. We explain how to use the new features of QuSpin using six detailed examples of various complexity: (i) the transverse-field Ising model and the Jordan-Wigner transformation, (ii) free particle systems: the SSH model, (iii) the many-body localised Fermi-Hubbard model, (iv) the Bose-Hubbard model in a ladder geometry, (v) nonlinear (imaginary) time evolution and the Gross-Pitaevskii equation, and (vi) integrability breaking and thermalising dynamics in the spin-$1$ transverse-field Ising model. This easily accessible package can serve various purposes, including educational and cutting-edge experimental and theoretical research.
+We present a major update to QuSpin, \emph{SciPostPhys.2.1.003} -- an open-source Python package for exact diagonalization and quantum dynamics of arbitrary boson, fermion and spin many-body systems, supporting the use of various symmetries in one dimension and (imaginary) time evolution following a user-specified driving protocol. We explain how to use the new features of QuSpin using seven detailed examples of various complexity: (i) the transverse-field Ising model and the Jordan-Wigner transformation, (ii) free particle systems: the SSH model, (iii) the many-body localised Fermi-Hubbard model, (iv) the Bose-Hubbard model in a ladder geometry, (v) nonlinear (imaginary) time evolution and the Gross-Pitaevskii equation, (vi) integrability breaking and thermalising dynamics in the spin-$1$ transverse-field Ising model, and (vii) Bose-Fermi mixtures. This easily accessible package can serve various purposes, including educational and cutting-edge experimental and theoretical research.
 }
 
 
@@ -338,21 +338,21 @@ The complete code including the lines that produce Fig.~\ref{fig:JW} is availabl
 This example shows how to
 \begin{itemize}
 	\item construct free-particle Hamiltonians in real space,
-	\item implement translation invariance with a two-site unit cell and construct the single-particle Hamiltonian in momentum space in block-diagonal form,
+	\item implement translation invariance with a two-site unit cell and construct the single-particle momentum-space block-diagonal Hamiltonian using the \texttt{block\_diag\_hamiltonian} function,
 	\item compute non-equal time correlation functions,
-	\item time evolve quantum states simultaneously
+	\item time evolve multiple quantum states simultaneously.
 \end{itemize}
 
-\noindent\emph{Physics Setup---}The Su-Schrieffer-Heeger (SSH) model of a free-particle on a dimerised chain is widely used to introduce the concept of edge states, topology, Berry phase, etc., in one spatial dimension. The Hamiltonian is given by
+\noindent\emph{Physics Setup---}The Su-Schrieffer-Heeger (SSH) model of a free-particle on a dimerised chain is widely used in one spatial dimension to introduce the concepts of edge states, topology, Berry phase, etc. The Hamiltonian is given by
 \begin{eqnarray}
 H = \sum_{j=0}^{L-1} -(J+(-1)^j\delta J)\left(c_jc^\dagger_{j+1} - c^\dagger_{j}c_{j+1}\right) + \Delta(-1)^jn_j, 
 \label{eq:SSH}
 \end{eqnarray}
-where $\{c_i,c^\dagger_j\}=\delta _{ij}$ obey fermionic commutation relations. The uniform part of the hopping matrix element is $J$, $\delta J$ defines the bond dimerisation, and $\Delta$ is the staggered potential. We assume periodic boundary conditions.
+where $\{c_i,c^\dagger_j\}=\delta _{ij}$ obey fermionic commutation relations. The uniform part of the hopping matrix element is $J$, the bond dimerisation is defined by $\delta J$, and $\Delta$ is the staggered potential. We work with periodic boundary conditions.
 
-Below, we show how one can use QuSpin to study the physics of free fermions in the SSH chain. One way of doing this would be to work in the many-body (Fock space) basis, see Sec.~???. However, whenever the particles are non-interacting, the exponential scaling of the Hilbert space dimension with the number of lattice sites imposes an artificial limitation on the system sizes one can do. Luckily, with no interactions present, the many-body wave functions factorise in a product of single-particle states. Hence, it is possible to study the behaviour of many free bosons and fermions by simulating the physics of a single particle.
+Below, we show how one can use QuSpin to study the physics of free fermions in the SSH chain. One way of doing this would be to work in the many-body (Fock space) basis, see Sec.~\ref{subsec:Fermion_MBL}. However, whenever the particles are non-interacting, the exponential scaling of the Hilbert space dimension with the number of lattice sites imposes an artificial limitation on the system sizes one can do. Luckily, with no interactions present, the many-body wave functions factorise in a product of single-particle states. Hence, it is possible to study the behaviour of many free bosons and fermions by simulating the physics of a single particle, and populating the states according to bosonic or fermionic statistics, respectively.
 
-Making use of translation invariance, a straightforward Fourier transformation to momentum space, $a_k = \sqrt{2/L}\sum_{j\ \mathrm{even}}^{L-1} \mathrm e^{-i k j}c_{j}$ and $b_k = \sqrt{2/L}\sum_{j\ \mathrm{odd}}^{L-1}\mathrm e^{-i k j} c_{j}$, casts the SSH Hamiltonian in the following form
+Making use of translation invariance, a straightforward Fourier transformation to momentum space, $a_k = \sqrt{2/L}\sum_{j:\mathrm{even}}^{L-1} \mathrm e^{-i k j}c_{j}$ and $b_k = \sqrt{2/L}\sum_{j:\mathrm{odd}}^{L-1}\mathrm e^{-i k j} c_{j}$, casts the SSH Hamiltonian in the following form
 \begin{equation}
 H \!=\! \sum_{k\in\mathrm{BZ'}} (a^\dagger_k,b^\dagger_k)
 \left(\begin{array}{cc}
@@ -366,7 +366,21 @@ b_k
 \end{array}
 \!\right),
 \end{equation}
-where the reduced Brillouin zone is defined as $\mathrm{BZ'}=[-\pi/2,\pi/2)$. We thus see that the Hamiltonian reduces further to a set of independent $2\times 2$ matrices. The spectrum of the SSH model is gapped, see Fig.~???.
+where the reduced Brillouin zone is defined as $\mathrm{BZ'}=[-\pi/2,\pi/2)$. We thus see that the Hamiltonian reduces further to a set of independent $2\times 2$ matrices. The spectrum of the SSH model is gapped and, thus, has two bands, see Fig.~\ref{fig:SSH}a.
+
+
+\begin{figure}[t!]
+	\centering
+	\begin{subfigure}[a]{0.496\textwidth}
+		\includegraphics[width=\textwidth]{SSH_spectrum.pdf}
+		%\caption{negative spin inversion/PBC sector}
+	\end{subfigure}
+	\begin{subfigure}[b]{0.496\textwidth}
+		\includegraphics[width=\textwidth]{SSH_correlator.pdf}
+		%\caption{positive spin inversion/APBC sector}
+	\end{subfigure}
+	\caption{\label{fig:SSH} (a) the spectrum of the SSH Hamiltonian in real and momentum space. (b) The non-equal time correlator $C_{i=0,j=L/2}(t)$, cf.~Eq.~\eqref{eq:SSH_corr} as a function of time. The parameters are $\delta J/J=0.1$, $\Delta/J=0.5$, $J\beta=100.0$ and $L=100$.}  
+\end{figure} 
 
 Since we are dealing with free fermions, the ground state is the Fermi sea, $|\mathrm{FS}\rangle$, defined by filling up the lowest band completely. We are interested in measuring the real-space non-equal time correlation function
 \begin{equation}
@@ -375,54 +389,54 @@ C_{ij}(t) = \langle \mathrm{FS}|n_i(t)n_j(0)|\mathrm{FS}\rangle = \langle \mathr
 \end{equation}
 To evaluate the correlator numerically, we shall use the right-hand side of this equation.
 
-As we are studying free particles, it is enough to work with the single-particle states. For instance the Fermi sea is given by $|\mathrm{FS}\rangle = \prod_{k\leq k_F}c^\dagger_k|0\rangle$. Denting the density operator in momentum space by $\hat n_{i}$, one can cast the correlator in momentum space in the following form:
+As we are studying free particles, it is enough to work with the single-particle states. For instance, the Fermi sea can be obtained as $|\mathrm{FS}\rangle = \prod_{k\leq k_F}c^\dagger_k|0\rangle$. Denoting the on-site density operator by $n_{i}$, one can cast the correlator in momentum space in the following form:
 \begin{equation}
-C_{ij}(t) = \sum_{k\leq k_F}\langle k|\hat n_i(t)\hat n_j(0)|k\rangle.
+C_{ij}(t) = \sum_{k\leq k_F}\langle k|n_i(t)\hat n_j(0)|k\rangle.
 \end{equation}
 If we want to consider finite-temperature $\beta^{-1}$, the above formula generalises to
 \begin{equation}
-C_{ij}(t,\beta) = \sum_{k\leq k_F}n_\mathrm{FD}(k,\beta)\langle k|\hat n_i(t)\hat n_j(0)|k\rangle,
+C_{ij}(t,\beta) = \sum_{k\in\mathrm{BZ'}}n_\mathrm{FD}(k,\beta)\langle k|n_i(t) n_j(0)|k\rangle,
 \end{equation} 
-where $n_\mathrm{FD}(k,\beta) = 1/(\exp(\beta E)+1)$ is the Fermi-Dirac distribution at temperature $\beta^{-1}$. Figure~??? shows the time evolution of $C_{ij}(t,\beta)$ for two sites, separated by the maximal distance on the ring: $L/2$. 
+where $n_\mathrm{FD}(k,\beta) = 1/(\exp(\beta E_k)+1)$ is the Fermi-Dirac distribution at temperature $\beta^{-1}$, with $E_k$ the SSH dispersion. Figure~\ref{fig:SSH}b) shows the time evolution of $C_{ij}(t,\beta)$ for two sites, separated by the maximal distance on the ring: $L/2$. 
 
 \noindent\emph{Code Analysis.---}Let us explain how one can do all this quickly and efficiently using QuSpin. As always, we start by loading the required packages and libraries.
 \lstinputlisting[firstline=1, lastline=9]{\SSHcode}
 After that, we define the model parameters
 \lstinputlisting[firstline=10, lastline=15]{\SSHcode}
-In the following, we construct the fermionic SSH Hamiltonian first in real space. We then show how one can also construct it in momentum space where, provided we use periodic boundary conditions, it appear bock-diagonal. Let us define the fermionic site-coupling lists. Once again, we mention that fermion systems require special care in defining the hopping terms: Eq.~\eqref{eq:SSH} is conveniently cast in the form where all site indices on the operators grow to the right, and all signs due to the fermion statistics are explicitly spelt out.  
+In the following, we construct the fermionic SSH Hamiltonian first in real space. We then show how one can also construct it in momentum space where, provided we use periodic boundary conditions, it appears bock-diagonal. Let us define the fermionic site-coupling lists. Once again, we emphasise that fermion systems require special care in defining the hopping terms: Eq.~\eqref{eq:SSH} is conveniently cast in the form where all site indices on the operators grow to the right, and all signs due to the fermion statistics are explicitly spelt out.  
 \lstinputlisting[firstline=16, lastline=20]{\SSHcode}
-Defining the static list assigns the specific SSH operator structure. Since our problem does not possess any explicit time dependence, we leave the \texttt{dynamic} list empty.
+Defining the \texttt{static} list assigns the specific SSH operator structure. Since our problem does not possess any explicit time dependence, we leave the \texttt{dynamic} list empty.
 \lstinputlisting[firstline=21, lastline=23]{\SSHcode}
-Defining the fermion basis with the help of the constructor \texttt{fermion\_basis\_1d} proceeds as smoothly as in Sec.~\ref{subsec:JW}. Notice a cheap trick: by specifying a total of \texttt{Nf=1} fermion in the lattice, QuSpin actually allows to define single-particle models, as a special case of the more general many-body Hamiltonians. Unlike many body models, however, due to the exponentially reduced Hilbert space size, this allows us to scale up the system size \texttt{L}. 
+Setting up the fermion basis with the help of the constructor \texttt{fermion\_basis\_1d} proceeds as smoothly as in Sec.~\ref{subsec:JW}. Notice a cheap trick: by specifying a total of \texttt{Nf=1} fermion in the lattice, QuSpin actually allows to define single-particle models, as a special case of the more general many-body Hamiltonians. Compared to many body models, however, due to the exponentially reduced Hilbert space size, this allows us to scale up the system size \texttt{L}. 
 \lstinputlisting[firstline=24, lastline=25]{\SSHcode}
-We then build the real-valued SSH Hamiltonian in real space by passing the static and dynamic lists, as well as the basis ad the data type, and diagonalise it.
+We then build the real-valued SSH Hamiltonian in real space by passing the static and dynamic lists, as well as the basis and the data type. After that, we and diagonalise it, storing all eigenenergies and eigenstates.
 \lstinputlisting[firstline=26, lastline=29]{\SSHcode}
 
-For translation invariant single-particle models, however, the user might prefer to use momentum space, where the Hamiltonian becomes block diagonal, as we showed above. This can be achieved using QuSpin's \texttt{block\_tools}. The idea behind it is simple: the main purpose is to create the full Hamiltonian in block-diagonal form, where the blocks correspond to pre-defined quantum numbers. In our case, we would like to use momentum or \texttt{kblock}'s. Note that the unit cell in the SSH model contains two sites, which we encode using the variable \texttt{a=2}. Thus, we can create a list of dictionaries \texttt{blocks}, each element of which defines a single symmetry block. If we combine all blocks, we exhaust the full Hilbert space. All other basis arguments, such as the system size, we store in the variable \texttt{basis\_args}. We mention in passing that this procedure is independent of the symmetry, and can be done using all symmetries supported by QuSpin, not only translation.
+For translation invariant single-particle models, however, the user might prefer to use momentum space, where the Hamiltonian becomes block diagonal, as we showed above. This can be achieved using QuSpin's \texttt{block\_tools}. The idea behind this tool is simple: the main purpose is to create the full Hamiltonian in block-diagonal form, where the blocks correspond to pre-defined quantum numbers. In our case, we would like to use momentum or \texttt{kblock}'s. Note that the unit cell in the SSH model contains two sites, which we encode using the variable \texttt{a=2}. Thus, we can create a list of dictionaries \texttt{blocks}, each element of which defines a single symmetry block. If we combine all blocks, we exhaust the full Hilbert space. All other basis arguments, such as the system size, we store in the variable \texttt{basis\_args}. We invite the interested user to check the package documentation for additional optional arguments and functionality of \texttt{block\_tools}, cf.~App.~\ref{app:doc}. We mention in passing that this procedure is independent of the symmetry, and can be done using all symmetries supported by QuSpin, not only translation.
 \lstinputlisting[firstline=30, lastline=33]{\SSHcode}
-To create the block-diagonal Hamiltonian, we invoke the \texttt{block\_diag\_hamiltonian} method. It takes both requires and optional arguments, and returns the transformation which block-diagonalises the Hamiltonian (in our case the Fourier transform) and the block-diagonal Hamiltonian object. Required arguments, in order of appearance, are the \texttt{blocks}, the \texttt{static} and \texttt{dynamic} lists, the basis constructor, \texttt{basis\_args}, and the data type. Since we expect the Hamiltonian to contain the Fourier factors $\exp(-ik)$, we know to choose a complex data type. \texttt{block\_diag\_hamiltonian} also accepts some optional arguments, such as the flags for disabling the automatic built-in symmetry checks. More about this function can be found in the documentation, cf.~App.~\ref{app:doc}.
+To create the block-diagonal Hamiltonian, we invoke the \texttt{block\_diag\_hamiltonian} method. It takes both requires and optional arguments, and returns the transformation which block-diagonalises the Hamiltonian (in our case the Fourier transform) and the block-diagonal Hamiltonian object. Required arguments, in order of appearance, are the \texttt{blocks}, the \texttt{static} and \texttt{dynamic} lists, the basis constructor, \texttt{basis\_args}, and the data type. Since we expect the matrix elements of the momenum-space Hamiltonian to contain the Fourier factors $\exp(-ik)$, we know to choose a complex data type. \texttt{block\_diag\_hamiltonian} also accepts some optional arguments, such as the flags for disabling the automatic built-in symmetry checks. More about this function can be found in the documentation, cf.~App.~\ref{app:doc}.
 \lstinputlisting[firstline=34, lastline=36]{\SSHcode}
-We can then use all functions and methods of the \texttt{hamiltonian} class, for instance the diagonalisation routines:
+We can then use all functions and methods of the \texttt{hamiltonian} class to manipulate the block-diagonal Hamiltonian, for instance the diagonalisation routines:
 \lstinputlisting[firstline=37, lastline=38]{\SSHcode}
 
 We now proceed to calculate the correlation function from Eq.~\eqref{eq:SSH_corr}. To this end, we shall split the correlator according to the RHS of Eq.~\eqref{eq:SSH_corr}. Thus, the strategy is to evolve both the Fermi sea $|\mathrm{FS}(t)\rangle$ and the auxiliary state $|\mathrm{nFS(t)}\rangle$ in time, and compute the expectation value of the time-independent operator $n_i(0)$ in between the two states as a function of time. Last, keep in mind that we do not need to construct the Fermi sea as a many-body state explicitly, so we rather work with single-particle states.
 
-The first step is to collect all momentum eigenstates into the array \texttt{psi}. We then build the operators $n_{j=0}$ and $n_{j=L/2}$ in real space.  
+The first step is to collect all momentum eigenstates into the columns of the array \texttt{psi}. We then build the operators $n_{j=0}$ and $n_{j=L/2}$ in real space.  
 \lstinputlisting[firstline=39, lastline=49]{\SSHcode}
-We then transform these two operators to momentum space using the method \texttt{rotate\_by()}. Setting the flag \texttt{generator=False} treats the Fourier transform \texttt{FT} as a unitary, rather than a generator of a unitary.
+Next, we transform these two operators to momentum space using the method \texttt{rotate\_by()}. Setting the flag \texttt{generator=False} treats the Fourier transform \texttt{FT} as a unitary transformation, rather than a generator of a unitary transformation.
 \lstinputlisting[firstline=50, lastline=52]{\SSHcode} 
 Let us proceed with the time-evolution. We first define the time vector \texttt{t} and the state \texttt{n\_psi0}.
 \lstinputlisting[firstline=53, lastline=57]{\SSHcode}
-We can perform the time evolution in two ways: (i) we calculate the time-evolution operator \texttt{U} using the \texttt{exp\_op} class, and apply it to the momentum states \texttt{psi0} and \texttt{n\_psi0}. The \texttt{exp\_op} class calculates the matrix exponential $\exp(aH)$ of an operator $H$ multiplied by a complex number $a$. One can also conveniently compute a series of matrix exponentials $\exp(aHt)$ for every time $t$ by specifying the stating point \texttt{start}, endpoint \texttt{stop} and the number of elements \texttt{num} which define the time array $t$ via \texttt{t=np.linspace(start,stop,num)}. Last, by parsing the flag \texttt{iterate=True} we create a generator -- an object evaluated only at the time it is called, i.e.~not pre-computed, which can save both time and memory. 
+We can perform the time evolution in two ways: (i) we calculate the time-evolution operator \texttt{U} using the \texttt{exp\_op} class, and apply it to the momentum states \texttt{psi0} and \texttt{n\_psi0}. The \texttt{exp\_op} class calculates the matrix exponential $\exp(aH)$ of an operator $H$ multiplied by a complex number $a$. One can also conveniently compute a series of matrix exponentials $\exp(aHt)$ for every time $t$ by specifying the stating point \texttt{start}, endpoint \texttt{stop} and the number of elements \texttt{num} which define the time array $t$ via \texttt{t=np.linspace(start,stop,num)}. Last, by parsing the flag \texttt{iterate=True} we create a python generator -- a pre-defined object evaluated only at the time it is called, i.e.~not pre-computed, which can save both time and memory. 
 \lstinputlisting[firstline=58, lastline=62]{\SSHcode}
-Another way of doing the time evolution, (ii), is to use \texttt{evolve()} method of the Hamiltonian class. The idea here is that every Hamiltonian defines a generator of time translations. This method solves Schr\"odinger equation using SciPy's ODE integration routines, see App.~\ref{app:doc} for more details. The required aruments, in order of appearance, are the initial state, the initial time, and the time vector. The \texttt{evolve()} method also supports the option to create the output as a generator using the flag \texttt{iterate=True}. Both ways (i) and (ii) time-evolve all momentum states \texttt{psi} at once.
+Another way of doing the time evolution, (ii), is to use the \texttt{evolve()} method of the \texttt{hamiltonian} class. The idea here is that every Hamiltonian defines a generator of time translations. This method solves the Schr\"odinger equation using SciPy's ODE integration routines, see App.~\ref{app:doc} for more details. The required arguments, in order of appearance, are the initial state, the initial time, and the time vector. The \texttt{evolve()} method also supports the option to create the output as a generator using the flag \texttt{iterate=True}. Both ways (i) and (ii) time-evolve all momentum states \texttt{psi} at once.
 \lstinputlisting[firstline=63, lastline=65]{\SSHcode}
-To evaluate the correlator, we first preallocate memory by defining the empty array \texttt{correlators}, which contains the correlator in every single-particle momentum mode $|k\rangle$. Using generators then allows us to loop only once over the time-evolved states \texttt{psi\_t} and \texttt{n\_psi\_t}. In doing so, we evaluate the expectation value $\langle \mathrm{FS}(t)|n_i(0)|\mathrm{nFS}(t)\rangle$ using the \texttt{matrix\_ele()} method of the \texttt{hamiltonian} class. The flag \texttt{diagonal=True} makes sure only the diagonal matrix elements are calculated\footnote{Recall that \texttt{psi\_t} and \texttt{n\_psi\_t} contain many time-evolved states, and if one uses the default \texttt{diagonal=False}, all off-diagonal matrix elements will be computed as well, so the result will be an array} and returned as an one-dimensional array. 
+To evaluate the correlator, we first preallocate memory by defining the empty array \texttt{correlators}, which will be filled with the correlator in every single-particle momentum mode $|k\rangle$. Using generators then allows us to loop only once over time to obtain the time-evolved states \texttt{psi\_t} and \texttt{n\_psi\_t}. In doing so, we evaluate the expectation value $\langle \mathrm{FS}(t)|n_i(0)|\mathrm{nFS}(t)\rangle$ using the \texttt{matrix\_ele()} method of the \texttt{hamiltonian} class. The flag \texttt{diagonal=True} makes sure only the diagonal matrix elements are calculated\footnote{Recall that \texttt{psi\_t} and \texttt{n\_psi\_t} contain many time-evolved states, and if one uses the default \texttt{diagonal=False}, all off-diagonal matrix elements will be computed as well, so the result will be a two-dimensional array} and returned as a one-dimensional array. 
 \lstinputlisting[firstline=66, lastline=70]{\SSHcode}
 Finally, we weigh all singe-state correlators by the Fermi-Dirac distribution to obtain the finite-temperature non-equal time correlation function $C_{0,L/2}(t,\beta)$.
 \lstinputlisting[firstline=71, lastline=73]{\SSHcode}
 
-The complete code including the lines that produce Fig.~\ref{fig:example3} is available in Example Code~\ref{code:ex5}.
+The complete code including the lines that produce Fig.~\ref{fig:SSH} is available in Example Code~\ref{code:ex5}.
 
 
 
@@ -537,7 +551,7 @@ As we consider a translational invariant ladder, the Hilbert space factorizes in
 		\includegraphics[width=0.9\textwidth]{boson_density.pdf}
 		\caption{local density of bosons as a function of time. Later times appearing farther down the page.}
 	\end{subfigure}
-	\caption{\label{fig:BHM} Quantities measured in the BHM: (a) the leg-to-leg entanglement entropy density and (b) the local density on each site as a function of time. The red dots on the entanglement plot shows the time points at which the snapshots of the local density are taken. The parameters are $J=1$, $U=10$, and $L=6$.\cyan{need to replace fig, changed $U\to U/2$}}
+	\caption{\label{fig:BHM} Quantities measured in the BHM: (a) the leg-to-leg entanglement entropy density and (b) the local density on each site as a function of time. The red dots on the entanglement plot shows the time points at which the snapshots of the local density are taken. The parameters are $U/J=20$, and $L=6$.}
 \end{figure}
 
 \noindent\emph{Code Analysis---}Let us now show how one can simulate this system using QuSpin. Following the code structure of previous examples, we begin by loading the modules needed for the computation:
@@ -649,6 +663,7 @@ The complete code including the lines that produce Fig.~\ref{fig:example8} is av
 
 
 \subsection{Integrability Breaking and Thermalising Dynamics in the Spin-$1$ Transverse-Field Ising Model}
+\label{subsec:higher_spin}
 
 This example shows how to:
 \begin{itemize}
@@ -694,7 +709,10 @@ of subsystem A, defined to contain the left half of the chain and $|\mathrm{A}|=
 
 The complete code including the lines that produce Fig.~\ref{fig:example3} is available in Example Code~\ref{code:ex3}.
 
+\subsection{Bose-Fermi Mixtures}
+\label{subsec:BF_mixtures}
 
+\cyan{This is to show the tensor basis once we get the ladders}
 
 \section{New Horizons for QuSpin}
 \label{sec:outro}
@@ -878,6 +896,8 @@ This work was supported by ???
 	\lstinputlisting[label=code:ex7,caption=The Bose-Hubbard Model on Translationally Invariant Ladder]{\BHLcode}
 	\newpage
 	\lstinputlisting[label=code:ex8,caption=The Gross-Pitaevskii Equation and Nonlinear Time Evolution]{\GPcode}
+	\newpage
+	\lstinputlisting[label=code:ex9,caption=Integrability Breaking and Thermalising Dynamics in the Spin-$1$ Transverse-Field Ising Model]{\Spincode}
 	
 	
 \end{appendix}

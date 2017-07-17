@@ -709,10 +709,38 @@ of subsystem A, defined to contain the left half of the chain and $|\mathrm{A}|=
 
 The complete code including the lines that produce Fig.~\ref{fig:example3} is available in Example Code~\ref{code:ex3}.
 
-\subsection{Bose-Fermi Mixtures}
+\subsection{Out-of-Equilibrium Bose-Fermi Mixtures}
 \label{subsec:BF_mixtures}
 
-\cyan{This is to show the tensor basis once we get the ladders}
+The last example in our tutorial shows how to:
+\begin{itemize}
+	\item construct Hamiltonians for Bose-Fermi mixtures using the \texttt{tensor\_basis} class
+	\item periodically drive one subsystem (here the fermions)
+	\item use new basis functionality to construct simple product states in the tensor basis
+	\item use \texttt{obs\_vs\_time} functionality to compute the evolution of the entanglement entropy of the bosons with the fermions.
+\end{itemize}
+
+\noindent\emph{Physics Setup---}The interest in the Bose-Fermi Hubbard model is motivated from different areas of condensed matter and atomic physics. Studying the dressing of (interacting) fermionic atoms submerged in a superfluid Bose gas, the development of the sympathetic cooling technique to cool down spin-polarised fermions which do not interact in the $s$-wave channel, etc., are only a few of the experimental platforms for the rich physics it hides. On the theoretical side, the BFH model is seen as a playground for the understanding of exotic phases of matter, such as the coexistence of superfluid and checkerboard order, supersolid states, and the emergence of dressed compound particles. It is also a natural candidate for the search of supersymmetry in condensed matter.
+
+In this section, we study the generation of interspecies entanglement, in a spinless Bose-Fermi mixture, caused by an external time-dependent drive. The Hamiltonian for the system reads
+\begin{eqnarray}
+\label{eq:H_BFM}
+H(t) &=& H_\mathrm{b} + H_\mathrm{f}(t) + H_\mathrm{bf},\nonumber\\
+H_\mathrm{b} &=& -J_\mathrm{b}\sum_{j}\left(b^\dagger_{j+1}b_j + \mathrm{h.c.}\right) - \frac{U_\mathrm{bb}}{2}\sum_j n^\mathrm{b}_j + \frac{U_\mathrm{bb}}{2}\sum_j n^\mathrm{b}_jn^\mathrm{b}_j,\nonumber\\
+H_\mathrm{f}(t) &=& -J_\mathrm{f}\sum_{j}\left(c^\dagger_{j+1}c_j - c_{j+1}c^\dagger_j\right) + A\cos\Omega t\sum_j (-1)^j n^\mathrm{f}_j +  U_\mathrm{ff}\sum_j n^\mathrm{f}_jn^\mathrm{f}_{j+1},\nonumber\\
+H_\mathrm{bf} &=& U_\mathrm{bf}\sum_j n^\mathrm{b}_jn^\mathrm{f}_j,
+\end{eqnarray} 
+where the operator $b^\dagger_j$ ($c^\dagger_j$) creates a boson (fermion) on site $j$, and the corresponding density is $n^\mathrm{b}_j=b^\dagger_jb_j$ ($n^\mathrm{f}_j=c^\dagger_jc_j$). The hopping matrix elements are denoted by $J_\mathrm{b}$ and $J_\mathrm{f}$, respectively. The bosons are subject to an on-site interaction of strength $U_\mathrm{bb}$, while the spin-polarised fermion-fermion interaction $U_\mathrm{ff}$ is effective on neighbouring sites. The bosonic and fermionic sectors are coupled through an on-site interspecies density-density interaction $U_\mathrm{bf}$. We assume unit filling for the bosons and half-filling for the fermions.
+
+The BF mixture is initially prepared in the product state $|b\rangle|f\rangle=...$. A low-frequency periodic drive of amplitude $A$ and frequency $\Omega$ couples to the staggered potential in the fermions sector, and pumps energy into the system. We study the growth of the entanglement $S_\mathrm{ent}(t)$ between the two species, see Fig.???
+\begin{equation}
+S_\mathrm{ent}(t) = -\mathrm{tr}_\mathrm{b}\left(\rho_\mathrm{b}(t)\log\rho_\mathrm{b}(t)\right),\quad \rho_\mathrm{b}(t) = \mathrm{tr}_\mathrm{f} |\psi(t)\rangle\langle\psi(t)|,
+\end{equation}  
+where $\mathrm{tr}_\mathrm{b}$ ($\mathrm{tr}_\mathrm{f}$) is the trace over the boson (fermion) sector, respectively.
+
+
+
+\noindent\emph{Code Analysis---}...
 
 \section{New Horizons for QuSpin}
 \label{sec:outro}

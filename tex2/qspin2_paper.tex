@@ -656,7 +656,7 @@ Last, we use our GPE ground state, to time-evolve it in real time according to t
 To perform the real-time evolution explicitly we once again use the \texttt{evolve()} function. This time, however, since the solution of the GPE is anticipated to be complex-valued, and because we do not do imaginary time, we do not need to pass the flags \texttt{real} and \texttt{imag\_time}. Instead, we decided to show the flags for the relative and absolute tolerance of the solver. 
 \lstinputlisting[firstline=91, lastline=92, firstnumber=91]{\GPcode}
 Finally, we can enjoy the movie displaying real-time evolution
-\lstinputlisting[firstline=94, lastline=112,, firstnumber=94]{\GPcode}
+\lstinputlisting[firstline=94, lastline=112, firstnumber=94]{\GPcode}
 
 The complete code including the lines that produce Fig.~\ref{fig:example8} is available in Example Code~\ref{code:ex8}.
 
@@ -679,11 +679,12 @@ H_{zz} = -\sum_{i=0}^{L-1} S^z_iS^z_{i+1}, \qquad H_{x} = -\sum_{i=0}^{L-1}S^x_i
 \end{equation}
 and evolve the ferromagnetic ground state of $H_{zz}$ with the following piecewise periodic Hamiltonian:
 \begin{equation}
-H(t)=H_{zz} -\Omega\,\mathrm{sgn}\left(\cos(\Omega t)\right)H_x
+H(t)=H_{zz} -A\,\mathrm{sgn}\left(\cos(\Omega t)\right)H_x
 \end{equation}
-where $\Omega$ is the driving frequency and $T$ is the period. As the Hamiltonian obeys translation,parity and spin-inversion symmetries we will use this to speed up the evolution by working in the symmetry sector which contains the ground state. 
+where $\Omega$ is the driving frequency, $T$ -- the corresponding period, and $A$ -- the driving amplitude. As the Hamiltonian obeys translation,parity and spin-inversion symmetries we will use this to speed up the evolution by working in the symmetry sector which contains the ground state. 
 
-In order to measure the difference in heating between spin-1 and spin-1/2 we measure the expectation value of $H_{zz}$ as a function of time. This operator has a symmetric spectrum and so following ref.[CITE heading papers] we define $Q$:
+\cyan{need equation to show application of unitaries}
+In order to measure the difference in heating between spin-$1$ and spin-$1/2$ we measure the expectation value of $H_{zz}$ as a function of time. This operator has a symmetric spectrum and so following ref.[CITE heading papers] we define $Q$:
 \begin{equation}
 Q(t) =\left\langle\psi(t)\left\vert\frac{ 2\left(H_{zz}-E_\mathrm{min}\right)}{E_\mathrm{max}-E_\mathrm{min}}\right\vert\psi(t)\right\rangle=\left\langle\psi(t)\left\vert\frac{ H_{zz}-E_\mathrm{min}}{-E_\mathrm{min}}\right\vert\psi(t)\right\rangle
 \end{equation}
@@ -701,13 +702,36 @@ of subsystem A, defined to contain the left half of the chain and $|\mathrm{A}|=
 		\includegraphics[width=0.9\textwidth]{TFIM_S.pdf}
 		\caption{$s_\mathrm{ent}(t)/s_\mathrm{Page}$ for $t=nT$}
 	\end{subfigure}
-	\caption{Comparing the dynamics of $Q(t)$ (a) and $s_\mathrm{ent}(t)$ (b) for $S=1$ (orange) and $S=1/2$ (blue) at stroboscopic times ($t=nT$). For $S=1$ and $S=1/2$ we take $L=11$ and $18$ respectively as to make sure the many-body Hilbert spaces have roughly the same number of state. $s_\mathrm{ent}$ is normalized by the Page entropy per site[CITE Page]. Note that for both systems $\Omega=4$.}
+	\caption{\label{fig:example9} Comparing the dynamics of $Q(t)$ (a) and $s_\mathrm{ent}(t)$ (b) for $S=1$ (orange) and $S=1/2$ (blue) at stroboscopic times ($t=nT$). For $S=1$ and $S=1/2$ we take $L=11$ and $18$ respectively as to make sure the many-body Hilbert spaces have roughly the same number of state. $s_\mathrm{ent}$ is normalized by the Page entropy per site[CITE Page]. Note that for both systems $\Omega=4$.}
 \end{figure}
 
-\noindent\emph{Code Analysis---}...
-\lstinputlisting[firstline=1, lastline=55]{\Spincode}
+\noindent\emph{Code Analysis---}Now we explain how to carry out the proposed study using QuSpin. We assume the reader has basic familiarity with QuSpin to set up simple time-dependent Hamiltonians. As is customary, we begin by loading the required Python libraries and packages:
+\lstinputlisting[firstline=1, lastline=7, firstnumber=1]{\Spincode}
+Then, we define the model parameters. Note that we chose all physical couplings to be unity, so the only parameters are the drive frequency and the drive amplitude, which is set equal to the driving frequency [this is chosen arbitrarily]. Also, since the Hilbert space dimensions for the spin-$1/2$ and spin-$1$ systems scale differently with the length of the chain, we shall keep two variables, labelled by \texttt{L\_12} and \texttt{L\_1}, respectively. In general, all variables indexed by \texttt{\_12} and \texttt{\_1} in the code refer to spin-$1/2$ and spin-$1$ quantities, respectively. 
+\lstinputlisting[firstline=9, lastline=13, firstnumber=9]{\Spincode}
+Let us now define the spin bases. To this end, we make use of the \texttt{spin\_basis\_1d} constructor. Notice the optional argument \texttt{S}, which accepts a string (integer or half-integer) to specify the spin vector size. Requesting symmetry blocks works as usual, by using the corresponding optional arguments.
+\lstinputlisting[firstline=15, lastline=20, firstnumber=15]{\Spincode} 
+To set up the site-coupling lists for the two operators in the Hamiltonian we proceed in the usual manner. Using them, we can call the \texttt{hamiltonian} constructor to define $-\sum_j S^z_{j}S^z_{j+1}$ and $-\sum_j S^x_j$. Here we keep the operators separate, in order to do the periodic step-drive evolution, which is why we do not need to define separate static and dynamic lists. We repeat this for both the spin-$1/2$ and the spin-$1$ systems.
+\lstinputlisting[firstline=22, lastline=33, firstnumber=22]{\Spincode}
+In order to do time evolution, we need to define the initial state of our system. In this case, we start from the ground state of the Hamiltonian $-\sum_j S^z_{j}S^z_{j+1}$. We remind the reader that, since we work in a specific symmetry sector, this state may no longer be a product state. To this end, we employ the \texttt{eigsh()} method for sparse hermitian matrices of the \texttt{hamiltonian} class, where we explicitly specify that we are interested in getting a single (\texttt{k=1}) smallest algebraic (i.e.~ground state) eigenenergy, and the corresponding eigenstate (a.k.a.~the ground state), c.f.~Example 1 in Ref.~\cite{weinberg_17_quspin} for more details [PUT LINK TO GITHUB]. 
+\lstinputlisting[firstline=35, lastline=41, firstnumber=35]{\Spincode}
+Let us now move on to simulating the evolution due to the periodic step-drive. Before we begin, we note that QuSpin contains a build-in \texttt{Floquet} class which can be useful for studying this and other periodically-driven systems, see Example 3 in Ref.~\cite{weinberg_17_quspin} [PUT LINK TO GITHUB]. Here, instead, we focus on manually evolving the state. First. we define the number of periods we would like to stroboscopically evolve our system for. Stroboscopic evolution is one where all quantities are evaluated at integer multiple of the driving period. To set up a time vector, which explicitly hits all those points, we use the \texttt{Floquet\_t\_vec} class, which accepts as arguments the frequency \texttt{Omega}, the number of periods \texttt{nT}, and the number of points per period \texttt{len\_T}. The \texttt{Floquet\_t\_vec} class creates an object which has many useful attributes, including the stroboscopic times and their indices, the period, the starting point, etc. We invite the interested reader to check out the documentation [PUT LINK] for more information.
+\lstinputlisting[firstline=44, lastline=46, firstnumber=44]{\Spincode}
+Since the Hamiltonian is piece-wise constant, we can simulate the time evolution by exponentiating the separate terms. Note that, since we choose the driving phase (Floquet gauge) to yield a time-symmetric Hamiltonian, i.e.~$H(-t)=H(t)$, this results in evolving the system with the Hamiltonians $H_{zz}+AH_x$, $H_{zz}-AH_x$, $H_{zz}+AH_x$ for the durations $T/4,T/2,T/4$, respectively (think of the phase of the drive as that of a rectilinear cosine drive). To compute the matrix exponential of a static operator, we make use of the \texttt{exp\_op} class, where $\exp(z B) = $\texttt{exp\_op(B,a=z)} for some complex number $z$ and some operator $B$.
+\lstinputlisting[firstline=47, lastline=51, firstnumber=47]{\Spincode}
+In order to evolve the state itself, we demonstrate how to construct a user-defined generator function \texttt{evolve\_gen()}, which takes the initial state, the number of periods, and a sequence of unitaries within a period to apply them on the state. The generator character of the function means that it will not execute the loops when called for the first time, but rather store information about them, and return the values one by one when prompted to do so later on. This is useful since otherwise we would have to loop over all times to evolve the state first, and then again to compute the observables, As we can we below, the generator function allows us to get away with a single loop.
+\lstinputlisting[firstline=52, lastline=61, firstnumber=52]{\Spincode}
+Finally, we are ready to compute the time-dependent quantities of interest. In order to calculate the expectation $\langle\psi(t)|H_{zz}|\psi(t)\rangle$ QuSpin has a routine called \texttt{obs\_vs\_time()}. It accepts the time-dependent state \texttt{psi\_12\_t} (or its generator), the time vector \texttt{t.vals} to evaluate the observable at, and a dictionary, which contains all observables of interest (here \texttt{Hzz\_12}). The output of \texttt{obs\_vs\_time()} is a dictionary which contains the results: every observable was passed in by a string (here \texttt{"E"}), under which its expectation value will appear, evaluated at the requested times. Further, if one specifies the optional argument \texttt{return\_state=True}, the time-evolved state is also returned under the string \texttt{"psi\_t"}. 
+\lstinputlisting[firstline=63, lastline=66, firstnumber=63]{\Spincode}
+In fact, \texttt{obs\_vs\_time()} can also compute the entanglement entropy at every point of time (see documentation [PUT LINK]). Instead, we decided to show how one can do this using the new functionality of the \texttt{basis} class. Each basis constructor comes with a function method \texttt{ent\_entropy()} which evaluates the entanglement entropy of a given state, and may return the reduced density matrix upon request. To compute the entanglement, the user needs to pass the state (here \texttt{Obs\_12\_t["psi\_t"]}), and a subsystem to define the partition for computing the entanglement. The method \texttt{ent\_entropy()} can handle vectorised calculations, and will compute the entanglement of the state for each point of time. The output is stored in a dictionary, and the entanglement entropy can be accessed with the key \texttt{"Sent\_A"}. Finally, to obtain the entanglement entropy density, we also normalise the results by the size of the subsystem of interest.
+\lstinputlisting[firstline=67, lastline=69, firstnumber=67]{\Spincode}
+In order get an intuition about the amount of entanglement cause in the system by the drive, we use as a reference entanglement the corresponding Page values, \cyan{which are a measure of...}
+\lstinputlisting[firstline=70, lastline=72, firstnumber=70]{\Spincode}
 
-The complete code including the lines that produce Fig.~\ref{fig:example3} is available in Example Code~\ref{code:ex3}.
+The complete code including the lines that produce Fig.~\ref{fig:example9} is available in Example Code~\ref{code:ex9}.
+
+
+
 
 \subsection{Out-of-Equilibrium Bose-Fermi Mixtures}
 \label{subsec:BF_mixtures}

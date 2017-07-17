@@ -1,10 +1,9 @@
 from __future__ import print_function, division
 from quspin.operators import hamiltonian
-from quspin.basis import tensor_basis,fermion_basis_1d,boson_basis_1d # Hilbert spaces
+from quspin.basis import tensor_basis,fermion_basis_1d,boson_basis_1d # bases
 from quspin.tools.measurements import obs_vs_time # calculating dynamics
 from quspin.tools.Floquet import Floquet_t_vec # period-spaced time vector
 import numpy as np # general math functions
-from time import time # tool for calculating computation time
 import matplotlib.pyplot as plt # plotting
 #
 ##### setting parameters for simulation
@@ -69,7 +68,7 @@ psi_0[i_0] = 1.0 # set MB state to be the given product state
 print("H-space size: {:d}, initial state: |{:s}>(x)|{:s}>".format(basis.Ns,s_b,s_f))
 #
 ###### time evolve initial state and measure entanglement between species
-t=Floquet_t_vec(Omega,10,len_T=10) # t.vals=times, t.i=init. time, t.T=drive period
+t=Floquet_t_vec(Omega,10,len_T=10) # t.vals=times, t.i=initial time, t.T=drive period
 psi_t = H_BFM.evolve(psi_0,t.i,t.vals,iterate=True)
 # measure observable
 Sent_args=dict(basis=basis,sub_sys_A="left")

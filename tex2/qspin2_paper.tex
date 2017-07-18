@@ -667,33 +667,49 @@ The complete code including the lines that produce Fig.~\ref{fig:example8} is av
 
 This example shows how to:
 \begin{itemize}
-	\item construct Hamiltonians for Higher spin operators.
-	\item find ground state of a Hamiltonian
-	\item use obs\_vs\_time function with costume user defined generator to calculate the expectation value of operators as a function of time.
-	\item use the new functionality of the basis class to calculate the entanglement entropy for higher spin.
+	\item construct Hamiltonians for higher spin systems.
+	\item find a ground state of a Hamiltonian
+	\item use the \texttt{obs\_vs\_time} routine with custom user defined generator to calculate the expectation value of operators as a function of time.
+	\item use the new functionality of the basis class to calculate the entanglement entropy.
 \end{itemize}
 
-\noindent{\emph{Physics Setup---}} In the previous section we introduced the TFI model and showed how one can solve the problem using the Jordan-Wigner transformation. This transformation allows one to get an exact analytic solution to the Hamiltonian (when the system obeys translational invariance). The fact that this solution exists in deeply connected to the notion of Integrability which has implications of how the system responds to a periodic modulation [CITE]. For non-integrable system when periodic driving, energy is no longer conserved and so generically one would expect that the system will heat up to infinite temperature, while in an integrable system, even though energy is not conserved, there are an extensive number of other static conserved quantities which may be conserved under the drive. If this is the case, then the system will not heat up at long times, but instead reach some steady state. By simply taking the transverse field ising model and promoting the spin-1/2 operators to spin-1, there is no longer a simple mapping to a quadratic Hamiltonian and therefore the model is no longer integrable. Here we will show this explicitly by driving the two different systems and checking it they heat or not. To do this we will define two Hamiltonians
+\noindent{\emph{Physics Setup---}} In Sec.~\ref{subsec:JW}, we introduced the spin-$1/2$ transverse-field Ising (TFI) model and showed how one can map it to an exactly-solvable quadratic fermion Hamiltonian using the Jordan-Wigner transformation. This transformation allows one to obtain an exact, closed-form analytic expression for the eigenstates and eigenenergies of the Hamiltonian (at least when the system obeys translational invariance). The fact that such a transformation exists is intrinsically related to the model being integrable. Integrable models feature an extensive amount of local integrals of motion -- conserved quantities which impose specific selection rules for the transitions between the states of the system. As a result, such models thermalise in a restricted sense, i.e.~in conformity with all these integrals of motion, and the long-time behaviour of the system is captured by a generalised Gibbs ensemble[CITE]. The system thermalises but thermalisation is constrained. On the other hand, non-integrable systems have a far less restricted phase space, and feature unconstrained thermalisation. Their long-time behaviour is thus captured by the Gibbs ensemble. Since thermalising dynamics appears to be intrinsically related to the lack of integrability, if detected, one can use it as an indicator for the absence of a simple, closed form expression for the eigenstates and the eigenenergies of generic quantum many-body systems.
+
+Suppose you have a model, and you are trying to determine its long-time thermalisation behaviour, from which in general you can infer information about integrability. One way to proceed is to conceive a numerical experiment: if we subject the system to periodic driving, this will lift energy conservation. Then, in the non-integrable case, it will absorb energy from the drive until the state reaches infinite-temperature. On the contrary, in the integrable scenario unlimited energy absorption will be inhibited by the existence of the additional conservation laws, and the system is likely to get stuck at some energy density corresponding to a finite temperature. Hence, the long-time dynamics of out-of-equilibrium many-body systems can be used to extract useful information about the complexity of the underlying Hamiltonian.
+
+Below, we take the transverse field Ising model and promote the spin-$1/2$ operators to spin-$1$. There is no known simple mapping to a quadratic Hamiltonian for spin-$1$ and, therefore, the model is likely no longer integrable. Here, we study thermalisation through energy absorption by periodically driving the two spin systems and demonstrate the difference in the long-time heating behaviour between the two. To this end, let us define two operators
 \begin{equation}
 H_{zz} = -\sum_{i=0}^{L-1} S^z_iS^z_{i+1}, \qquad H_{x} = -\sum_{i=0}^{L-1}S^x_i
 \end{equation}
-and evolve the ferromagnetic ground state of $H_{zz}$ with the following piecewise periodic Hamiltonian:
+and use them to construct the following piecewise periodic Hamiltonian $H(t)=H(t+T)$ where:
 \begin{equation}
-H(t)=H_{zz} -A\,\mathrm{sgn}\left(\cos(\Omega t)\right)H_x
+H(t)=\Bigg\{ \begin{array}{cc}
+H_{zz} +AH_x,& \qquad t\in[0,T/4), \\
+H_{zz} -AH_x,& \qquad t\in[T/4,3T/4),\\
+H_{zz} +AH_x,& \qquad t\in[3T/4,T)
+\end{array}
 \end{equation}
-where $\Omega$ is the driving frequency, $T$ -- the corresponding period, and $A$ -- the driving amplitude. As the Hamiltonian obeys translation,parity and spin-inversion symmetries we will use this to speed up the evolution by working in the symmetry sector which contains the ground state. 
+where $T=2\pi/\Omega$ is the corresponding period, and $A$ and $\Omega$ -- the driving amplitude and frequency, respectively. The dynamics is initialised in the ferromagnetic \cyan{is it really ferromagnetic in the presence of symmetries?} ground state of $H_{zz}$, $|\psi_i\rangle$. As the Hamiltonian obeys translation, parity and spin-inversion symmetry at all times, we will use this to reach larger system sizes by working in the symmetry sector which contains the ground state. We are only interested in the evolution of the state at integer multiples of the driving period $T$, i.e.~stroboscopically. The state at the $\ell$-th period is conveniently obtained by successive application of the Floquet unitary $U_F$:
+\begin{eqnarray}
+|\psi(\ell T)\rangle = [U_F(T)]^\ell|\psi_i\rangle, \qquad U_F(T)=\mathrm e^{-iT/4(H_{zz} +AH_x)}
+\mathrm e^{-iT/2(H_{zz} -AH_x)}\mathrm e^{-iT/4(H_{zz} +AH_x)}
+\end{eqnarray} 
 
-\cyan{need equation to show application of unitaries}
-In order to measure the difference in heating between spin-$1$ and spin-$1/2$ we measure the expectation value of $H_{zz}$ as a function of time. This operator has a symmetric spectrum and so following ref.[CITE heading papers] we define $Q$:
+In order to see the difference in the long-time heating behaviour between spin-$1$ and spin-$1/2$ we measure the expectation value of $H_{zz}$ as a function of time. Let us define the relative energy $Q$ absorbed from the drive:
 \begin{equation}
-Q(t) =\left\langle\psi(t)\left\vert\frac{ 2\left(H_{zz}-E_\mathrm{min}\right)}{E_\mathrm{max}-E_\mathrm{min}}\right\vert\psi(t)\right\rangle=\left\langle\psi(t)\left\vert\frac{ H_{zz}-E_\mathrm{min}}{-E_\mathrm{min}}\right\vert\psi(t)\right\rangle
+Q(t) =\left\langle\psi(t)\left\vert\frac{ \left(H_{zz}-E_\mathrm{min}\right)}{E_\mathrm{inf.~temp.}-E_\mathrm{min}}\right\vert\psi(t)\right\rangle=\left\langle\psi(t)\left\vert\frac{ H_{zz}-E_\mathrm{min}}{-E_\mathrm{min}}\right\vert\psi(t)\right\rangle
 \end{equation}
-where the last equality comes from the symmetry of the spectrum: $E_\mathrm{max}=-E_\mathrm{min}$. This quantity is defined such that an infinite temperature state has $Q=1$. Another measure of heating we will use is the entanglement entropy density
+where the last equality comes from the fact every state in the spectrum of $H_{zz}$ has a partner of opposite energy, and thus $E_\mathrm{inf.~temp.}=0$. This quantity is normalised such that an infinite-temperature state has $Q=1$, while a zero-temperature state -- $Q=0$. 
+
+Since $H_{zz}$ is not the only observable, one might worry that some of the information contained in the quantum is lost. Hence, we also look at the entanglement entropy density, which is a property of the quantum state itself:
 \begin{equation}
 s_\mathrm{ent}(t) = -\frac{1}{|\mathrm{A}|}\mathrm{tr}_{\mathrm{A}}\left[\rho_\mathrm{A}(t)\log\rho_\mathrm{A}(t)\right], \qquad \rho_\mathrm{A}(t) = \mathrm{tr}_{\mathrm{A^c}} |\psi(t)\rangle\langle\psi(t)|
 \end{equation}
-of subsystem A, defined to contain the left half of the chain and $|\mathrm{A}|=L/2$. We denoted the reduced density matrix of subsystem A by $\rho_\mathrm{A}$, and $\mathrm{A^c}$ is the complement of A. 
-\begin{figure}
+of subsystem A, defined to contain the left half of the chain and $|\mathrm{A}|=L/2$. We denoted the reduced density matrix of subsystem A by $\rho_\mathrm{A}$, and $\mathrm{A^c}$ is the complement of A. To obtain a dimensionless quantity, we normalise the entanglement entropy by the corresponding Page value[CITE].
+
+The dynamics of the excess energy and the entanglement are shown in Fig.~\ref{fig:example9}. 
+
+\begin{figure}[t!]
 	\begin{subfigure}[a]{0.496\textwidth}
 		\includegraphics[width=0.9\textwidth]{TFIM_Q.pdf}
 		\caption{$Q(t)$ for $t=nT$}

@@ -1,12 +1,12 @@
 from __future__ import print_function, division
-from quspin.operators import hamiltonian
+from quspin.operators import hamiltonian # Hamiltonians and operators
 from quspin.basis import tensor_basis,fermion_basis_1d,boson_basis_1d # bases
 from quspin.tools.measurements import obs_vs_time # calculating dynamics
 from quspin.tools.Floquet import Floquet_t_vec # period-spaced time vector
 import numpy as np # general math functions
 import matplotlib.pyplot as plt # plotting
 #
-##### setting parameters for simulation
+##### setting up parameters for simulation
 # physical parameters
 L = 6 # system size
 Nf, Nb = L//2, L # number of fermions, bosons
@@ -22,9 +22,9 @@ drive_args=[Omega]
 #
 ###### create the basis
 # build the two bases to tensor together to spinful fermions
-basis_b = boson_basis_1d(L,Nb=Nb,sps=3) # boson basis
-basis_f = fermion_basis_1d(L,Nf=Nf) # fermion basis
-basis = tensor_basis(basis_b,basis_f) # total fermions
+basis_b=boson_basis_1d(L,Nb=Nb,sps=3) # boson basis
+basis_f=fermion_basis_1d(L,Nf=Nf) # fermion basis
+basis=tensor_basis(basis_b,basis_f) # total fermions
 #
 ##### create model
 # define site-coupling lists
@@ -53,15 +53,13 @@ static = [
 			]
 dynamic = [["|n",drive_f,drive,drive_args]] # drive couples to fermions only
 #
-###### setting up operators	
-# set up hamiltonian 
+###### set up Hamiltonian and initial states
 no_checks = dict(check_pcon=False,check_symm=False,check_herm=False)
 H_BFM = hamiltonian(static,dynamic,basis=basis,**no_checks)
-# strings which represent the initial state
+# define initial Fock state through strings
 s_f = "".join("1" for i in range(Nf)) + "".join("0" for i in range(L-Nf))
 s_b = "".join("1" for i in range(Nb))
-# basis.index accepts strings and returns the index 
-# which corresponds to that state in the basis list
+# basis.index accepts strings and returns the index which corresponds to that state in the basis list
 i_0 = basis.index(s_b,s_f) # find index of product state
 psi_0 = np.zeros(basis.Ns) # allocate space for state
 psi_0[i_0] = 1.0 # set MB state to be the given product state
@@ -78,12 +76,11 @@ Entropy_t = meas["Sent_time"]["Sent_A"]
 #
 ######
 # configuring plots
-plt.plot(t.vals/t.T, Entropy_t, label='$S_\\mathrm{ent}(t)$')
+plt.plot(t.vals/t.T, Entropy_t)
 plt.xlabel("$\\mathrm{driving\\ cycle}$",fontsize=18)
-#plt.ylabel("$\mathcal{I}$",fontsize=18)
+plt.ylabel('$S_\\mathrm{ent}(t)$',fontsize=18)
 plt.grid(True)
 plt.tick_params(labelsize=16)
-plt.legend(fontsize=18)
 plt.tight_layout()
-#plt.savefig('fermion_MBL.pdf', bbox_inches='tight')
+plt.savefig('BFM.pdf', bbox_inches='tight')
 plt.show()

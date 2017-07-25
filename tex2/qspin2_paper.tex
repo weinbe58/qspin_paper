@@ -154,6 +154,7 @@
 
 \newcommand{\BHLcode}{example8.py}
 \newcommand{\MBLcode}{example9.py}
+\newcommand{\BFMcode}{example10.py}
 \newcommand{\Spincode}{example7.py}
 \newcommand{\JWcode}{example6.py}
 \newcommand{\GPcode}{example4.py}
@@ -212,7 +213,8 @@ We present a major update to QuSpin, \emph{SciPostPhys.2.1.003} -- an open-sourc
 
 \cyan{
 \begin{itemize}
-	\item re-label numbering of examples to match order in text.
+	\item re-label numbering of examples to match order in text
+	\item insert references	
 \end{itemize}
 	}
 
@@ -739,7 +741,7 @@ In order to evolve the state itself, we demonstrate how to construct a user-defi
 \lstinputlisting[firstline=52, lastline=61, firstnumber=52]{\Spincode}
 Finally, we are ready to compute the time-dependent quantities of interest. In order to calculate the expectation $\langle\psi(t)|H_{zz}|\psi(t)\rangle$ QuSpin has a routine called \texttt{obs\_vs\_time()}. It accepts the time-dependent state \texttt{psi\_12\_t} (or its generator), the time vector \texttt{t.vals} to evaluate the observable at, and a dictionary, which contains all observables of interest (here \texttt{Hzz\_12}). The output of \texttt{obs\_vs\_time()} is a dictionary which contains the results: every observable was passed in by a string (here \texttt{"E"}), under which its expectation value will appear, evaluated at the requested times. Further, if one specifies the optional argument \texttt{return\_state=True}, the time-evolved state is also returned under the string \texttt{"psi\_t"}. 
 \lstinputlisting[firstline=63, lastline=66, firstnumber=63]{\Spincode}
-In fact, \texttt{obs\_vs\_time()} can also compute the entanglement entropy at every point of time (see documentation [PUT LINK]). Instead, we decided to show how one can do this using the new functionality of the \texttt{basis} class. Each basis constructor comes with a function method \texttt{ent\_entropy()} which evaluates the entanglement entropy of a given state, and may return the reduced density matrix upon request. To compute the entanglement, the user needs to pass the state (here \texttt{Obs\_12\_t["psi\_t"]}), and a subsystem to define the partition for computing the entanglement. The method \texttt{ent\_entropy()} can handle vectorised calculations, and will compute the entanglement of the state for each point of time. The output is stored in a dictionary, and the entanglement entropy can be accessed with the key \texttt{"Sent\_A"}. Finally, to obtain the entanglement entropy density, we also normalise the results by the size of the subsystem of interest.
+In fact, \texttt{obs\_vs\_time()} can also compute the entanglement entropy at every point of time (see documentation or Sec.~\ref{subsec:BF_mixtures}). Instead, we decided to show how one can do this using the new functionality of the \texttt{basis} class. Each basis constructor comes with a function method \texttt{ent\_entropy()} which evaluates the entanglement entropy of a given state, and may return the reduced density matrix upon request. To compute the entanglement, the user needs to pass the state (here \texttt{Obs\_12\_t["psi\_t"]}), and a subsystem to define the partition for computing the entanglement. The method \texttt{ent\_entropy()} can handle vectorised calculations, and will compute the entanglement of the state for each point of time. The output is stored in a dictionary, and the entanglement entropy can be accessed with the key \texttt{"Sent\_A"}. Finally, to obtain the entanglement entropy density, we also normalise the results by the size of the subsystem of interest.
 \lstinputlisting[firstline=67, lastline=69, firstnumber=67]{\Spincode}
 In order get an intuition about the amount of entanglement cause in the system by the drive, we use as a reference entanglement the corresponding Page values, \cyan{which are a measure of...}
 \lstinputlisting[firstline=70, lastline=72, firstnumber=70]{\Spincode}
@@ -760,9 +762,9 @@ The last example in our tutorial shows how to:
 	\item use \texttt{obs\_vs\_time} functionality to compute the evolution of the entanglement entropy of the bosons with the fermions.
 \end{itemize}
 
-\noindent\emph{Physics Setup---}The interest in the Bose-Fermi Hubbard model is motivated from different areas of condensed matter and atomic physics. Studying the dressing of (interacting) fermionic atoms submerged in a superfluid Bose gas, the development of the sympathetic cooling technique to cool down spin-polarised fermions which do not interact in the $s$-wave channel, etc., are only a few of the experimental platforms for the rich physics it hides. On the theoretical side, the BFH model is seen as a playground for the understanding of exotic phases of matter, such as the coexistence of superfluid and checkerboard order, supersolid states, and the emergence of dressed compound particles. It is also a natural candidate for the search of supersymmetry in condensed matter.
+\noindent\emph{Physics Setup---}The interest in the Bose-Fermi Hubbard (BFH) model is motivated from different areas of condensed matter and atomic physics. Studying the dressing of (interacting) fermionic atoms submerged in a superfluid Bose gas, the development of the sympathetic cooling technique to cool down spin-polarised fermions which do not interact in the $s$-wave channel, etc., are only a few of the experimental platforms for the rich physics Bose-Fermi mixtures (BFM) hide. On the theoretical side, the BFH model is seen as a playground for the understanding of exotic phases of matter, such as the coexistence of superfluid and checkerboard order, supersolid states, and the emergence of dressed compound particles. It is also a natural candidate for the search of manifestations of supersymmetry in condensed matter.
 
-In this section, we study the generation of interspecies entanglement, in a spinless Bose-Fermi mixture, caused by an external time-dependent drive. The Hamiltonian for the system reads
+In this section, we study the generation of interspecies entanglement in a spinless Bose-Fermi mixture, caused by an external time-dependent drive. The Hamiltonian for the system reads
 \begin{eqnarray}
 \label{eq:H_BFM}
 H(t) &=& H_\mathrm{b} + H_\mathrm{f}(t) + H_\mathrm{bf},\nonumber\\
@@ -770,17 +772,50 @@ H_\mathrm{b} &=& -J_\mathrm{b}\sum_{j}\left(b^\dagger_{j+1}b_j + \mathrm{h.c.}\r
 H_\mathrm{f}(t) &=& -J_\mathrm{f}\sum_{j}\left(c^\dagger_{j+1}c_j - c_{j+1}c^\dagger_j\right) + A\cos\Omega t\sum_j (-1)^j n^\mathrm{f}_j +  U_\mathrm{ff}\sum_j n^\mathrm{f}_jn^\mathrm{f}_{j+1},\nonumber\\
 H_\mathrm{bf} &=& U_\mathrm{bf}\sum_j n^\mathrm{b}_jn^\mathrm{f}_j,
 \end{eqnarray} 
-where the operator $b^\dagger_j$ ($c^\dagger_j$) creates a boson (fermion) on site $j$, and the corresponding density is $n^\mathrm{b}_j=b^\dagger_jb_j$ ($n^\mathrm{f}_j=c^\dagger_jc_j$). The hopping matrix elements are denoted by $J_\mathrm{b}$ and $J_\mathrm{f}$, respectively. The bosons are subject to an on-site interaction of strength $U_\mathrm{bb}$, while the spin-polarised fermion-fermion interaction $U_\mathrm{ff}$ is effective on neighbouring sites. The bosonic and fermionic sectors are coupled through an on-site interspecies density-density interaction $U_\mathrm{bf}$. We assume unit filling for the bosons and half-filling for the fermions.
+where the operator $b^\dagger_j$ ($c^\dagger_j$) creates a boson (fermion) on site $j$, and the corresponding density is $n^\mathrm{b}_j=b^\dagger_jb_j$ ($n^\mathrm{f}_j=c^\dagger_jc_j$). The hopping matrix elements are denoted by $J_\mathrm{b}$ and $J_\mathrm{f}$, respectively. The bosons are subject to an on-site interaction of strength $U_\mathrm{bb}$, while the spin-polarised fermion-fermion interaction $U_\mathrm{ff}$ is effective on nearest-neighbouring sites. The bosonic and fermionic sectors are coupled through an on-site interspecies density-density interaction $U_\mathrm{bf}$. We assume unit filling for the bosons and half-filling for the fermions.
 
-The BF mixture is initially prepared in the product state $|b\rangle|f\rangle=...$. A low-frequency periodic drive of amplitude $A$ and frequency $\Omega$ couples to the staggered potential in the fermions sector, and pumps energy into the system. We study the growth of the entanglement $S_\mathrm{ent}(t)$ between the two species, see Fig.???
+\begin{figure}[t!]
+	\centering
+	\includegraphics[width=0.5\textwidth]{BFM.pdf}
+	\caption{\label{fig:BFM} Entanglement entropy of one species as a function of time. This data was taken on a chain of length $L=6$.}
+\end{figure}
+
+The BF mixture is initially prepared in the product state $|b\rangle|f\rangle=...$. A low-frequency periodic drive of amplitude $A$ and frequency $\Omega$ couples to the staggered potential in the fermions sector, and pumps energy into the system. We study the growth of the entanglement $S_\mathrm{ent}(t)$ between the two species, see Fig.~\ref{fig:BFM}.
 \begin{equation}
 S_\mathrm{ent}(t) = -\mathrm{tr}_\mathrm{b}\left(\rho_\mathrm{b}(t)\log\rho_\mathrm{b}(t)\right),\quad \rho_\mathrm{b}(t) = \mathrm{tr}_\mathrm{f} |\psi(t)\rangle\langle\psi(t)|,
 \end{equation}  
-where $\mathrm{tr}_\mathrm{b}$ ($\mathrm{tr}_\mathrm{f}$) is the trace over the boson (fermion) sector, respectively.
+where $\mathrm{tr}_\mathrm{b}(\cdot)$ and $\mathrm{tr}_\mathrm{f}(\cdot)$ are the traces over the boson and fermion sectors, respectively.
 
 
+\noindent\emph{Code Analysis---}Let us explain how to code up the Hamiltonian for the BHM now. As always, we begin by loading the necessary modules for the simulation. New here is the \texttt{tensor\_basis} class with the help of which one can construct the basis for tensor product Hilbert space:
+\lstinputlisting[firstline=1, lastline=7, firstnumber=1]{\BFMcode}
+First, we define the model parameters, and the drive:
+\lstinputlisting[firstline=9, lastline=21, firstnumber=9]{\BFMcode}
+Next we set up the basis, introducing here the \texttt{tensor\_basis} constructor class. In its full-fledged generality, \texttt{tensor\_basis} takes $n$ basis objects which it then uses to construct the matrix elements in the tensor product space: 
+\begin{equation}
+\mathcal{H} = \mathcal{H}_1\otimes\mathcal{H}_2\otimes\cdots\otimes\mathcal{H}_n.
+\end{equation}
+Here we consider the case of two Hilbert spaces, $\mathcal{H} = \mathcal{H}_1\otimes\mathcal{H}_2$, one for bosons and one for fermions\footnote{to construct a \texttt{tensor\_basis} object in general: \texttt{t\_basis = tensor\_basis(basis\_1,basis\_2,...,basis\_n)}}. One disadvantage of using the tensor basis is that it does not allow for the use of symmetries, beyond particle-conservation (magnetisation in the case of spin systems). This is because a tensor basis need not obey the symmetries of the individual bases. 
+\lstinputlisting[firstline=23, lastline=27, firstnumber=23]{\BFMcode}
+To create the Hamiltonian, we again use the usual form of the site-coupling lists, as if we would construct a single-species operator. Since the site-coupling lists do not yet know which operators they will refer to, this is straightforward [mind the signs for the fermionic hopping operators, though, see Sec.~\ref{subsec:SSH_model}]. We use the subscripts \texttt{b}, \texttt{f} and \texttt{bf} to designate which species this lists will refer to:
+\lstinputlisting[firstline=29, lastline=40, firstnumber=29]{\BFMcode}
+The new part comes in specifying the \texttt{static} and \texttt{dynamic} lists. This is where we tell the code that we are dealing with two species, tensored together. Notice here that the \texttt{"|"} character is used to separate the operators which belong to the boson (left side of tensor product) and fermion (right side of tensor product) Hilbert spaces in \texttt{basis}. If no string in present, the operator is assumed to be the identity \texttt{'I'}. The site-coupling lists, on the other hand, do not require separating the two sides of the tensor product, as it is assumed that the operator string lines up with the correct site index when the \texttt{'|'} character is removed. For instance, the only term which couples te bosons and the fermions is a density-density interaction. It is the corresponding site-coupling list, thought, that determines that it is of on-site type. Te syntax is the same for both \texttt{static} and \texttt{dynamic} lists.
+\lstinputlisting[firstline=41, lastline=54, firstnumber=41]{\BFMcode}
+Computing the Hamiltonian for the BHM is done in one line:
+\lstinputlisting[firstline=56, lastline=58, firstnumber=56]{\BFMcode} 
+As the basis states are coded as integers, it might be hard to find the integer corresponding to a particular Fock basis state. Therefore, the \texttt{tensor\_basis} class has a method for finding the index of a particular Fock state in the \texttt{basis}. The user just has to pass a string with zeros and ones to determine which sites are occupied and which empty. For the BHM, we choose an initial state where each site is occupied by one boson, while the fermions start in a domain wall occupying the left half of the chain. We call the index of the basis array which corresponds to the initial state \texttt{i\_0}. To create the pure initial Fock state in the full Hilbert space, we first define an array \texttt{psi\_0} which is empty, except for the position \texttt{i\_0}, where the component is set to unity by the normalisation requirement.
+\lstinputlisting[firstline=62, lastline=66, firstnumber=62]{\BFMcode} 
+To compute the time evolution of the state under the Hamiltonian $H(t)$, we make use of the \texttt{Floquet\_t\_vec} class to create a time vector which hits all stroboscopic points, and further contains \texttt{len\_T=10} points per period. For the dynamics, we use the \texttt{evolve()} method of the \texttt{hamiltonian} constructor class (the details of this have been explain in Secs.???). Note that we create a generator object \texttt{psi\_t}, which yields the evolved state, time step by time step.
+\lstinputlisting[firstline=68, lastline=70, firstnumber=68]{\BFMcode} 
+In Sec.~\ref{subsec:higher_spin}, we showed how one can use the method \texttt{basis.ent\_entropy()} to compute the time evolution of the entanglement entropy, if we have the time-evolved state. Here, we show a different way of obtaining the same result. We use function \texttt{obs\_vs\_time()}, with the user-defined generator \texttt{psi\_t} as an input. In general, \texttt{obs\_vs\_time()}, calculates the expectation of observables, see Sec.~\ref{subsec:higher_spin}. However, if we parse a non-empty dictionary, called \texttt{Sent\_args}, which contains the arguments for \texttt{basis.ent\_entropy()}, we can immediately get the result. 
+\lstinputlisting[firstline=71, lastline=73, firstnumber=71]{\BFMcode} 
+The output of \texttt{obs\_vs\_time()} is a dictionary. The results pertaining to the calculation of entanglement
+are stored under the key \texttt{"Sent\_time"}. The corresponding value itself is another dictionary, the output of \texttt{basis.ent\_entropy()}, in which the entropy is stored under the key \texttt{"Sent\_A"}. That second dictionary can also contain other objects, such as the reduced DM at all times, if these are specified in the variable \texttt{Srdm\_args}. For more information on that, we refer the user to the documentation.
+\lstinputlisting[firstline=74, lastline=75, firstnumber=74]{\BFMcode}.
+ 
+The complete code including the lines that produce Fig.~\ref{fig:example10} is available in Example Code~\ref{code:ex10}.
 
-\noindent\emph{Code Analysis---}...
+
 
 \section{New Horizons for QuSpin}
 \label{sec:outro}
@@ -796,7 +831,7 @@ We would much appreciate it if the users could report bugs using the \href{https
 
 
 \section*{Acknowledgements}
-We would like to thank L.~Pollet, M.~Kolodrubetz, S.~Capponi ... for various stimulating discussions and for providing comments on the draft. The authors are pleased to acknowledge that the computational work reported on in this paper was performed on the Shared Computing Cluster which is administered by \href{http://www.bu.edu/tech/support/research/}{Boston University's Research Computing Services}. The authors also acknowledge the Research Computing Services group for providing consulting support which has contributed to the results reported within this paper. We would also like to thank \href{https://github.com/}{Github} for providing the online resources to help develop and maintain this project. 
+We would like to thank L.~Pollet, M.~Kolodrubetz, S.~Capponi ... for various stimulating discussions and for providing comments on the draft. The authors are pleased to acknowledge that the computational work reported on in this paper was performed on the Shared Computing Cluster which is administered by \href{http://www.bu.edu/tech/support/research/}{Boston University's Research Computing Services}. The authors also acknowledge the Research Computing Services group for providing consulting support which has contributed to the results reported within this paper. We would also like to thank \href{https://github.com/}{Github} for providing the online resources to help develop and maintain this project, \cyan{and the Sphinx[CITE] project which makes it possible to maintain an easy-to-read and up-to-date documentation[PUT link]} . 
 
 % TODO: include funding information
 \paragraph{Funding information}
@@ -966,7 +1001,9 @@ This work was supported by ???
 	\lstinputlisting[label=code:ex8,caption=The Gross-Pitaevskii Equation and Nonlinear Time Evolution]{\GPcode}
 	\newpage
 	\lstinputlisting[label=code:ex9,caption=Integrability Breaking and Thermalising Dynamics in the Spin-$1$ Transverse-Field Ising Model]{\Spincode}
-	
+	\newpage
+	\lstinputlisting[label=code:ex10,caption=Out-of-Equilibrium Bose-Fermi Mixtures]{\BFMcode}	
+	\newpage 
 	
 \end{appendix}
 

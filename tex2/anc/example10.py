@@ -60,7 +60,7 @@ H_BFM = hamiltonian(static,dynamic,basis=basis,**no_checks)
 s_f = "".join("1" for i in range(Nf)) + "".join("0" for i in range(L-Nf))
 s_b = "".join("1" for i in range(Nb))
 # basis.index accepts strings and returns the index which corresponds to that state in the basis list
-i_0 = basis.index(s_b,s_f) # find index of product state
+i_0 = basis.index(s_b,s_f) # find index of product state in basis
 psi_0 = np.zeros(basis.Ns) # allocate space for state
 psi_0[i_0] = 1.0 # set MB state to be the given product state
 print("H-space size: {:d}, initial state: |{:s}>(x)|{:s}>".format(basis.Ns,s_b,s_f))

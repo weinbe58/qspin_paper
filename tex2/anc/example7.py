@@ -1,5 +1,5 @@
 from __future__ import print_function, division
-from quspin.operators import ops_dict,hamiltonian,exp_op # Hamiltonians and operators
+from quspin.operators import hamiltonian,exp_op # Hamiltonians and operators
 from quspin.basis import spin_basis_1d # spin basis constructor
 from quspin.tools.measurements import obs_vs_time # calculating dynamics
 from quspin.tools.Floquet import Floquet_t_vec # period-spaced time vector

@@ -73,7 +73,7 @@ def real(H_dict,I,psi_0,w,t,i):
 	# body of function goes below
 	ti = time() # start timing function for duration of reach realisation
 	# create a parameter list which specifies the onsite potential with disorder
-	params_dict=dict(H0=1)
+	params_dict=dict(H0=1.0)
 	for j in range(L):
 		params_dict["n"+str(j)] = uniform(-w,w)
 	# using the parameters dictionary construct a hamiltonian object with those

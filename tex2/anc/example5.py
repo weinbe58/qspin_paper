@@ -28,7 +28,7 @@ H=hamiltonian(static,dynamic,basis=basis,dtype=np.float64)
 # diagonalise real-space Hamiltonian
 E,V=H.eigh()
 ##### compute Fourier transform and momentum-space Hamiltonian #####
-# define basis blocks and arguments
+# define momentm blocks and basis arguments
 blocks=[dict(Nf=1,kblock=i,a=2) for i in range(L//2)] # only L//2 distinct momenta
 basis_args = (L,)
 # construct block-diagonal Hamiltonian

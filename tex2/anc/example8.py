@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt # plotting
 import matplotlib.animation as animation # animating movie of dynamics
 #
 ##### define model parameters
-# initial see for random number generator
+# initial seed for random number generator
 np.random.seed(0) # seed is 0 to produce plots from QuSpin2 paper
 # setting up parameters of simulation
 L = 6 # length of chain
@@ -43,7 +43,7 @@ basis_kwargs = dict(nb=nb,sps=sps,a=2) # boson_basis_1d optional args
 get_proj_kwargs = dict(pcon=True) # set projection to full particle basis
 H_block = block_ops(blocks,static,dynamic,boson_basis_1d,baisis_args,np.complex128,
 					basis_kwargs=basis_kwargs,get_proj_kwargs=get_proj_kwargs)
-# setting up basis for local fock basis
+# setting up local Fock basis
 basis = boson_basis_1d(N,nb=nb,sps=sps)
 # setting up observables
 no_checks = dict(check_herm=False,check_symm=False,check_pcon=False)
@@ -54,7 +54,7 @@ i0 = np.random.randint(basis.Ns) # pick random state from basis set
 psi = np.zeros(basis.Ns,dtype=np.float64)
 psi[i0] = 1.0
 # print info about setup
-state_str = "".join(str(int((basis[i0]//basis.sps**i)%basis.sps)) for i in range(N))
+state_str = "".join(str(int((basis[i0]//basis.sps**(L-i-1)))%basis.sps)) for i in range(N))
 print("total H-space size: {}, initial state: |{}>".format(basis.Ns,state_str))
 # setting up parameters for evolution
 start,stop,num = 0,30,301 # 0.1 equally spaced points

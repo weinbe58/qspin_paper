@@ -1,6 +1,6 @@
 from __future__ import print_function, division
-from quspin.operators import quantum_operator, hamiltonian, exp_op # Hamiltonians and operators
-from quspin.basis import spin_basis_1d, spin_basis_general # spin basis constructor
+from quspin.operators import quantum_operator, hamiltonian, exp_op # operators
+from quspin.basis import spin_basis_1d, spin_basis_general # spin basis constructors
 from quspin.tools.measurements import obs_vs_time # calculating dynamics
 from quspin.tools.Floquet import Floquet_t_vec # period-spaced time vector
 import numpy as np # general math functions
@@ -19,8 +19,8 @@ x = s%Lx # x positions for sites
 y = s//Lx # y positions for sites
 T_x = (x+1)%Lx + Lx*y # translation along x-direction
 T_y = x +Lx*((y+1)%Ly) # translation along y-direction
-P_x = x + Lx*(Ly-y-1) # reflection about x-axis
 P_y = (Lx-x-1) + Lx*y # reflection about y-axis
+P_x = x + Lx*(Ly-y-1) # reflection about x-axis
 Z   = -(s+1) # spin inversion
 #
 ###### setting up bases ######
@@ -78,12 +78,12 @@ psi_2d_t = evolve_gen(psi0_2d,nT,U1_2d,U2_2d,U1_2d)
 # measure Hzz as a function of time
 Obs_1d_t = obs_vs_time(psi_1d_t,t.vals,dict(E=Hzz_1d),return_state=True)
 Obs_2d_t = obs_vs_time(psi_2d_t,t.vals,dict(E=Hzz_2d),return_state=True)
-# calculating the entanglement entropy density
-Sent_time_1d = basis_1d.ent_entropy(Obs_1d_t["psi_t"],sub_sys_A=range(L_1d//2))["Sent_A"]/(L_1d//2)
-Sent_time_2d = basis_2d.ent_entropy(Obs_2d_t["psi_t"],sub_sys_A=range(N_2d//2))["Sent_A"]/(N_2d//2)
 # calculate entanglement entropy density
 s_p_1d = np.log(2)-2.0**(-L_1d//2-L_1d)/(2*(L_1d//2))
 s_p_2d = np.log(2)-2.0**(-N_2d//2-N_2d)/(2*(N_2d//2))
+# calculating the entanglement entropy density
+Sent_time_1d = basis_1d.ent_entropy(Obs_1d_t["psi_t"],sub_sys_A=range(L_1d//2))["Sent_A"]/(L_1d//2)
+Sent_time_2d = basis_2d.ent_entropy(Obs_2d_t["psi_t"],sub_sys_A=range(N_2d//2))["Sent_A"]/(N_2d//2)
 #
 ###### plotting results ######
 plt.plot(t.strobo.inds,(Obs_1d_t["E"]-E_1d_min)/(-E_1d_min),marker='.',markersize=5,label="$S=1/2$")

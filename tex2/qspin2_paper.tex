@@ -194,7 +194,7 @@ Department of Physics, Boston University, \\
 
 \section*{Abstract}
 {\bf 
-We present a major update to QuSpin, \emph{SciPostPhys.2.1.003} -- an open-source Python package for exact diagonalization and quantum dynamics of arbitrary boson, fermion and spin many-body systems, supporting the use of various symmetries in one dimension and (imaginary) time evolution following a user-specified driving protocol. We explain how to use the new features of QuSpin using seven detailed examples of various complexity: (i) the transverse-field Ising model and the Jordan-Wigner transformation, (ii) free particle systems: the SSH model, (iii) the many-body localised Fermi-Hubbard model, (iv) the Bose-Hubbard model in a ladder geometry, (v) nonlinear (imaginary) time evolution and the Gross-Pitaevskii equation, (vi) integrability breaking and thermalising dynamics in the spin-$1$ transverse-field Ising model, and (vii) Bose-Fermi mixtures. This easily accessible package can serve various purposes, including educational and cutting-edge experimental and theoretical research.
+We present a major update to QuSpin, \emph{SciPostPhys.2.1.003} -- an open-source Python package for exact diagonalization and quantum dynamics of arbitrary boson, fermion and spin many-body systems, supporting the use of various (user-defined) symmetries in one and higher dimension and (imaginary) time evolution following a user-specified driving protocol. We explain how to use the new features of QuSpin using seven detailed examples of various complexity: (i) the transverse-field Ising model and the Jordan-Wigner transformation, (ii) free particle systems: the SSH model, (iii) the many-body localised Fermi-Hubbard model, (iv) the Bose-Hubbard model in a ladder geometry, (v) nonlinear (imaginary) time evolution and the Gross-Pitaevskii equation, (vi) integrability breaking and thermalising dynamics in the spin-$1$ transverse-field Ising model, and (vii) Bose-Fermi mixtures. This easily accessible and user-friendly package can serve various purposes, including educational and cutting-edge experimental and theoretical research.
 }
 
 
@@ -608,7 +608,7 @@ i\partial_t\psi_j(t) &=& -J\left( \psi_{j-1}(t) + \psi_{j+1}(t)\right) + \frac{1
 \kappa_\mathrm{trap}(t)&=&(\kappa_f-\kappa_i)t/t_\mathrm{ramp}+ \kappa_i
 \label{eq:GPE}
 \end{eqnarray}
-where $J$ is the hopping matrix element, $\kappa_\mathrm{trap}(t)$ -- the harmonic trap strength which varies slowly in time over a scale $t_\mathrm{ramp}$, and $U$ -- the mean-field interaction strength. The lattice sites are labelled by $j=0,\dots,L-1$, and $j_0$ is the centre of the 1d chain. We set the lattice constant to unity, and use open boundary conditions.
+where $J$ is the hopping matrix element, $\kappa_\mathrm{trap}(t)$ -- the harmonic trap strength which varies slowly in time over a scale $t_\mathrm{ramp}$, and $U$ -- the mean-field interaction strength. The lattice sites are labelled by $j=0,\dots,L-1$, and $j_0$ is the centre of the $1d$ chain. We set the lattice constant to unity, and use open boundary conditions.
 
 Whenever $U=0$, the system is non-interacting and the GPE reduces to the Heisenberg EOM for the bosonic field operator $\hat\psi_j(t)$. Thus, for the purposes of using QuSpin to simulate the GPE, it is instructive to cast Eq.~\eqref{eq:GPE} in the following generic form
 \begin{equation}
@@ -664,27 +664,26 @@ The complete code including the lines that produce Fig.~\ref{fig:example8} is av
 
 
 
-\subsection{Integrability Breaking and Thermalising Dynamics in the 2D Spin-$1$ Transverse-Field Ising Model}
+\subsection{Integrability Breaking and Thermalising Dynamics in the 2D Transverse-Field Ising Model}
 \label{subsec:higher_spin}
 
 This example shows how to:
 \begin{itemize}
-	\item construct Hamiltonians for higher spin systems.
-	\item use the \texttt{spin\_basis\_general} classes to define custom symmetries.
 	\item define symmetries for 2D systems.
+	\item use the \texttt{spin\_basis\_general} classes to define custom symmetries.
 	\item use the \texttt{obs\_vs\_time} routine with custom user-defined generator to calculate the expectation value of operators as a function of time.
 	\item use the new functionality of the basis class to calculate the entanglement entropy.
 \end{itemize}
 
 \noindent{\emph{Physics Setup---}} In Sec.~\ref{subsec:JW}, we introduced the spin-$1/2$ transverse-field Ising (TFI) model and showed how one can map it to an exactly-solvable quadratic fermion Hamiltonian using the Jordan-Wigner transformation. This transformation allows one to obtain an exact, closed-form analytic expression for the eigenstates and eigenenergies of the Hamiltonian (at least when the system obeys translational invariance). The fact that such a transformation exists is intrinsically related to the model being integrable. Integrable models feature an extensive amount of local integrals of motion -- conserved quantities which impose specific selection rules for the transitions between the states of the system. As a result, such models thermalise in a restricted sense, i.e.~in conformity with all these integrals of motion, and the long-time behaviour of the system is captured by a generalised Gibbs ensemble[CITE]. The system thermalises but thermalisation is constrained. On the other hand, non-integrable systems have a far less restricted phase space, and feature unconstrained thermalisation. Their long-time behaviour is thus captured by the Gibbs ensemble. Since thermalising dynamics appears to be intrinsically related to the lack of integrability, if detected, one can use it as an indicator for the absence of a simple, closed form expression for the eigenstates and the eigenenergies of generic quantum many-body systems.
 
-Imagine you have a model, and you are trying to determine its long-time thermalisation behaviour, from which in general you can infer information about integrability. One way to proceed is to conceive a numerical experiment as follows: if we subject the system to periodic driving, this will break energy conservation. Then, in the non-integrable case, the system will keep absorbing energy from the drive until the state reaches infinite-temperature. On the contrary, in the integrable scenario unlimited energy absorption will be inhibited by the existence of additional conservation laws, and the system is likely to get stuck at some energy density corresponding to a finite temperature. Hence, the long-time dynamics of out-of-equilibrium many-body systems can be used to extract useful information about the complexity of the underlying Hamiltonian.
+Imagine you are given a model, and you wan to determine its long-time thermalisation behaviour, from which in general you can infer information about integrability. One way to proceed is to conceive a numerical experiment as follows: if we subject the system to periodic driving, this will break energy conservation. Then, in the non-integrable case, the system will keep absorbing energy from the drive until the state reaches infinite-temperature. On the contrary, in the integrable scenario unlimited energy absorption will be inhibited by the existence of additional conservation laws, and the system is likely to get stuck at some energy density corresponding to a finite temperature. Hence, the long-time dynamics of out-of-equilibrium many-body systems can be used to extract useful information about the complexity of the underlying Hamiltonian.
 
-Below, we take the transverse field Ising model and promote the spin-$1/2$ operators to spin-$1$. Additionally, we also put this spin-$1$ system on a 2D-lattice. There is no known simple mapping to a quadratic Hamiltonian for spin-$1$ and, therefore, the model is supposedly no longer integrable. Here, we study thermalisation through energy absorption by periodically driving the two spin systems and demonstrate the difference in the long-time heating behaviour between the two. To this end, let us define two operators
+Below, we take the spin-$1/2$ transverse field Ising model and promote the lattice to be two-dimensional. There is no known simple mapping to a quadratic Hamiltonian in $2d$ and, therefore, the model is supposedly no longer integrable. Here, we study thermalisation through energy absorption by periodically driving the two spin systems and demonstrate the difference in the long-time heating behaviour between the two. To this end, let us define two operators
 \begin{equation}
-H_{zz} = -\sum_{i=0}^{L-1} S^z_iS^z_{i+1}, \qquad H_{x} = -\sum_{i=0}^{L-1}S^x_i
+H_{zz} = -\sum_{\langle ij\rangle} S^z_iS^z_{j}, \qquad H_{x} = -\sum_{i}S^x_i
 \end{equation}
-and use them to construct the following piecewise periodic Hamiltonian $H(t)=H(t+T)$ where:
+where $\langle ij\rangle$ restricts the sum over nearest neighbours, and use them to construct the following piecewise periodic Hamiltonian $H(t)=H(t+T)$ where:
 \begin{equation}
 H(t)=\Bigg\{ \begin{array}{cc}
 H_{zz} +AH_x,& \qquad t\in[0,T/4), \\
@@ -704,7 +703,7 @@ Q(t) =\left\langle\psi(t)\left\vert\frac{ \left(H_{zz}-E_\mathrm{min}\right)}{E_
 \end{equation}
 where the last equality comes from the fact every state in the spectrum of $H_{zz}$ has a partner of opposite energy, and thus $E_\mathrm{inf.~temp.}=0$. This quantity is normalised such that an infinite-temperature state has $Q=1$, while a zero-temperature state -- $Q=0$. 
 
-Since $H_{zz}$ is not the only observable, one might worry that some of the information contained in the quantum state is lost. Hence, we also look at the entanglement entropy density
+Since $H_{zz}$ is not the only available observable, one might worry that some of the information contained in the quantum state is lost. Hence, we also look at the entanglement entropy density
 \begin{equation}
 s_\mathrm{ent}(t) = -\frac{1}{|\mathrm{A}|}\mathrm{tr}_{\mathrm{A}}\left[\rho_\mathrm{A}(t)\log\rho_\mathrm{A}(t)\right], \qquad \rho_\mathrm{A}(t) = \mathrm{tr}_{\mathrm{A^c}} |\psi(t)\rangle\langle\psi(t)|
 \end{equation}
@@ -715,22 +714,22 @@ The dynamics of the excess energy and the entanglement are shown in Fig.~\ref{fi
 \begin{figure}[t!]
 	\begin{subfigure}[a]{0.496\textwidth}
 		\includegraphics[width=0.9\textwidth]{TFIM_Q.pdf}
-		\caption{$Q(t)$ for $t=nT$}
+		\caption{$Q(t)$ for $t=\ell T$}
 	\end{subfigure}
 	\begin{subfigure}[b]{0.496\textwidth}
 		\includegraphics[width=0.9\textwidth]{TFIM_S.pdf}
-		\caption{$s_\mathrm{ent}(t)/s_\mathrm{Page}$ for $t=nT$}
+		\caption{$s_\mathrm{ent}(t)/s_\mathrm{Page}$ for $t=\ell T$}
 	\end{subfigure}
 	\caption{\label{fig:example9} Comparing the dynamics of $Q(t)$ (a) and $s_\mathrm{ent}(t)$ (b) for $S=1$ (orange) and $S=1/2$ (blue) at stroboscopic times ($t=nT$). For $S=1$ and $S=1/2$ we take $L=11$ and $18$ respectively as to make sure the many-body Hilbert spaces have roughly the same number of state. $s_\mathrm{ent}$ is normalized by the Page entropy per site[CITE Page]. Note that for both systems $\Omega=4$.}
 \end{figure}
 
 \noindent\emph{Code Analysis---}Below we explain how to carry out the proposed study using QuSpin. We assume the reader has basic familiarity with QuSpin to set up simple time-dependent Hamiltonians. As is customary, we begin by loading the required Python libraries and packages:
 \lstinputlisting[firstline=1, lastline=7, firstnumber=1]{\Spincode}
-Then, we define the model parameters. Note that we chose all physical couplings to be unity, so the only parameters are the drive frequency and the drive amplitude, which is set equal to the driving frequency [the value of which is chosen arbitrarily]. The variable \texttt{L} denotes the linear dimension of the two systems: the 1d spin-1/2 chain has a total of \texttt{L\_1d} sites, while the 2d spin-1 lattice has linear dimensions \texttt{Lx} and \texttt{Ly}, and a total number of sites \texttt{N\_2d}. Since the Hilbert space dimensions for the spin-$1/2$ and spin-$1$ systems scale differently with the length of the chain, we shall keep two variables, labelled by \texttt{L\_1d} and \texttt{L\_2d}, respectively. In general, all variables indexed by \texttt{\_1d} and \texttt{\_2d} in the code refer to the 1d spin-$1/2$ and 2d spin-$1$ quantities, respectively. 
+Then, we define the model parameters. Note that we choose all physical couplings to be unity, so the only parameters are the drive frequency and the drive amplitude, which is set equal to the driving frequency [the value of which is chosen arbitrarily]. The variable \texttt{L} denotes the linear dimension of the two spin-$1/2$ systems: the $1d$ chain has a total of \texttt{L\_1d} sites, while the $2d$ lattice has linear dimensions \texttt{Lx} and \texttt{Ly}, and a total number of sites \texttt{N\_2d}. All variables indexed by \texttt{\_1d} and \texttt{\_2d} in the code below refer to the $1d$ and $2d$ system, respectively. 
 \lstinputlisting[firstline=9, lastline=14, firstnumber=9]{\Spincode}
-Before we move on to define the two bases, let us explain how to use the \texttt{spin\_basis\_general} class two manually define custom symmetries in 2d. In our case, these are translations and parity along the $x$ and $y$ lattice directions, and spin inversion. To this end, we first label all sites with integers, and store them in the variable \texttt{s}. One can think of the 2d system as a snake-like folded \texttt{s}. The action of any local symmetry can be programmed on this set of sites. For instance, this helps us define the action of the $x$ and $y$ translation operators \texttt{T\_x} and \texttt{T\_y}, respectively by shifting the corresponding sites.  Parity (reflections) are also intuitive to define. Last, the spin inversion symmetry is uniquely defined through the mapping \texttt{s}$\mapsto$\texttt{1-s} for every affected site \texttt{s}. In this way, the user can define different lattice geometries, and/or sublattice symmetries and QuSpin will do the hard job to reduce the Hlbert space to the corresponding symmetry sector.
+Before we move on to define the two bases, let us explain how to use the \texttt{spin\_basis\_general} class two manually define custom symmetries in $2d$. Needless to say, one can follow the same procedure to construct two-dimensional boson an fermion bases, see Sec.~\ref{app:doc}. QuSpin can handle any unitary symmetry operation $Q$ of multiplicity $m_Q$ ($Q^{m_Q}=1$). We label its eigenvalues $\exp(-2\pi i q/m_Q)$ by an integer $q=\{0,1,\dots,m_Q-1\}$, which is used to set the symmetry block. For instance, if $Q=P$ is parity (reflection), then $q=0,1$ will correspond to the positive and negative parity blocks. If $Q=T$ is translation, then $q$ will label all momentum blocks. In the present case, the symmetries are translations and parity along the $x$ and $y$ lattice directions, and spin inversion. To this end, we first label all sites with integers, and store them in the variable \texttt{s}. One can think of the $2d$ system as a snake-like folded (or square-reshaped) \texttt{s}. The action of any local symmetry can be programmed on this set of sites. For instance, this helps us define the action of the $x$ and $y$ translation operators \texttt{T\_x} and \texttt{T\_y}, by shifting all sites in the corresponding direction. Parity (reflection) operations \texttt{P\_x} and \texttt{P\_y} are also intuitive to define. Last, the spin inversion symmetry is uniquely defined through the mapping \texttt{s}$\;\mapsto\;$\texttt{1-s} for every site \texttt{s} it acts on. In this way, the user can define different lattice geometries, and/or sublattice symmetries and QuSpin will do the hard job to reduce the Hilbert space to the corresponding symmetry sector.
 \lstinputlisting[firstline=16, lastline=24, firstnumber=16]{\Spincode}
-Let us now define the spin bases. Forthe1d spin-$1/2$ case, we make use of the \texttt{spin\_basis\_1d} constructor. Notice the optional argument \texttt{S}, which accepts a string (integer or half-integer) to specify the spin vector size. Requesting symmetry blocks works as usual, by using the corresponding optional arguments.
+Let us now define the spin bases. For the $1d$ case, we make use of the \texttt{spin\_basis\_1d} constructor. We note in passing that one can also study higher-spin systems by using the optional argument \texttt{S}, which accepts a string (integer or half-integer) to specify the spin vector size. Requesting symmetry blocks works as usual, by using the corresponding optional arguments. For the $2d$ spin system, we use the \texttt{spin\_basis\_general} class. This constructor allows the user to build basis objects with many user-defined symmetries, based on their action on the lattice sites. Unlike the $1d$-basis constructors which have symmetry blocks with pre-defined variables which take integer values \texttt{kblock=0}, the general basis constructors accept user-defined block names which take a tuple for every symmetry requested: the first entry is the symmetry transformation itself, and the second one -- the integer which labels the required symmetry block, e.g.~\texttt{kxblock=(T\_x,0)}.
 \lstinputlisting[firstline=26, lastline=32, firstnumber=26]{\Spincode} 
 To set up the site-coupling lists for the two operators in the Hamiltonian we proceed in the usual manner. Using them, we can call the \texttt{hamiltonian} constructor to define $-\sum_j S^z_{j}S^z_{j+1}$ and $-\sum_j S^x_j$. Here we keep the operators separate, in order to do the periodic step-drive evolution, which is why we do not need to define separate static and dynamic lists. We repeat this for both the spin-$1/2$ and the spin-$1$ systems.
 \lstinputlisting[firstline=34, lastline=47, firstnumber=34]{\Spincode}
@@ -904,7 +903,7 @@ This work was supported by ???
 		\begin{lstlisting}[numbers=none,keywordstyle=\ttfamily]
 		$ ls 
 		\end{lstlisting}
-		list files in another directory:
+		\item list files in another directory:
 		\begin{lstlisting}[numbers=none,keywordstyle=\ttfamily]
 		$ ls < path_to_directory >
 		\end{lstlisting}
@@ -928,12 +927,7 @@ This work was supported by ???
 	\end{itemize}
 	Unix also has an auto complete feature if one hits the TAB key. It will complete a word or stop when it matches more than one file/folder name. The current directory is denoted by "." and the directory above is "..".
 	%
-	Now, to execute a Python script all one has to do is open your terminal and navigate to the directory which contains the python script. To execute the script just use the following command:
-	\begin{lstlisting}[numbers=none,keywordstyle=\ttfamily]
-	$ python script.py
-	\end{lstlisting}
-	It's that simple!
-	
+		
 	\subsection{Windows}
 	Some basic commands:
 	
@@ -946,7 +940,7 @@ This work was supported by ???
 		\begin{lstlisting}[numbers=none,keywordstyle=\ttfamily]
 		> dir
 		\end{lstlisting}
-		list files in another directory:
+		\item list files in another directory:
 		\begin{lstlisting}[numbers=none,keywordstyle=\ttfamily]
 		> dir < path_to_directory >
 		\end{lstlisting}

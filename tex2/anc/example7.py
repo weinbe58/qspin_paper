@@ -1,5 +1,5 @@
 from __future__ import print_function, division
-from quspin.operators import quantum_operator, hamiltonian, exp_op # Hamiltonians and operators
+from quspin.operators import quantum_operator, hamiltonian, exp_op # operators
 from quspin.basis import spin_basis_1d, spin_basis_general # spin basis constructor
 from quspin.tools.measurements import obs_vs_time # calculating dynamics
 from quspin.tools.Floquet import Floquet_t_vec # period-spaced time vector
@@ -26,25 +26,25 @@ Z   = -(s+1) # spin inversion
 ###### setting up bases ######
 basis_1d = spin_basis_1d(L_1d,kblock=0,pblock=1,zblock=1) # 1d - basis
 basis_2d = spin_basis_general(N_2d,kxblock=(T_x,0),kyblock=(T_y,0),
-							pxblock=(P_x,0),pyblock=(P_y,0),zblock=(Z,0)) # 2d - basis
+				pxblock=(P_x,0),pyblock=(P_y,0),zblock=(Z,0)) # 2d - basis
 # print information about the basis
 print("Size of 1D H-space: {Ns:d}".format(Ns=basis_1d.Ns))
 print("Size of 2D H-space: {Ns:d}".format(Ns=basis_2d.Ns))
 #
 ###### setting up operators in hamiltonian ######
 # setting up site-coupling lists
-Jzz_1d = [[-1.0,i,(i+1)%L_1d] for i in range(L_1d)]
-hx_1d  = [[-1.0,i] for i in range(L_1d)]
+Jzz_1d=[[-1.0,i,(i+1)%L_1d] for i in range(L_1d)]
+hx_1d =[[-1.0,i] for i in range(L_1d)]
 #
-Jzz_2d = [[-1.0,i,T_x[i]] for i in range(N_2d)] + [[-1.0,i,T_y[i]] for i in range(N_2d)]
-hx_2d  = [[-1.0,i] for i in range(N_2d)]
+Jzz_2d=[[-1.0,i,T_x[i]] for i in range(N_2d)]+[[-1.0,i,T_y[i]] for i in range(N_2d)]
+hx_2d =[[-1.0,i] for i in range(N_2d)]
 # setting up hamiltonians
 # spin-1/2
-Hzz_1d = hamiltonian([["zz",Jzz_1d]],[],basis=basis_1d,dtype=np.float64)
-Hx_1d  = hamiltonian([["x",hx_1d]],[],basis=basis_1d,dtype=np.float64)
+Hzz_1d=hamiltonian([["zz",Jzz_1d]],[],basis=basis_1d,dtype=np.float64)
+Hx_1d =hamiltonian([["x",hx_1d]],[],basis=basis_1d,dtype=np.float64)
 # spin-1
-Hzz_2d = hamiltonian([["zz",Jzz_2d]],[],basis=basis_2d,dtype=np.float64)
-Hx_2d  = hamiltonian([["x",hx_2d]],[],basis=basis_2d,dtype=np.float64)
+Hzz_2d=hamiltonian([["zz",Jzz_2d]],[],basis=basis_2d,dtype=np.float64)
+Hx_2d =hamiltonian([["x",hx_2d]],[],basis=basis_2d,dtype=np.float64)
 #
 ###### calculate initial states ######
 # calculating bandwidth for non-driven hamiltonian
@@ -93,8 +93,8 @@ plt.ylabel("$Q(t)$",fontsize=20)
 plt.xlabel("$t/T$",fontsize=20)
 plt.savefig("TFIM_Q.pdf")
 plt.figure()
-plt.plot(t.strobo.inds,Sent_time_1d/s_p_1d,marker='.',markersize=5,label="$1D$")
-plt.plot(t.strobo.inds,Sent_time_2d/s_p_2d,marker='.',markersize=5,label="$2D$")
+plt.plot(t.strobo.inds,Sent_time_1d/s_p_1d,marker='.',markersize=5,label="$1d$")
+plt.plot(t.strobo.inds,Sent_time_2d/s_p_2d,marker='.',markersize=5,label="$2d$")
 plt.grid()
 plt.ylabel("$s_{\mathrm{ent}}(t)/s_\mathrm{Page}$",fontsize=20)
 plt.xlabel("$t/T$",fontsize=20)

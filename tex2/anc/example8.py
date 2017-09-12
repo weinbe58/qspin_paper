@@ -1,138 +1,112 @@
-from __future__ import print_function, division #import python 3 functions
 from quspin.operators import hamiltonian # Hamiltonians and operators
-from quspin.basis import boson_basis_1d # bosonic Hilbert space
-from quspin.tools.block_tools import block_ops # dynamics in symmetry blocks
-import numpy as np # general math functions
-import matplotlib.pyplot as plt # plotting
-import matplotlib.animation as animation # animating movie of dynamics
+from quspin.basis import boson_basis_1d # Hilbert space boson basis
+from quspin.tools.measurements import evolve # nonlinear evolution 
+import numpy as np # generic math functions
+import matplotlib.pyplot as plt # plot library
 #
-##### define model parameters
-# initial seed for random number generator
-np.random.seed(0) # seed is 0 to produce plots from QuSpin2 paper
-# setting up parameters of simulation
-L = 6 # length of chain
-N = 2*L # number of sites
-nb = 0.5 # density of bosons
-sps = 3 # number of states per site
-J_par_1 = 1.0 # top side of ladder hopping
-J_par_2 = 1.0 # bottom side of ladder hopping
-J_perp =  0.5 # rung hopping
-U = 20.0 # Hubbard interaction
+##### define model parameters #####
+L=300 # system size
+# calculate centre of chain
+if L%2==0:
+	j0 = L//2-0.5 # centre of chain
+else:
+	j0 = L//2 # centre of chain
+sites=np.arange(L)-j0
+# static parameters
+J=1.0 # hopping
+U=1.0 # Bose-Hubbard interaction strength
+# dynamic parameters
+kappa_trap_i=0.001 # initial chemical potential
+kappa_trap_f=0.0001 # final chemical potential
+t_ramp=40.0/J # set total ramp time
+# ramp protocol
+def ramp(t,kappa_trap_i,kappa_trap_f,t_ramp):
+	return  (kappa_trap_f - kappa_trap_i)*t/t_ramp + kappa_trap_i
+# ramp protocol parameters
+ramp_args=[kappa_trap_i,kappa_trap_f,t_ramp]
 #
-##### set up Hamiltonian and observables
+##### construct single-particle Hamiltonian #####
 # define site-coupling lists
-int_list_1 = [[-0.5*U,i] for i in range(N)] # interaction $-U/2 \sum_i n_i$
-int_list_2 = [[0.5*U,i,i] for i in range(N)] # interaction: $U/2 \num_i n_i^2$
-# setting up hopping lists
-hop_list = [[-J_par_1,i,(i+2)%N] for i in range(0,N,2)] # PBC bottom leg
-hop_list.extend([[-J_par_2,i,(i+2)%N] for i in range(1,N,2)]) # PBC top leg
-hop_list.extend([[-J_perp,i,i+1] for i in range(0,N,2)]) # perp/rung hopping
-hop_list_hc = [[J.conjugate(),i,j] for J,i,j in hop_list] # add h.c. terms
-# set up static and dynamic lists
-static = [
-			["+-",hop_list], # hopping
-			["-+",hop_list_hc], # hopping h.c.
-			["nn",int_list_2], # U n_i^2
-			["n",int_list_1] # -U n_i
-		]
-dynamic = [] # no dynamic operators
-# create block_ops object
-blocks=[dict(kblock=kblock) for kblock in range(L)] # blocks to project on to
-baisis_args = (N,) # boson_basis_1d manditory arguments
-basis_kwargs = dict(nb=nb,sps=sps,a=2) # boson_basis_1d optional args
-get_proj_kwargs = dict(pcon=True) # set projection to full particle basis
-H_block = block_ops(blocks,static,dynamic,boson_basis_1d,baisis_args,np.complex128,
-					basis_kwargs=basis_kwargs,get_proj_kwargs=get_proj_kwargs)
-# setting up local Fock basis
-basis = boson_basis_1d(N,nb=nb,sps=sps)
-# setting up observables
-no_checks = dict(check_herm=False,check_symm=False,check_pcon=False)
-n_list = [hamiltonian([["n",[[1.0,i]]]],[],basis=basis,dtype=np.float64,**no_checks) for i in range(N)]
-##### do time evolution
-# set up initial state
-i0 = np.random.randint(basis.Ns) # pick random state from basis set
-psi = np.zeros(basis.Ns,dtype=np.float64)
-psi[i0] = 1.0
-# print info about setup
-state_str = "".join(str(int((basis[i0]//basis.sps**(L-i-1)))%basis.sps)) for i in range(N))
-print("total H-space size: {}, initial state: |{}>".format(basis.Ns,state_str))
-# setting up parameters for evolution
-start,stop,num = 0,30,301 # 0.1 equally spaced points
-times = np.linspace(start,stop,num)
-# calculating the evolved states
-n_jobs = 1 # paralelisation: increase to see if calculation runs faster!
-psi_t = H_block.expm(psi,a=-1j,start=start,stop=stop,num=num,block_diag=False,n_jobs=n_jobs)
-# calculating the local densities as a function of time
-expt_n_t = np.vstack([n.expt_value(psi_t).real for n in n_list]).T
-# reshape data for plotting
-n_t = np.zeros((num,2,L))
-n_t[:,0,:] = expt_n_t[:,0::2]
-n_t[:,1,:] = expt_n_t[:,1::2]
-# calculating entanglement entropy 
-sub_sys_A = range(0,N,2) # bottom side of ladder 
-gen = (basis.ent_entropy(psi,sub_sys_A=sub_sys_A)["Sent_A"]/L for psi in psi_t.T[:])
-ent_t = np.fromiter(gen,dtype=np.float64,count=num)
-# plotting static figures
-"""
-fig, ax = plt.subplots(nrows=5,ncols=1)
-im=[]
-im_ind = []
-for i,t in enumerate(np.logspace(-1,np.log10(stop-1),5,base=10)):
-	j = times.searchsorted(t)
-	im_ind.append(j)
-	im.append(ax[i].imshow(n_t[j],cmap="hot",vmax=n_t.max(),vmin=0))
-	ax[i].tick_params(labelbottom=False,labelleft=False)
-cax = fig.add_axes([0.85, 0.1, 0.03, 0.8])
-fig.colorbar(im[2],cax)
-plt.savefig("boson_density.pdf")
-plt.figure()
-plt.plot(times,ent_t,lw=2)
-plt.plot(times[im_ind],ent_t[im_ind],marker="o",linestyle="",color="red")
-plt.xlabel("$t/J$",fontsize=20)
-plt.ylabel("$s_\mathrm{ent}(t)$",fontsize=20)
-plt.grid()
-plt.savefig("boson_entropy.pdf")
-plt.show()
-"""
-# setting up two plots to animate side by side
-fig, (ax1,ax2) = plt.subplots(1,2)
-fig.set_size_inches(10, 5)
-ax1.set_xlabel(r"$t/J$",fontsize=18)
-ax1.set_ylabel(r"$s_\mathrm{ent}$",fontsize=18)
-ax1.grid()
-line1, = ax1.plot(times, ent_t, lw=2)
-line1.set_data([],[])
-im = ax2.matshow(n_t[0],cmap="hot")
-fig.colorbar(im)
-def run(i): # function to update frame
-	# set new data for plots
-	line1.set_data(times[:i],ent_t[:i])
-	im.set_data(n_t[i])
-	return im, line1
-ani = animation.FuncAnimation(fig, run, range(num),interval=50)
-plt.show()
+hopping=[[-J,i,(i+1)%L] for i in range(L-1)]
+trap=[[0.5*(i-j0)**2,i] for i in range(L)]
+# define static and dynamic lists
+static=[["+-",hopping],["-+",hopping]]
+dynamic=[['n',trap,ramp,ramp_args]]
+# define basis
+basis = boson_basis_1d(L,Nb=1,sps=2)
+# build Hamiltonian
+Hsp=hamiltonian(static,dynamic,basis=basis,dtype=np.float64)
+E,V=Hsp.eigsh(time=0.0,k=1,which='SA')
 #
-""" 
-#schematic of how the ladder lattice is set up coupling parameters:
-# -: J_par_1
-# ^: J_par_2
-# |: J_perp
+##### imaginary-time evolution to compute GS of GPE #####
+def GPE_imag_time(tau,phi,Hsp,U):
+	"""
+	This function solves the real-valued GPE in imaginary time:
+	$$ -\dot\phi(\tau) = Hsp(t=0)\phi(\tau) + U |\phi(\tau)|^2 \phi(\tau) $$
+	"""
+	return -( Hsp.dot(phi,time=0) + U*np.abs(phi)**2*phi )
+# define ODE parameters
+GPE_params = (Hsp,U)
+# define initial state to flow to GS from
+phi0=V[:,0]*np.sqrt(L) # initial state normalised to 1 particle per site
+# define imaginary time vector
+tau=np.linspace(0.0,35.0,71)
+# evolve state in imaginary time
+psi_tau = evolve(phi0,tau[0],tau,GPE_imag_time,f_params=GPE_params,
+							imag_time=True,real=True,iterate=True)
 #
-^ 1 ^ 3 ^ 5 ^ 7 ^ 9 ^
-  |   |   |   |   |
-- 0 - 2 - 4 - 6 - 8 -
+# display state evolution
+for i,psi0 in enumerate(psi_tau):
+	# compute energy
+	E_GS=(Hsp.matrix_ele(psi0,psi0,time=0) + 0.5*U*np.sum(np.abs(psi0)**4) ).real
+	# plot wave function
+	plt.plot(sites, abs(phi0)**2, color='r',marker='s',alpha=0.2,
+										label='$|\\phi_j(0)|^2$')
+	plt.plot(sites, abs(psi0)**2, color='b',marker='o',
+								label='$|\\phi_j(\\tau)|^2$' )
+	plt.xlabel('$\\mathrm{lattice\\ sites}$',fontsize=14)
+	plt.title('$J\\tau=%0.2f,\\ E_\\mathrm{GS}(\\tau)=%0.4fJ$'%(tau[i],E_GS)
+																,fontsize=14)
+	plt.ylim([-0.01,max(abs(phi0)**2)+0.01])
+	plt.legend(fontsize=14)
+	plt.draw() # draw frame
+	plt.pause(0.005) # pause frame
+	plt.clf() # clear figure
+plt.close()
 #
-# translations (i -> i+2):
+##### real-time evolution of GPE #####
+def GPE(time,psi):
+	"""
+	This function solves the complex-valued time-dependent GPE:
+	$$ i\dot\psi(t) = Hsp(t)\psi(t) + U |\psi(t)|^2 \psi(t) $$
+	"""
+	# solve static part of GPE
+	psi_dot = Hsp.static.dot(psi) + U*np.abs(psi)**2*psi
+	# solve dynamic part of GPE
+	for Hd,f,f_args in Hsp.dynamic:
+		psi_dot += f(time,*f_args)*Hd.dot(psi)
+	return -1j*psi_dot
+# define real time vector
+t=np.linspace(0.0,t_ramp,101)
+# time-evolve state according to GPE
+psi_t = evolve(psi0,t[0],t,GPE,iterate=True,atol=1E-12,rtol=1E-12)
 #
- ^ 9 ^ 1 ^ 3 ^ 5 ^ 7 ^
-   |   |   |   |   | 
- - 8 - 0 - 2 - 4 - 6 -
-#
-# if J_par_1=J_par_2, one can use regular chain parity (i -> N - i):
-#
- - 8 - 6 - 4 - 2 - 0 - 
-   |   |   |   |   | 
- - 9 - 7 - 5 - 3 - 1 -
-#
-# combination of two ladder parity operators!
-"""
+# display state evolution
+for i,psi in enumerate(psi_t):
+	# compute energy
+	E=(Hsp.matrix_ele(psi,psi,time=t[i]) + 0.5*U*np.sum(np.abs(psi)**4) ).real
+	# compute trap
+	kappa_trap=ramp(t[i],kappa_trap_i,kappa_trap_f,t_ramp)*(sites)**2
+	# plot wave function
+	plt.plot(sites, abs(psi0)**2, color='r',marker='s',alpha=0.2
+								,label='$|\\psi_{\\mathrm{GS},j}|^2$')
+	plt.plot(sites, abs(psi)**2, color='b',marker='o',label='$|\\psi_j(t)|^2$')
+	plt.plot(sites, kappa_trap,'--',color='g',label='$\\mathrm{trap}$')
+	plt.ylim([-0.01,max(abs(psi0)**2)+0.01])
+	plt.xlabel('$\\mathrm{lattice\\ sites}$',fontsize=14)
+	plt.title('$Jt=%0.2f,\\ E(t)-E_\\mathrm{GS}=%0.4fJ$'%(t[i],E-E_GS),fontsize=14)
+	plt.legend(loc='upper right',fontsize=14)
+	plt.draw() # draw frame
+	plt.pause(0.00005) # pause frame
+	plt.clf() # clear figure
+plt.close()

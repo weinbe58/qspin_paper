@@ -1,103 +1,140 @@
-from __future__ import print_function, division
-from quspin.operators import quantum_operator, hamiltonian, exp_op # operators
-from quspin.basis import spin_basis_1d, spin_basis_general # spin basis constructor
-from quspin.tools.measurements import obs_vs_time # calculating dynamics
-from quspin.tools.Floquet import Floquet_t_vec # period-spaced time vector
+from __future__ import print_function, division #import python 3 functions
+from quspin.operators import hamiltonian # Hamiltonians and operators
+from quspin.basis import boson_basis_1d # bosonic Hilbert space
+from quspin.tools.block_tools import block_ops # dynamics in symmetry blocks
 import numpy as np # general math functions
-import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt # plotting
+import matplotlib.animation as animation # animating movie of dynamics
 #
-###### define model parameters ######
-L_1d = 16 # length of chain for spin 1/2
-Lx, Ly = 4, 4 # linear dimension of spin 1 2d lattice
-N_2d = Lx*Ly # number of sites for spin 1
-Omega = 2.0 # drive frequency
-A = 2.0 # drive amplitude
+##### define model parameters
+# initial seed for random number generator
+np.random.seed(0) # seed is 0 to produce plots from QuSpin2 paper
+# setting up parameters of simulation
+L = 6 # length of chain
+N = 2*L # number of sites
+nb = 0.5 # density of bosons
+sps = 3 # number of states per site
+J_par_1 = 1.0 # top side of ladder hopping
+J_par_2 = 1.0 # bottom side of ladder hopping
+J_perp =  0.5 # rung hopping
+U = 20.0 # Hubbard interaction
 #
-###### setting up user-defined symmetry transformations for 2d lattice ######
-s = np.arange(N_2d) # sites [0,1,2,....]
-x = s%Lx # x positions for sites
-y = s//Lx # y positions for sites
-T_x = (x+1)%Lx + Lx*y # translation along x-direction
-T_y = x +Lx*((y+1)%Ly) # translation along y-direction
-P_x = x + Lx*(Ly-y-1) # reflection about x-axis
-P_y = (Lx-x-1) + Lx*y # reflection about y-axis
-Z   = -(s+1) # spin inversion
-#
-###### setting up bases ######
-basis_1d = spin_basis_1d(L_1d,kblock=0,pblock=1,zblock=1) # 1d - basis
-basis_2d = spin_basis_general(N_2d,kxblock=(T_x,0),kyblock=(T_y,0),
-				pxblock=(P_x,0),pyblock=(P_y,0),zblock=(Z,0)) # 2d - basis
-# print information about the basis
-print("Size of 1D H-space: {Ns:d}".format(Ns=basis_1d.Ns))
-print("Size of 2D H-space: {Ns:d}".format(Ns=basis_2d.Ns))
-#
-###### setting up operators in hamiltonian ######
-# setting up site-coupling lists
-Jzz_1d=[[-1.0,i,(i+1)%L_1d] for i in range(L_1d)]
-hx_1d =[[-1.0,i] for i in range(L_1d)]
-#
-Jzz_2d=[[-1.0,i,T_x[i]] for i in range(N_2d)]+[[-1.0,i,T_y[i]] for i in range(N_2d)]
-hx_2d =[[-1.0,i] for i in range(N_2d)]
-# setting up hamiltonians
-# spin-1/2
-Hzz_1d=hamiltonian([["zz",Jzz_1d]],[],basis=basis_1d,dtype=np.float64)
-Hx_1d =hamiltonian([["x",hx_1d]],[],basis=basis_1d,dtype=np.float64)
-# spin-1
-Hzz_2d=hamiltonian([["zz",Jzz_2d]],[],basis=basis_2d,dtype=np.float64)
-Hx_2d =hamiltonian([["x",hx_2d]],[],basis=basis_2d,dtype=np.float64)
-#
-###### calculate initial states ######
-# calculating bandwidth for non-driven hamiltonian
-[E_1d_min],psi_1d = Hzz_1d.eigsh(k=1,which="SA")
-[E_2d_min],psi_2d = Hzz_2d.eigsh(k=1,which="SA")
-# setting up initial states
-psi0_1d = psi_1d.ravel()
-psi0_2d = psi_2d.ravel()
-#
-###### time evolution ######
-# stroboscopic time vector
-nT = 200 # number of periods to evolve to
-t=Floquet_t_vec(Omega,nT,len_T=1) # t.vals=t, t.i=initial time, t.T=drive period
-# creating generators of time evolution using exp_op class
-U1_1d = exp_op(Hzz_1d+A*Hx_1d,a=-1j*t.T/4)
-U2_1d = exp_op(Hzz_1d-A*Hx_1d,a=-1j*t.T/2)
-U1_2d = exp_op(Hzz_2d+A*Hx_2d,a=-1j*t.T/4)
-U2_2d = exp_op(Hzz_2d-A*Hx_2d,a=-1j*t.T/2)
-# user-defined generator for stroboscopic dynamics 
-def evolve_gen(psi0,nT,*U_list):
-	yield psi0
-	for i in range(nT): # loop over number of periods
-		for U in U_list: # loop over unitaries
-			psi0 = U.dot(psi0)
-		yield psi0
-# get generator objects for time-evolved states
-psi_1d_t = evolve_gen(psi0_1d,nT,U1_1d,U2_1d,U1_1d)
-psi_2d_t = evolve_gen(psi0_2d,nT,U1_2d,U2_2d,U1_2d)
-#
-###### compute expectation values of observables ######
-# measure Hzz as a function of time
-Obs_1d_t = obs_vs_time(psi_1d_t,t.vals,dict(E=Hzz_1d),return_state=True)
-Obs_2d_t = obs_vs_time(psi_2d_t,t.vals,dict(E=Hzz_2d),return_state=True)
-# calculating the entanglement entropy density
-Sent_time_1d = basis_1d.ent_entropy(Obs_1d_t["psi_t"],sub_sys_A=range(L_1d//2))["Sent_A"]/(L_1d//2)
-Sent_time_2d = basis_2d.ent_entropy(Obs_2d_t["psi_t"],sub_sys_A=range(N_2d//2))["Sent_A"]/(N_2d//2)
-# calculate entanglement entropy density
-s_p_1d = np.log(2)-2.0**(-L_1d//2-L_1d)/(2*(L_1d//2))
-s_p_2d = np.log(2)-2.0**(-N_2d//2-N_2d)/(2*(N_2d//2))
-#
-###### plotting results ######
-plt.plot(t.strobo.inds,(Obs_1d_t["E"]-E_1d_min)/(-E_1d_min),marker='.',markersize=5,label="$S=1/2$")
-plt.plot(t.strobo.inds,(Obs_2d_t["E"]-E_2d_min)/(-E_2d_min),marker='.',markersize=5,label="$S=1$")
-plt.grid()
-plt.ylabel("$Q(t)$",fontsize=20)
-plt.xlabel("$t/T$",fontsize=20)
-plt.savefig("TFIM_Q.pdf")
+##### set up Hamiltonian and observables
+# define site-coupling lists
+int_list_1 = [[-0.5*U,i] for i in range(N)] # interaction $-U/2 \sum_i n_i$
+int_list_2 = [[0.5*U,i,i] for i in range(N)] # interaction: $U/2 \num_i n_i^2$
+# setting up hopping lists
+hop_list = [[-J_par_1,i,(i+2)%N] for i in range(0,N,2)] # PBC bottom leg
+hop_list.extend([[-J_par_2,i,(i+2)%N] for i in range(1,N,2)]) # PBC top leg
+hop_list.extend([[-J_perp,i,i+1] for i in range(0,N,2)]) # perp/rung hopping
+hop_list_hc = [[J.conjugate(),i,j] for J,i,j in hop_list] # add h.c. terms
+# set up static and dynamic lists
+static = [
+			["+-",hop_list], # hopping
+			["-+",hop_list_hc], # hopping h.c.
+			["nn",int_list_2], # U n_i^2
+			["n",int_list_1] # -U n_i
+		]
+dynamic = [] # no dynamic operators
+# create block_ops object
+blocks=[dict(kblock=kblock) for kblock in range(L)] # blocks to project on to
+baisis_args = (N,) # boson_basis_1d manditory arguments
+basis_kwargs = dict(nb=nb,sps=sps,a=2) # boson_basis_1d optional args
+get_proj_kwargs = dict(pcon=True) # set projection to full particle basis
+H_block = block_ops(blocks,static,dynamic,boson_basis_1d,baisis_args,np.complex128,
+					basis_kwargs=basis_kwargs,get_proj_kwargs=get_proj_kwargs)
+# setting up local Fock basis
+basis = boson_basis_1d(N,nb=nb,sps=sps)
+# setting up observables
+no_checks = dict(check_herm=False,check_symm=False,check_pcon=False)
+n_list = [hamiltonian([["n",[[1.0,i]]]],[],basis=basis,dtype=np.float64,**no_checks) for i in range(N)]
+##### do time evolution
+# set up initial state
+i0 = np.random.randint(basis.Ns) # pick random state from basis set
+psi = np.zeros(basis.Ns,dtype=np.float64)
+psi[i0] = 1.0
+# print info about setup
+state_str = "".join(str(int((basis[i0]//basis.sps**(L-i-1)))%basis.sps)) for i in range(N))
+print("total H-space size: {}, initial state: |{}>".format(basis.Ns,state_str))
+# setting up parameters for evolution
+start,stop,num = 0,30,301 # 0.1 equally spaced points
+times = np.linspace(start,stop,num)
+# calculating the evolved states
+n_jobs = 1 # paralelisation: increase to see if calculation runs faster!
+psi_t = H_block.expm(psi,a=-1j,start=start,stop=stop,num=num,block_diag=False,n_jobs=n_jobs)
+# calculating the local densities as a function of time
+expt_n_t = np.vstack([n.expt_value(psi_t).real for n in n_list]).T
+# reshape data for plotting
+n_t = np.zeros((num,2,L))
+n_t[:,0,:] = expt_n_t[:,0::2]
+n_t[:,1,:] = expt_n_t[:,1::2]
+# calculating entanglement entropy 
+sub_sys_A = range(0,N,2) # bottom side of ladder 
+gen = (basis.ent_entropy(psi,sub_sys_A=sub_sys_A)["Sent_A"]/L for psi in psi_t.T[:])
+ent_t = np.fromiter(gen,dtype=np.float64,count=num)
+# plotting static figures
+"""
+fig, ax = plt.subplots(nrows=5,ncols=1)
+im=[]
+im_ind = []
+for i,t in enumerate(np.logspace(-1,np.log10(stop-1),5,base=10)):
+	j = times.searchsorted(t)
+	im_ind.append(j)
+	im.append(ax[i].imshow(n_t[j],cmap="hot",vmax=n_t.max(),vmin=0))
+	ax[i].tick_params(labelbottom=False,labelleft=False)
+cax = fig.add_axes([0.85, 0.1, 0.03, 0.8])
+fig.colorbar(im[2],cax)
+plt.savefig("boson_density.pdf")
 plt.figure()
-plt.plot(t.strobo.inds,Sent_time_1d/s_p_1d,marker='.',markersize=5,label="$1d$")
-plt.plot(t.strobo.inds,Sent_time_2d/s_p_2d,marker='.',markersize=5,label="$2d$")
+plt.plot(times,ent_t,lw=2)
+plt.plot(times[im_ind],ent_t[im_ind],marker="o",linestyle="",color="red")
+plt.xlabel("$t/J$",fontsize=20)
+plt.ylabel("$s_\mathrm{ent}(t)$",fontsize=20)
 plt.grid()
-plt.ylabel("$s_{\mathrm{ent}}(t)/s_\mathrm{Page}$",fontsize=20)
-plt.xlabel("$t/T$",fontsize=20)
-plt.legend(loc=0,fontsize=16)
-plt.savefig("TFIM_S.pdf")
+plt.savefig("boson_entropy.pdf")
 plt.show()
+"""
+# setting up two plots to animate side by side
+fig, (ax1,ax2) = plt.subplots(1,2)
+fig.set_size_inches(10, 5)
+ax1.set_xlabel(r"$t/J$",fontsize=18)
+ax1.set_ylabel(r"$s_\mathrm{ent}$",fontsize=18)
+ax1.grid()
+line1, = ax1.plot(times, ent_t, lw=2)
+line1.set_data([],[])
+im = ax2.matshow(n_t[0],cmap="hot")
+fig.colorbar(im)
+def run(i): # function to update frame
+	# set new data for plots
+	line1.set_data(times[:i],ent_t[:i])
+	im.set_data(n_t[i])
+	return im, line1
+ani = animation.FuncAnimation(fig, run, range(num),interval=50)
+plt.show()
+#
+""" 
+###### ladder lattice 
+# hopping coupling parameters:
+# - : J_par_1
+# = : J_par_2
+# | : J_perp
+#
+# lattice graph
+#
+ = 1 = 3 = 5 = 7 = 9 =
+   |   |   |   |   |
+ - 0 - 2 - 4 - 6 - 8 -
+#
+# translations along leg-direction (i -> i+2):
+#
+ = 9 = 1 = 3 = 5 = 7 =
+ |   |   |   |   | 
+ - 8 - 0 - 2 - 4 - 6 -
+#
+# if J_par_1=J_par_2, one can use regular chain parity (i -> N - i) as combination 
+# of the two ladder parity operators:
+#
+ - 8 - 6 - 4 - 2 - 0 - 
+ |   |   |   |   | 
+ - 9 - 7 - 5 - 3 - 1 -
+"""

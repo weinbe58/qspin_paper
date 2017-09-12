@@ -1,113 +1,103 @@
 from __future__ import print_function, division
-from quspin.operators import hamiltonian,exp_op,ops_dict # operators
-from quspin.basis import tensor_basis,fermion_basis_1d # Hilbert spaces
+from quspin.operators import hamiltonian, exp_op # operators
+from quspin.basis import spin_basis_1d, spin_basis_general # spin basis constructor
 from quspin.tools.measurements import obs_vs_time # calculating dynamics
+from quspin.tools.Floquet import Floquet_t_vec # period-spaced time vector
 import numpy as np # general math functions
-from numpy.random import uniform,choice # tools for doing random sampling
-from time import time # tool for calculating computation time
-import matplotlib.pyplot as plt # plotting
+import matplotlib.pyplot as plt
 #
-##### setting parameters for simulation
-# simulation parameters
-n_real = 100 # number of realizations
-n_boot = 100 # number of bootstrap samples to calculate error
-# physical parameters
-L = 8 # system size
-N = L//2 # number of particles
-N_up = N//2 + N % 2 # number of fermions with spin up
-N_down = N//2 # number of fermions with spin down
-w_list = [1.0,4.0,10.0] # disorder strength
-J = 1.0 # hopping strength
-U = 5.0 # interaction strength
-# range in time to evolve system
-start,stop,num=0.0,35.0,101
-t = np.linspace(start,stop,num=num,endpoint=True)
+###### define model parameters ######
+L_1d = 16 # length of chain for spin 1/2
+Lx, Ly = 4, 4 # linear dimension of spin 1 2d lattice
+N_2d = Lx*Ly # number of sites for spin 1
+Omega = 2.0 # drive frequency
+A = 2.0 # drive amplitude
 #
-###### create the basis
-# build the two bases to tensor together to spinful fermions
-basis_up = fermion_basis_1d(L,Nf=N_up) # up basis
-basis_down = fermion_basis_1d(L,Nf=N_down) # down basis
-basis = tensor_basis(basis_up,basis_down) # spinful fermions
+###### setting up user-defined symmetry transformations for 2d lattice ######
+s = np.arange(N_2d) # sites [0,1,2,....]
+x = s%Lx # x positions for sites
+y = s//Lx # y positions for sites
+T_x = (x+1)%Lx + Lx*y # translation along x-direction
+T_y = x +Lx*((y+1)%Ly) # translation along y-direction
+P_x = x + Lx*(Ly-y-1) # reflection about x-axis
+P_y = (Lx-x-1) + Lx*y # reflection about y-axis
+Z   = -(s+1) # spin inversion
 #
-##### create model
-# define site-coupling lists
-hop_right = [[-J,i,i+1] for i in range(L-1)] # hopping to the right OBC
-hop_left = [[J,i,i+1] for i in range(L-1)] # hopping to the left OBC
-int_list = [[U,i,i] for i in range(L)] # onsite interaction
-# site-coupling list to create the sublattice imbalance observable
-sublat_list = [[(-1.0)**i/N,i] for i in range(0,L)]
-# create static lists
-operator_list_0 = [	
-			["+-|", hop_left], # up hop left
-			["-+|", hop_right], # up hop right
-			["|+-", hop_left], # down hop left
-			["|-+", hop_right], # down hop right
-			["n|n", int_list], # onsite interaction
-			]
-imbalance_list = [["n|",sublat_list],["|n",sublat_list]]
-# create operator dictionary for ops_dict class
-# add key for Hubbard hamiltonian
-operator_dict=dict(H0=operator_list_0)
-# add keys for local potential in each site
-for i in range(L):
-	# add to dictioanry keys h0,h1,h2,...,hL with local potential operator
-	operator_dict["n"+str(i)] = [["n|",[[1.0,i]]],["|n",[[1.0,i]]]]
+###### setting up bases ######
+basis_1d = spin_basis_1d(L_1d,kblock=0,pblock=1,zblock=1) # 1d - basis
+basis_2d = spin_basis_general(N_2d,kxblock=(T_x,0),kyblock=(T_y,0),
+				pxblock=(P_x,0),pyblock=(P_y,0),zblock=(Z,0)) # 2d - basis
+# print information about the basis
+print("Size of 1D H-space: {Ns:d}".format(Ns=basis_1d.Ns))
+print("Size of 2D H-space: {Ns:d}".format(Ns=basis_2d.Ns))
 #
-###### setting up operators	
-# set up hamiltonian dictionary and observable (imbalance I)
-no_checks = dict(check_pcon=False,check_symm=False,check_herm=False)
-H_dict = ops_dict(operator_dict,basis=basis,**no_checks)
-I = hamiltonian(imbalance_list,[],basis=basis,**no_checks)
-# strings which represent the initial state
-s_up = "".join("1000" for i in range(N_up))
-s_down = "".join("0010" for i in range(N_down))
-# basis.index accepts strings and returns the index 
-# which corresponds to that state in the basis list
-i_0 = basis.index(s_up,s_down) # find index of product state
-psi_0 = np.zeros(basis.Ns) # allocate space for state
-psi_0[i_0] = 1.0 # set MB state to be the given product state
-print("H-space size: {:d}, initial state: |{:s}>(x)|{:s}>".format(basis.Ns,s_up,s_down))
+###### setting up operators in hamiltonian ######
+# setting up site-coupling lists
+Jzz_1d=[[-1.0,i,(i+1)%L_1d] for i in range(L_1d)]
+hx_1d =[[-1.0,i] for i in range(L_1d)]
 #
-# define function to do dynamics for different disorder realizations.
-def real(H_dict,I,psi_0,w,t,i):
-	# body of function goes below
-	ti = time() # start timing function for duration of reach realisation
-	# create a parameter list which specifies the onsite potential with disorder
-	params_dict=dict(H0=1.0)
-	for j in range(L):
-		params_dict["n"+str(j)] = uniform(-w,w)
-	# using the parameters dictionary construct a hamiltonian object with those
-	# parameters defined in the list
-	H = H_dict.tohamiltonian(params_dict)
-	# use exp_op to get the evolution operator
-	U = exp_op(H,a=-1j,start=t.min(),stop=t.max(),num=len(t),iterate=True)
-	psi_t = U.dot(psi_0) # get generator psi_t for time evolved state
-	# use obs_vs_time to evaluate the dynamics
-	t = U.grid # extract time grid stored in U, and defined in exp_op
-	obs_t = obs_vs_time(psi_t,t,dict(I=I))
-	# print reporting the computation time for realization
-	print("realization {}/{} completed in {:.2f} s".format(i+1,n_real,time()-ti))
-	# return observable values
-	return obs_t["I"]
+Jzz_2d=[[-1.0,i,T_x[i]] for i in range(N_2d)]+[[-1.0,i,T_y[i]] for i in range(N_2d)]
+hx_2d =[[-1.0,i] for i in range(N_2d)]
+# setting up hamiltonians
+# 1d
+Hzz_1d=hamiltonian([["zz",Jzz_1d]],[],basis=basis_1d,dtype=np.float64)
+Hx_1d =hamiltonian([["x",hx_1d]],[],basis=basis_1d,dtype=np.float64)
+# 2d
+Hzz_2d=hamiltonian([["zz",Jzz_2d]],[],basis=basis_2d,dtype=np.float64)
+Hx_2d =hamiltonian([["x",hx_2d]],[],basis=basis_2d,dtype=np.float64)
 #
-###### looping over differnt disorder strengths
-for w in w_list:	
-	I_data = np.vstack([real(H_dict,I,psi_0,w,t,i) for i in range(n_real)])
-	##### averaging and error estimation
-	I_avg = I_data.mean(axis=0) # get mean value of I for all time points
-	# generate bootstrap samples
-	bootstrap_gen = (I_data[choice(n_real,size=n_real)].mean(axis=0) for i in range(n_boot)) 
-	# generate the fluctuations about the mean of I
-	sq_fluc_gen = ((bootstrap-I_avg)**2 for bootstrap in bootstrap_gen)
-	I_error = np.sqrt(sum(sq_fluc_gen)/n_boot) 
-	##### plotting results
-	plt.errorbar(t,I_avg,I_error,marker=".",label="w={:.2f}".format(w))
-# configuring plots
-plt.xlabel("$t/J$",fontsize=18)
-plt.ylabel("$\mathcal{I}$",fontsize=18)
-plt.grid(True)
-plt.tick_params(labelsize=16)
-plt.legend(loc=0)
-plt.tight_layout()
-plt.savefig('fermion_MBL.pdf', bbox_inches='tight')
+###### calculate initial states ######
+# calculating bandwidth for non-driven hamiltonian
+[E_1d_min],psi_1d = Hzz_1d.eigsh(k=1,which="SA")
+[E_2d_min],psi_2d = Hzz_2d.eigsh(k=1,which="SA")
+# setting up initial states
+psi0_1d = psi_1d.ravel()
+psi0_2d = psi_2d.ravel()
+#
+###### time evolution ######
+# stroboscopic time vector
+nT = 200 # number of periods to evolve to
+t=Floquet_t_vec(Omega,nT,len_T=1) # t.vals=t, t.i=initial time, t.T=drive period
+# creating generators of time evolution using exp_op class
+U1_1d = exp_op(Hzz_1d+A*Hx_1d,a=-1j*t.T/4)
+U2_1d = exp_op(Hzz_1d-A*Hx_1d,a=-1j*t.T/2)
+U1_2d = exp_op(Hzz_2d+A*Hx_2d,a=-1j*t.T/4)
+U2_2d = exp_op(Hzz_2d-A*Hx_2d,a=-1j*t.T/2)
+# user-defined generator for stroboscopic dynamics 
+def evolve_gen(psi0,nT,*U_list):
+	yield psi0
+	for i in range(nT): # loop over number of periods
+		for U in U_list: # loop over unitaries
+			psi0 = U.dot(psi0)
+		yield psi0
+# get generator objects for time-evolved states
+psi_1d_t = evolve_gen(psi0_1d,nT,U1_1d,U2_1d,U1_1d)
+psi_2d_t = evolve_gen(psi0_2d,nT,U1_2d,U2_2d,U1_2d)
+#
+###### compute expectation values of observables ######
+# measure Hzz as a function of time
+Obs_1d_t = obs_vs_time(psi_1d_t,t.vals,dict(E=Hzz_1d),return_state=True)
+Obs_2d_t = obs_vs_time(psi_2d_t,t.vals,dict(E=Hzz_2d),return_state=True)
+# calculating the entanglement entropy density
+Sent_time_1d = basis_1d.ent_entropy(Obs_1d_t["psi_t"],sub_sys_A=range(L_1d//2))["Sent_A"]/(L_1d//2)
+Sent_time_2d = basis_2d.ent_entropy(Obs_2d_t["psi_t"],sub_sys_A=range(N_2d//2))["Sent_A"]/(N_2d//2)
+# calculate entanglement entropy density
+s_p_1d = np.log(2)-2.0**(-L_1d//2-L_1d)/(2*(L_1d//2))
+s_p_2d = np.log(2)-2.0**(-N_2d//2-N_2d)/(2*(N_2d//2))
+#
+###### plotting results ######
+plt.plot(t.strobo.inds,(Obs_1d_t["E"]-E_1d_min)/(-E_1d_min),marker='.',markersize=5,label="$S=1/2$")
+plt.plot(t.strobo.inds,(Obs_2d_t["E"]-E_2d_min)/(-E_2d_min),marker='.',markersize=5,label="$S=1$")
+plt.grid()
+plt.ylabel("$Q(t)$",fontsize=20)
+plt.xlabel("$t/T$",fontsize=20)
+plt.savefig("TFIM_Q.pdf")
+plt.figure()
+plt.plot(t.strobo.inds,Sent_time_1d/s_p_1d,marker='.',markersize=5,label="$1d$")
+plt.plot(t.strobo.inds,Sent_time_2d/s_p_2d,marker='.',markersize=5,label="$2d$")
+plt.grid()
+plt.ylabel("$s_{\mathrm{ent}}(t)/s_\mathrm{Page}$",fontsize=20)
+plt.xlabel("$t/T$",fontsize=20)
+plt.legend(loc=0,fontsize=16)
+plt.savefig("TFIM_S.pdf")
 plt.show()

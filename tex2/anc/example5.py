@@ -9,10 +9,10 @@ except ImportError:
     pass 
 ##### define model parameters #####
 L=100 # system size
-J=1.0 # uniform hopping contribution
+J=1.0 # uniform hopping
 deltaJ=0.1 # bond dimerisation
 Delta=0.5 # staggered potential
-beta=100.0 # set inverse temperature for Fermi-Dirac distribution
+beta=100.0 # inverse temperature for Fermi-Dirac distribution
 ##### construct single-particle Hamiltonian #####
 # define site-coupling lists
 hop_pm=[[-J-deltaJ*(-1)**i,i,(i+1)%L] for i in range(L)] # PBC
@@ -93,7 +93,3 @@ plt.yticks(fontsize=16)
 plt.grid()
 plt.tight_layout()
 plt.show()
-
-
-
-

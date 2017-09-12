@@ -1,73 +1,113 @@
-from quspin.operators import hamiltonian # Hamiltonians and operators
-from quspin.basis import spin_basis_1d, fermion_basis_1d # Hilbert space spin basis
-import numpy as np # generic math functions
-import matplotlib.pyplot as plt # figure/plot library
+from __future__ import print_function, division
+from quspin.operators import hamiltonian,exp_op,ops_dict # operators
+from quspin.basis import tensor_basis,fermion_basis_1d # Hilbert spaces
+from quspin.tools.measurements import obs_vs_time # calculating dynamics
+import numpy as np # general math functions
+from numpy.random import uniform,choice # tools for doing random sampling
+from time import time # tool for calculating computation time
+import matplotlib.pyplot as plt # plotting
 #
-##### define model parameters #####
-L=8 # system size
-J=1.0 # spin zz interaction
-h=np.sqrt(2) # z magnetic field strength
+##### setting parameters for simulation
+# simulation parameters
+n_real = 100 # number of realizations
+n_boot = 100 # number of bootstrap samples to calculate error
+# physical parameters
+L = 8 # system size
+N = L//2 # number of particles
+N_up = N//2 + N % 2 # number of fermions with spin up
+N_down = N//2 # number of fermions with spin down
+w_list = [1.0,4.0,10.0] # disorder strength
+J = 1.0 # hopping strength
+U = 5.0 # interaction strength
+# range in time to evolve system
+start,stop,num=0.0,35.0,101
+t = np.linspace(start,stop,num=num,endpoint=True)
 #
-# loop over spin inversion symmetry block variable and boundary conditions
-for zblock,PBC in zip([-1,1],[1,-1]):
-	#
-	##### define spin model
-	# site-coupling lists (PBC for both spin inversion sectors)
-	h_field=[[-h,i] for i in range(L)]
-	J_zz=[[-J,i,(i+1)%L] for i in range(L)] # PBC
-	# define spin static and dynamic lists
-	static_spin =[["zz",J_zz],["x",h_field]] # static part of H
-	dynamic_spin=[] # time-dependent part of H
-	# construct spin basis in pos/neg spin inversion sector depending on APBC/PBC
-	basis_spin = spin_basis_1d(L=L,zblock=zblock) 
-	# build spin Hamiltonians
-	H_spin=hamiltonian(static_spin,dynamic_spin,basis=basis_spin,dtype=np.float64)
-	# calculate spin energy levels
-	E_spin=H_spin.eigvalsh()
-	#
-	##### define fermion model
-	# define site-coupling lists for external field
-	h_pot=[[2.0*h,i] for i in range(L)]
-	if PBC==1: # periodic BC: odd particle number subspace only
-		# define site-coupling lists (including boudary couplings)
-		J_pm=[[-J,i,(i+1)%L] for i in range(L)] # PBC
-		J_mp=[[+J,i,(i+1)%L] for i in range(L)] # PBC
-		J_pp=[[-J,i,(i+1)%L] for i in range(L)] # PBC
-		J_mm=[[+J,i,(i+1)%L] for i in range(L)] # PBC
-		# construct fermion basis in the odd particle number subsector
-		basis_fermion = fermion_basis_1d(L=L,Nf=range(1,L+1,2))
-	elif PBC==-1: # anti-periodic BC: even particle number subspace only
-		# define bulk site coupling lists
-		J_pm=[[-J,i,i+1] for i in range(L-1)]
-		J_mp=[[+J,i,i+1] for i in range(L-1)]
-		J_pp=[[-J,i,i+1] for i in range(L-1)]
-		J_mm=[[+J,i,i+1] for i in range(L-1)]
-		# add boundary coupling between sites (L-1,0)
-		J_pm.append([+J,L-1,0]) # APBC
-		J_mp.append([-J,L-1,0]) # APBC
-		J_pp.append([+J,L-1,0]) # APBC
-		J_mm.append([-J,L-1,0]) # APBC
-		# construct fermion basis in the even particle number subsector
-		basis_fermion = fermion_basis_1d(L=L,Nf=range(0,L+1,2))
-	# define fermionic static and dynamic lists
-	static_fermion =[["+-",J_pm],["-+",J_mp],["++",J_pp],["--",J_mm],['z',h_pot]]
-	dynamic_fermion=[]
-	# build fermionic Hamiltonian
-	H_fermion=hamiltonian(static_fermion,dynamic_fermion,basis=basis_fermion,
-							dtype=np.float64,check_pcon=False,check_symm=False)
-	# calculate fermionic energy levels
-	E_fermion=H_fermion.eigvalsh()
-	#
-	##### plot spectra
-	plt.plot(np.arange(H_fermion.Ns),E_fermion/L,marker='o'
-									,color='b',label='fermion')
-	plt.plot(np.arange(H_spin.Ns),E_spin/L,marker='x'
-									,color='r',markersize=2,label='spin')
-	plt.xlabel('state number',fontsize=16)
-	plt.ylabel('energy',fontsize=16)
-	plt.xticks(fontsize=16)
-	plt.yticks(fontsize=16)
-	plt.legend(fontsize=16)
-	plt.grid()
-	plt.tight_layout()
-	plt.show()
+###### create the basis
+# build the two bases to tensor together to spinful fermions
+basis_up = fermion_basis_1d(L,Nf=N_up) # up basis
+basis_down = fermion_basis_1d(L,Nf=N_down) # down basis
+basis = tensor_basis(basis_up,basis_down) # spinful fermions
+#
+##### create model
+# define site-coupling lists
+hop_right = [[-J,i,i+1] for i in range(L-1)] # hopping to the right OBC
+hop_left = [[J,i,i+1] for i in range(L-1)] # hopping to the left OBC
+int_list = [[U,i,i] for i in range(L)] # onsite interaction
+# site-coupling list to create the sublattice imbalance observable
+sublat_list = [[(-1.0)**i/N,i] for i in range(0,L)]
+# create static lists
+operator_list_0 = [	
+			["+-|", hop_left], # up hop left
+			["-+|", hop_right], # up hop right
+			["|+-", hop_left], # down hop left
+			["|-+", hop_right], # down hop right
+			["n|n", int_list], # onsite interaction
+			]
+imbalance_list = [["n|",sublat_list],["|n",sublat_list]]
+# create operator dictionary for ops_dict class
+# add key for Hubbard hamiltonian
+operator_dict=dict(H0=operator_list_0)
+# add keys for local potential in each site
+for i in range(L):
+	# add to dictioanry keys h0,h1,h2,...,hL with local potential operator
+	operator_dict["n"+str(i)] = [["n|",[[1.0,i]]],["|n",[[1.0,i]]]]
+#
+###### setting up operators	
+# set up hamiltonian dictionary and observable (imbalance I)
+no_checks = dict(check_pcon=False,check_symm=False,check_herm=False)
+H_dict = ops_dict(operator_dict,basis=basis,**no_checks)
+I = hamiltonian(imbalance_list,[],basis=basis,**no_checks)
+# strings which represent the initial state
+s_up = "".join("1000" for i in range(N_up))
+s_down = "".join("0010" for i in range(N_down))
+# basis.index accepts strings and returns the index 
+# which corresponds to that state in the basis list
+i_0 = basis.index(s_up,s_down) # find index of product state
+psi_0 = np.zeros(basis.Ns) # allocate space for state
+psi_0[i_0] = 1.0 # set MB state to be the given product state
+print("H-space size: {:d}, initial state: |{:s}>(x)|{:s}>".format(basis.Ns,s_up,s_down))
+#
+# define function to do dynamics for different disorder realizations.
+def real(H_dict,I,psi_0,w,t,i):
+	# body of function goes below
+	ti = time() # start timing function for duration of reach realisation
+	# create a parameter list which specifies the onsite potential with disorder
+	params_dict=dict(H0=1.0)
+	for j in range(L):
+		params_dict["n"+str(j)] = uniform(-w,w)
+	# using the parameters dictionary construct a hamiltonian object with those
+	# parameters defined in the list
+	H = H_dict.tohamiltonian(params_dict)
+	# use exp_op to get the evolution operator
+	U = exp_op(H,a=-1j,start=t.min(),stop=t.max(),num=len(t),iterate=True)
+	psi_t = U.dot(psi_0) # get generator psi_t for time evolved state
+	# use obs_vs_time to evaluate the dynamics
+	t = U.grid # extract time grid stored in U, and defined in exp_op
+	obs_t = obs_vs_time(psi_t,t,dict(I=I))
+	# print reporting the computation time for realization
+	print("realization {}/{} completed in {:.2f} s".format(i+1,n_real,time()-ti))
+	# return observable values
+	return obs_t["I"]
+#
+###### looping over differnt disorder strengths
+for w in w_list:	
+	I_data = np.vstack([real(H_dict,I,psi_0,w,t,i) for i in range(n_real)])
+	##### averaging and error estimation
+	I_avg = I_data.mean(axis=0) # get mean value of I for all time points
+	# generate bootstrap samples
+	bootstrap_gen = (I_data[choice(n_real,size=n_real)].mean(axis=0) for i in range(n_boot)) 
+	# generate the fluctuations about the mean of I
+	sq_fluc_gen = ((bootstrap-I_avg)**2 for bootstrap in bootstrap_gen)
+	I_error = np.sqrt(sum(sq_fluc_gen)/n_boot) 
+	##### plotting results
+	plt.errorbar(t,I_avg,I_error,marker=".",label="w={:.2f}".format(w))
+# configuring plots
+plt.xlabel("$t/J$",fontsize=18)
+plt.ylabel("$\mathcal{I}$",fontsize=18)
+plt.grid(True)
+plt.tick_params(labelsize=16)
+plt.legend(loc=0)
+plt.tight_layout()
+plt.savefig('fermion_MBL.pdf', bbox_inches='tight')
+plt.show()

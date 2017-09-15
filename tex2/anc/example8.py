@@ -2,7 +2,7 @@ from quspin.operators import hamiltonian # Hamiltonians and operators
 from quspin.basis import boson_basis_1d # Hilbert space boson basis
 from quspin.tools.measurements import evolve # nonlinear evolution 
 import numpy as np # generic math functions
-import matplotlib.pyplot as plt # plot library
+import matplotlib.pyplot as plt # plotting library
 #
 ##### define model parameters #####
 L=300 # system size

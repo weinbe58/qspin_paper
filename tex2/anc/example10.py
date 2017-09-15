@@ -4,7 +4,7 @@ from quspin.basis import tensor_basis,fermion_basis_1d,boson_basis_1d # bases
 from quspin.tools.measurements import obs_vs_time # calculating dynamics
 from quspin.tools.Floquet import Floquet_t_vec # period-spaced time vector
 import numpy as np # general math functions
-import matplotlib.pyplot as plt # plotting
+import matplotlib.pyplot as plt # plotting library
 #
 ##### setting up parameters for simulation
 # physical parameters
@@ -21,16 +21,16 @@ def drive(t,Omega):
 drive_args=[Omega]
 #
 ###### create the basis
-# build the two bases to tensor together to spinful fermions
+# build the two bases to tensor together to a bose-fermi mixture
 basis_b=boson_basis_1d(L,Nb=Nb,sps=3) # boson basis
 basis_f=fermion_basis_1d(L,Nf=Nf) # fermion basis
-basis=tensor_basis(basis_b,basis_f) # total fermions
+basis=tensor_basis(basis_b,basis_f) # BFM
 #
 ##### create model
 # define site-coupling lists
 hop_b = [[-Jb,i,(i+1)%L] for i in range(L)] # b hopping
 int_list_bb = [[Ubb/2.0,i,i] for i in range(L)] # bb onsite interaction
-int_list_bb_lin = [[-Ubb/2.0,i] for i in range(L)] # bb onsite interaction, linear term
+int_list_bb_lin = [[-Ubb/2.0,i] for i in range(L)] # bb interaction, linear term
 # 
 hop_f_right = [[-Jf,i,(i+1)%L] for i in range(L)] # f hopping right
 hop_f_left = [[Jf,i,(i+1)%L] for i in range(L)] # f hopping left

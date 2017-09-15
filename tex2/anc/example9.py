@@ -4,7 +4,7 @@ from quspin.basis import spin_basis_1d, spin_basis_general # spin basis construc
 from quspin.tools.measurements import obs_vs_time # calculating dynamics
 from quspin.tools.Floquet import Floquet_t_vec # period-spaced time vector
 import numpy as np # general math functions
-import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt # plotting library
 #
 ###### define model parameters ######
 L_1d = 16 # length of chain for spin 1/2

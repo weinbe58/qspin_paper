@@ -1,7 +1,7 @@
 from quspin.operators import hamiltonian # Hamiltonians and operators
 from quspin.basis import spin_basis_1d, fermion_basis_1d # Hilbert space spin basis
 import numpy as np # generic math functions
-import matplotlib.pyplot as plt # figure/plot library
+import matplotlib.pyplot as plt # plotting library
 #
 ##### define model parameters #####
 L=8 # system size

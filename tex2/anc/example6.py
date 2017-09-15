@@ -5,7 +5,7 @@ from quspin.tools.measurements import obs_vs_time # calculating dynamics
 import numpy as np # general math functions
 from numpy.random import uniform,choice # tools for doing random sampling
 from time import time # tool for calculating computation time
-import matplotlib.pyplot as plt # plotting
+import matplotlib.pyplot as plt # plotting library
 #
 ##### setting parameters for simulation
 # simulation parameters

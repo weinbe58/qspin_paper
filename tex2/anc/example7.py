@@ -3,7 +3,7 @@ from quspin.operators import hamiltonian # Hamiltonians and operators
 from quspin.basis import boson_basis_1d # bosonic Hilbert space
 from quspin.tools.block_tools import block_ops # dynamics in symmetry blocks
 import numpy as np # general math functions
-import matplotlib.pyplot as plt # plotting
+import matplotlib.pyplot as plt # plotting library
 import matplotlib.animation as animation # animating movie of dynamics
 #
 ##### define model parameters

@@ -216,11 +216,12 @@ We present a major update to QuSpin, \emph{SciPostPhys.2.1.003} -- an open-sourc
 	\item update example codes to new release
 	\item run all tests for code, and all example codes for doc
 	\item put all examples in doc, once they are ready
-	\item update spinfull fermion doc once ready
-	\item update links to doc in appendix	
-	\item insert missing MBL references
+	\item update and put python notebooks to doc
+	\item update spinful fermion doc once ready
+	\item update links to doc in appendix
+	\item update github readme
+	\item for manual install, list all required packages; update online doc	
 	\item put link to example code in doc in the end of each subsec
-	\item update online doc with possible symmetry operations on the sites for the general basis class
 	\item decolour text
 	\item fill in relevant funding info 
 	\item check latex log file 	
@@ -471,9 +472,9 @@ This example shows how to:
 	\item use \texttt{obs\_vs\_time()} functionality to measure observables as a function of time.
 \end{itemize}
 
-A class of exciting new problems in the field of non-equalibrium physics is that of many-body localised (MBL) models. The MBL transition is a dynamical phase transition in the eigenstates of a many-body Hamiltonian. Driven primarily by quenched disorder, the transition is distinguished by the system having ergodic eigenstates in the weak disorder limit and non-ergodic eigenstates in the strong disorder limit. The MBL phase is reminiscent of integrable systems as one can construct quasi-local integrals of motion, but these integrals of motion are much more robust in the sense that they are not sensitive to small perturbations, as is the case in many classes of integrable systems~\cite{nandkishore_15,abanin_17}\cyan{[CITE more MBL misc]}.
+A class of exciting new problems in the field of non-equalibrium physics is that of many-body localised (MBL) models. The MBL transition is a dynamical phase transition in the eigenstates of a many-body Hamiltonian. Driven primarily by quenched disorder, the transition is distinguished by the system having ergodic eigenstates in the weak disorder limit and non-ergodic eigenstates in the strong disorder limit. The MBL phase is reminiscent of integrable systems as one can construct quasi-local integrals of motion, but these integrals of motion are much more robust in the sense that they are not sensitive to small perturbations, as is the case in many classes of integrable systems~\cite{nandkishore_15,abanin_17}.
 
-Motivated by recent experiments~\cite{Schreiber15,ovadia_15,bordia_16,smith_16,choi_16,lueschen_17} we explore MBL in the context of fermions using QuSpin. The model we will consider is the Fermi-Hubbard model with quenched random disorder which has the following Hamiltonian:
+Motivated by recent experiments~\cite{kondov_15,Schreiber15,ovadia_15,bordia_16,smith_16,choi_16,kucsko_16,lueschen_17,bordia_17} we explore MBL in the context of fermions using QuSpin. The model we will consider is the Fermi-Hubbard model with quenched random disorder which has the following Hamiltonian:
 \begin{equation}
 	H = -J\sum_{i=0,\sigma}^{L-2} \left(c^\dagger_{i\sigma}c_{i+1,\sigma} - c_{i\sigma}c^\dagger_{i+1,\sigma}\right) +U\sum_{i=0}^{L-1} n_{i\uparrow }n_{i\downarrow } + \sum_{i=0,\sigma}^{L-1} V_i n_{i\sigma}\label{eq:FH_ham}
 \end{equation}
@@ -533,7 +534,7 @@ The function ends by printing the time of executing and returning the value for 
 
 Now we are all set to run the disorder realizations for the different disorder strengths which in principle can be spilt up over multiple simulations, e.g.~using \texttt{joblib} [c.f.~Example2 from Ref.~\cite{weinberg_17_quspin}] but for completeness we do all of the calculations in one script. 
 \lstinputlisting[firstline=93, lastline=95,firstnumber=93]{\MBLcode}
-Last, we calculate the average and its error bars using bootstrap re-sampling \cyan{(See Appendix\ref{app:bootstrap})}
+Last, we calculate the average and its error bars using \emph{bootstrap re-sampling}.
 \lstinputlisting[firstline=96, lastline=102,firstnumber=96]{\MBLcode}
 
 The complete code including the lines that produce Fig.~\ref{fig:MBL} is available under:\\

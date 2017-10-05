@@ -117,6 +117,8 @@
 
 %%%%%%%
 
+%define path for figs
+\graphicspath{{figs/}}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%% qspin logo %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -194,7 +196,7 @@ Department of Physics, Boston University, \\
 
 \section*{Abstract}
 {\bf 
-We present a major update to QuSpin, \emph{SciPostPhys.2.1.003} -- an open-source Python package for exact diagonalization and quantum dynamics of arbitrary boson, fermion and spin many-body systems, supporting the use of various (user-defined) symmetries in one and higher dimension and (imaginary) time evolution following a user-specified driving protocol. We explain how to use the new features of QuSpin using seven detailed examples of various complexity: (i) the transverse-field Ising model and the Jordan-Wigner transformation, (ii) free particle systems: the SSH model, (iii) the many-body localised Fermi-Hubbard model, (iv) the Bose-Hubbard model in a ladder geometry, (v) nonlinear (imaginary) time evolution and the Gross-Pitaevskii equation, (vi) integrability breaking and thermalising dynamics in the 2D transverse-field Ising model on a torus, and (vii) out-of-equilibrium Bose-Fermi mixtures. This easily accessible and user-friendly package can serve various purposes, including educational and cutting-edge experimental and theoretical research.
+We present a major update to QuSpin, \emph{SciPostPhys.2.1.003} -- an open-source Python package for exact diagonalization and quantum dynamics of arbitrary boson, fermion and spin many-body systems, supporting the use of various (user-defined) symmetries in one and higher dimension and (imaginary) time evolution following a user-specified driving protocol. We explain how to use the new features of QuSpin using seven detailed examples of various complexity: (i) the transverse-field Ising model and the Jordan-Wigner transformation, (ii) free particle systems: the SSH model, (iii) the many-body localised Fermi-Hubbard model, (iv) the Bose-Hubbard model in a ladder geometry, (v) nonlinear (imaginary) time evolution and the Gross-Pitaevskii equation, (vi) integrability breaking and thermalising dynamics in the translationally-invariant 2D transverse-field Ising model, and (vii) out-of-equilibrium Bose-Fermi mixtures. This easily accessible and user-friendly package can serve various purposes, including educational and cutting-edge experimental and theoretical research.
 }
 
 
@@ -213,25 +215,23 @@ We present a major update to QuSpin, \emph{SciPostPhys.2.1.003} -- an open-sourc
 
 \cyan{
 \begin{itemize}
-	\item update example codes to new release
-	\item run all tests for code, and all example codes for doc
-	\item put all examples in doc, once they are ready
-	\item update and put python notebooks to doc
+	\item run all tests for code, and all doc example codes
+	\item update all examples and copy them in doc, once they are ready; update examples scripts and jupyter notebooks
 	\item dot and rdot issue in exp\_op.
 	\item bug, expop.rdot(), "shape[1] != self.getshape[0]" if other is vector
 	\item measurements.evolve, bug if stackstate is on for evolution of many states in parallel
-	\item update spinful fermion doc once ready
 	\item update links to doc in appendix
-	\item update github readme
-	\item for manual install, list all required packages; update online doc	
+	\item update github readme with links
+	\item for manual install, list all required packages; update online doc	and README
 	\item put link to example code in doc in the end of each subsec
+	\item update spinful fermion doc once ready
 	\item decolour text
 	\item fill in relevant funding info 
 	\item check latex log file 	
 \end{itemize}
 	}
 
-Understanding the physics of many-body quantum condensed matter systems often involves a great deal of numerical simulations, be it to gain intuition about the complicated problem of interest, or because they do not admit an analytical solution which can be expressed in a closed form. This motivates the development of open-source packages~\cite{alet05,albuquerque2007,bauer11,dolfi14,ITensor,TNT,johansson2012,johansson2013,wright_13}\cyan{more?}, the purpose of which is to facilitate the study of condensed matter systems, without the need to implement the inner workings of complicated numerical methods which required years to understand and fully develop. Here, we report on a major upgrade to QuSpin~\cite{weinberg_17_quspin} -- a Python library for exact diagonalisation (ED) and simulation of the dynamics of arbitrary quantum many-body systems. 
+Understanding the physics of many-body quantum condensed matter systems often involves a great deal of numerical simulations, be it to gain intuition about the complicated problem of interest, or because they do not admit an analytical solution which can be expressed in a closed form. This motivates the development of open-source packages~\cite{alet05,albuquerque2007,bauer11,dolfi14,ITensor,TNT,johansson2012,johansson2013,wright_13,kramer_17,gegg_17,young_17,al_17}\cyan{more?}, the purpose of which is to facilitate the study of condensed matter systems, without the need to implement the inner workings of complicated numerical methods which required years to understand and fully develop. Here, we report on a major upgrade to QuSpin~\cite{weinberg_17_quspin} -- a Python library for exact diagonalisation (ED) and simulation of the dynamics of arbitrary quantum many-body systems. 
 
 Although ED methods are vastly outperformed by more sophisticated numerical techniques in the study of equilibrium problems, such as quantum Monte Carlo~\cite{pollet_12,foulkes_01,acioli_97}, matrix product states based density matrix renormalisation group~\cite{daley_04,schollwock_05,schollwock_11}, and dynamical mean-field theory~\cite{georges_96,kotliar_06,aoki_14}, as of present date ED remains essential for certain dynamical non-equilibrium problems. The reason for this often times relies on the fact that the underlying physics of these problems cannot be explained without taking into consideration the contribution from high-energy states excited during the nonequilibrium process. Some prominent examples of such problems include the study of the many-body localisation (MBL) transition~\cite{nandkishore_15,abanin_17}, the Eigenstate Thermalisation hypothesis~\cite{TD_review}, quantum quench dynamics~\cite{polkovnikov_11}, periodically-driven systems~\cite{goldman_14,bukov_review,eckardt_17}, adiabatic and counter-diabatic state preparation~\cite{kolodrubetz_17}, applications of Machine Learning to non-equilibrium physics~\cite{chen_14,bukov_17RL,dunjko_17}, optimal control~\cite{glaser_15}, and many more \cyan{\bf did I forget smth important?}.
 
@@ -475,9 +475,9 @@ This example shows how to:
 	\item use \texttt{obs\_vs\_time()} functionality to measure observables as a function of time.
 \end{itemize}
 
-A class of exciting new problems in the field of non-equalibrium physics is that of many-body localised (MBL) models. The MBL transition is a dynamical phase transition in the eigenstates of a many-body Hamiltonian. Driven primarily by quenched disorder, the transition is distinguished by the system having ergodic eigenstates in the weak disorder limit and non-ergodic eigenstates in the strong disorder limit. The MBL phase is reminiscent of integrable systems as one can construct quasi-local integrals of motion, but these integrals of motion are much more robust in the sense that they are not sensitive to small perturbations, as is the case in many classes of integrable systems~\cite{nandkishore_15,abanin_17}.
+A class of exciting new problems in the field of non-equalibrium physics is that of many-body localised (MBL) models. The MBL transition is a dynamical phase transition in the eigenstates of a many-body Hamiltonian. Driven primarily by quenched disorder, the transition is distinguished by the system having ergodic eigenstates in the weak disorder limit and non-ergodic eigenstates in the strong disorder limit. The MBL phase is reminiscent of integrable systems as one can construct quasi-local integrals of motion, but these integrals of motion are much more robust in the sense that they are not sensitive to small perturbations, as is the case in many classes of integrable systems~\cite{nandkishore_15,abanin_17,khemani_16,khemani_17,ponte_17}.
 
-Motivated by recent experiments~\cite{kondov_15,Schreiber15,ovadia_15,bordia_16,smith_16,choi_16,kucsko_16,lueschen_17,bordia_17} we explore MBL in the context of fermions using QuSpin. The model we will consider is the Fermi-Hubbard model with quenched random disorder which has the following Hamiltonian:
+Motivated by recent experiments~\cite{kondov_15,Schreiber15,ovadia_15,bordia_16,smith_16,choi_16,kucsko_16,lueschen_17,bordia_17,zhang_17} we explore MBL in the context of fermions using QuSpin. The model we will consider is the Fermi-Hubbard model with quenched random disorder which has the following Hamiltonian:
 \begin{equation}
 	H = -J\sum_{i=0,\sigma}^{L-2} \left(c^\dagger_{i\sigma}c_{i+1,\sigma} - c_{i\sigma}c^\dagger_{i+1,\sigma}\right) +U\sum_{i=0}^{L-1} n_{i\uparrow }n_{i\downarrow } + \sum_{i=0,\sigma}^{L-1} V_i n_{i\sigma}\label{eq:FH_ham}
 \end{equation}
@@ -725,7 +725,7 @@ The complete code including the lines that produce Fig.~\ref{fig:GPE_fig} is ava
 
 
 
-\subsection{Integrability Breaking and Thermalising Dynamics in the 2D Transverse-Field Ising Model on a Torus}
+\subsection{Integrability Breaking and Thermalising Dynamics in the Translationally Invariant 2D Transverse-Field Ising Model}
 \label{subsec:higher_spin}
 
 This example shows how to:

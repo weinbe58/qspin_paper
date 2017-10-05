@@ -54,7 +54,7 @@ i0 = np.random.randint(basis.Ns) # pick random state from basis set
 psi = np.zeros(basis.Ns,dtype=np.float64)
 psi[i0] = 1.0
 # print info about setup
-state_str = "".join(str(int((basis[i0]//basis.sps**(L-i-1)))%basis.sps)) for i in range(N))
+state_str = "".join(str(int((basis[i0]//basis.sps**(L-i-1)))%basis.sps) for i in range(N))
 print("total H-space size: {}, initial state: |{}>".format(basis.Ns,state_str))
 # setting up parameters for evolution
 start,stop,num = 0,30,301 # 0.1 equally spaced points

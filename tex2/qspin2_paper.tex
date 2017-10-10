@@ -220,10 +220,8 @@ We present a major update to QuSpin, \emph{SciPostPhys.2.1.003} -- an open-sourc
 	\item dot and rdot issue in exp\_op.
 	\item bug, expop.rdot(), "shape[1] != self.getshape[0]" if other is vector
 	\item measurements.evolve, bug if stackstate is on for evolution of many states in parallel
-	\item update links to doc in appendix
 	\item update github readme with links
-	\item for manual install, list all required packages; update online doc	and README
-	\item put link to example code in doc in the end of each subsec
+	\item for manual install, list all required packages (add six b/c of iteritems ine xamples); update online doc	and README
 	\item update spinful fermion doc once ready
 	\item decolour text
 	\item fill in relevant funding info 
@@ -251,7 +249,7 @@ New in QuSpin 2.0, we have added the following features and toolboxes:
 	\item[(vi)] \texttt{quantum\_LinearOperator} class to efficiently apply an operator to a state without constructing the operator.
 \end{itemize}
 
-\noindent Before we carry on, we refer the interested reader to examples (i)-(iv) from the original QuSpin paper~\cite{weinberg_17_quspin}. The examples below focus predominantly on the newly introduced features, and are thus to be considered complementary. We emphasize that, since they serve the purpose of explaining how to use QuSpin, for the sake of brevity we shall not discuss the interesting physics related to the interpretation of the results.\\
+\noindent Before we carry on, we refer the interested reader to \href{examples (0)-(3)}{http://weinbe58.github.io/QuSpin/Examples.html} from the original QuSpin paper~\cite{weinberg_17_quspin}. The examples below focus predominantly on the newly introduced features, and are thus to be considered complementary. We emphasize that, since they serve the purpose of explaining how to use QuSpin, for the sake of brevity we shall not discuss the interesting physics related to the interpretation of the results.\\
 
 \emph{Installing QuSpin is quick and efficient; just follow the steps outlined in App.~\ref{app:install}.}
 
@@ -326,7 +324,7 @@ The last step before we can construct the Hamiltonian is to build the basis for 
 \lstinputlisting[firstline=21, lastline=22, firstnumber=21]{\JWcode}
 Having specified the static and dynamic lists, as well as the basis, building up the Hamiltonian is a one-liner, using the \texttt{hamiltonian} constructor. The required arguments in order of appearance are the \texttt{static} and \texttt{dynamic} lists, respectively. Optional arguments include the \texttt{basis}, and the precision or data type \texttt{dtype}. If no basis is passed, the constructor uses \texttt{spin\_basis\_1d} by default. The default data type is \texttt{np.complex128}.
 \lstinputlisting[firstline=23, lastline=24, firstnumber=23]{\JWcode} 
-The Hamiltonian is stored as a Scipy sparse matrix for efficiency. It can be cast to a full array for a more convenient inspection using the attribute \texttt{H.toarray()}. To calculate its spectrum, we use the attribute \texttt{H.eigenvalsh()}, which returns all eigenvalues. Other attributes for diagonalisation were discussed in \href{https://github.com/weinbe58/QuSpin/blob/master/examples/scripts/example0.py}{Example 0}\cyan{update link}, c.f.~Ref.~\cite{weinberg_17_quspin}.
+The Hamiltonian is stored as a Scipy sparse matrix for efficiency. It can be cast to a full array for a more convenient inspection using the attribute \texttt{H.toarray()}. To calculate its spectrum, we use the attribute \texttt{H.eigenvalsh()}, which returns all eigenvalues. Other attributes for diagonalisation were discussed \href{http://weinbe58.github.io/QuSpin/examples/example0.html#example0-label}{here}, c.f.~Ref.~\cite{weinberg_17_quspin}.
 \lstinputlisting[firstline=25, lastline=26, firstnumber=25]{\JWcode} 
 
 Let us now move to the second part of the loop which defines the fermionic $p$-wave superconductor. We start by defining the site-coupling list for the local potential
@@ -350,7 +348,7 @@ Constructing and diagonalising the fermion Hamiltonian is the same as for the sp
 
 The complete code including the lines that produce Fig.~\ref{fig:JW} is available under:\\
 
-\href{https://github.com/weinbe58/QuSpin/#quspin}{https://github.com/weinbe58/QuSpin/\#quspin}\\
+\href{http://weinbe58.github.io/QuSpin/examples/example5.html\#example5-label}{http://weinbe58.github.io/QuSpin/examples/example5.html\#example5-label}\\
 
 
 \subsection{Free Particle Systems: the Fermionic SSH Chain}
@@ -434,9 +432,9 @@ Setting up the fermion basis with the help of the constructor \texttt{spinless\_
 We then build the real-valued SSH Hamiltonian in real space by passing the static and dynamic lists, as well as the basis and the data type. After that, we and diagonalise it, storing all eigenenergies and eigenstates.
 \lstinputlisting[firstline=26, lastline=29]{\SSHcode}
 
-For translation invariant single-particle models, however, the user might prefer to use momentum space, where the Hamiltonian becomes block diagonal, as we showed in the theory section above. This can be achieved using QuSpin's \texttt{block\_tools}. The idea behind this tool is simple: the main purpose is to create the full Hamiltonian in block-diagonal form, where the blocks correspond to pre-defined quantum numbers. In our case, we would like to use momentum or \texttt{kblock}'s. Note that the unit cell in the SSH model contains two sites, which we encode using the variable \texttt{a=2}. Thus, we can create a list of dictionaries \texttt{blocks}, each element of which defines a single symmetry block. If we combine all blocks, we exhaust the full Hilbert space. All other basis arguments, such as the system size, we store in the variable \texttt{basis\_args}. We invite the interested user to check the package documentation for additional optional arguments and functionality of \texttt{block\_tools}, cf.~App.~\ref{app:doc}. We mention in passing that this procedure is independent of the symmetry, and can be done using all symmetries supported by QuSpin, not only translation.
+For translation invariant single-particle models, however, the user might prefer to use momentum space, where the Hamiltonian becomes block diagonal, as we showed in the theory section above. This can be achieved using QuSpin's \texttt{block\_tools}. The idea behind this tool is simple: the main purpose is to create the full Hamiltonian in block-diagonal form, where the blocks correspond to pre-defined quantum numbers. In our case, we would like to use momentum or \texttt{kblock}'s. Note that the unit cell in the SSH model contains two sites, which we encode using the variable \texttt{a=2}. Thus, we can create a list of dictionaries \texttt{blocks}, each element of which defines a single symmetry block. If we combine all blocks, we exhaust the full Hilbert space. All other basis arguments, such as the system size, we store in the variable \texttt{basis\_args}. We invite the interested user to check the package \href{http://weinbe58.github.io/QuSpin/index.html}{documentation} for additional optional arguments and functionality of \texttt{block\_tools}, cf.~App.~\ref{app:doc}. We mention in passing that this procedure is independent of the symmetry, and can be done using all symmetries supported by QuSpin, not only translation.
 \lstinputlisting[firstline=30, lastline=33]{\SSHcode}
-To create the block-diagonal Hamiltonian, we invoke the \texttt{block\_diag\_hamiltonian} method. It takes both required and optional arguments, and returns the transformation which block-diagonalises the Hamiltonian (in our case the Fourier transform) and the block-diagonal Hamiltonian object. Required arguments, in order of appearance, are the \texttt{blocks}, the \texttt{static} and \texttt{dynamic} lists, the \texttt{basis} constructor, \texttt{basis\_args}, and the data type. Since we anticipate the matrix elements of the momenum-space Hamiltonian to contain the Fourier factors $\exp(-ik)$, we know to choose a complex data type. \texttt{block\_diag\_hamiltonian} also accepts some optional arguments, such as the flags for disabling the automatic built-in symmetry checks. More about this function can be found in the documentation, cf.~App.~\ref{app:doc}.
+To create the block-diagonal Hamiltonian, we invoke the \texttt{block\_diag\_hamiltonian} method. It takes both required and optional arguments, and returns the transformation which block-diagonalises the Hamiltonian (in our case the Fourier transform) and the block-diagonal Hamiltonian object. Required arguments, in order of appearance, are the \texttt{blocks}, the \texttt{static} and \texttt{dynamic} lists, the \texttt{basis} constructor, \texttt{basis\_args}, and the data type. Since we anticipate the matrix elements of the momenum-space Hamiltonian to contain the Fourier factors $\exp(-ik)$, we know to choose a complex data type. \texttt{block\_diag\_hamiltonian} also accepts some optional arguments, such as the flags for disabling the automatic built-in symmetry checks. More about this function can be found in the \href{http://weinbe58.github.io/QuSpin/index.html}{documentation}, cf.~App.~\ref{app:doc}.
 \lstinputlisting[firstline=34, lastline=36]{\SSHcode}
 We can then use all functions and methods of the \texttt{hamiltonian} class to manipulate the block-diagonal Hamiltonian, for instance the diagonalisation routines:
 \lstinputlisting[firstline=37, lastline=38]{\SSHcode}
@@ -460,7 +458,7 @@ Finally, we weigh all singe-state correlators by the Fermi-Dirac distribution to
 
 The complete code including the lines that produce Fig.~\ref{fig:SSH} is available under:\\
 
-\href{https://github.com/weinbe58/QuSpin/#quspin}{https://github.com/weinbe58/QuSpin/\#quspin}\\
+\href{http://weinbe58.github.io/QuSpin/examples/example5.html\#example5-label}{http://weinbe58.github.io/QuSpin/examples/example5.html\#example5-label}\\
 
 
 
@@ -542,7 +540,7 @@ Last, we calculate the average and its error bars using \emph{bootstrap re-sampl
 
 The complete code including the lines that produce Fig.~\ref{fig:MBL} is available under:\\
 
-\href{https://github.com/weinbe58/QuSpin/#quspin}{https://github.com/weinbe58/QuSpin/\#quspin}\\
+\href{http://weinbe58.github.io/QuSpin/examples/example6.html\#example6-label}{http://weinbe58.github.io/QuSpin/examples/example6.html\#example6-label}\\
 
 \subsection{The Bose-Hubbard Model on Translationally Invariant Ladder}
 \label{subsec:Bose_Ladder}
@@ -613,7 +611,7 @@ We can also compute the entanglement entropy between the two legs of the adder. 
 
 The complete code including the lines that produce Fig.~\ref{fig:BHM} is available under:\\
 
-\href{https://github.com/weinbe58/QuSpin/#quspin}{https://github.com/weinbe58/QuSpin/\#quspin}\\
+\href{http://weinbe58.github.io/QuSpin/examples/example7.html\#example7-label}{http://weinbe58.github.io/QuSpin/examples/example7.html\#example7-label}\\
 
 \subsection{The Gross-Pitaevskii Equation and Nonlinear Time Evolution}
 \label{subsec:GP_dynamics}
@@ -693,35 +691,35 @@ Once we have the initial state $\vec\psi_\mathrm{GS}$, we evolve it according to
 
 
 \noindent\emph{Code Analysis---}In the following, we demonstrate how one can code the above physics using QuSpin. As usual, we begin by loading the necessary packages:
-\lstinputlisting[firstline=1, lastline=5, firstnumber=1]{\GPcode}
+\lstinputlisting[firstline=1, lastline=7, firstnumber=1]{\GPcode}
 Next, we define the model parameters. We distinguish between static parameters and dynamic parameters -- those involved in the time-dependent trap widening.
-\lstinputlisting[firstline=7, lastline=21, firstnumber=7]{\GPcode}
+\lstinputlisting[firstline=9, lastline=23, firstnumber=9]{\GPcode}
 In order to do time evolution, we code up the trap widening protocol from Eq.~\eqref{eq:GPE} in the function \texttt{ramp}. Since we want to make use of QuSpin's time-dependent operator features, the first argument must be the time \texttt{t}, followed by all protocol parameters. These same parameters are then explicitly stored in the variable \texttt{ramp\_args}.
-\lstinputlisting[firstline=22, lastline=26, firstnumber=22]{\GPcode}
+\lstinputlisting[firstline=24, lastline=28, firstnumber=24]{\GPcode}
 With this, we are ready to construct the single-particle Hamiltonian $H_\mathrm{sp}(t)$. The first step is to define the site-coupling lists, and the static and dynamic lists. Note that the dynamic list, which defines the harmonic potential in the single-particle Hamiltonian, contains four elements: apart from the operator string and the corresponding site-coupling list, the third and fourth elements are the time-dependent function \texttt{ramp} and its argument list \texttt{ramp\_args}. We emphasize that this order of appearance is crucial.
-\lstinputlisting[firstline=28, lastline=34, firstnumber=28]{\GPcode}
+\lstinputlisting[firstline=30, lastline=36, firstnumber=30]{\GPcode}
 To create the single-particle Hamiltonian, we choose to use the bosonic basis constructor \texttt{boson\_basis\_1d} specifying the number sector to \texttt{Nb=1} boson for the entire lattice, and a local Hilbert space of \texttt{sps=2} states per site (empty and filled). 
-\lstinputlisting[firstline=35, lastline=36, firstnumber=35]{\GPcode}
+\lstinputlisting[firstline=37, lastline=38, firstnumber=37]{\GPcode}
 Then we call the \texttt{hamiltonian} constructor to build the single-particle matrix. We can obtain the single-particle ground state without fully diagonalising this matrix, by using the sparse diagonalisation method \texttt{Hsp.eigsh()}. The \texttt{eigsh()} routine accepts the optional flags \texttt{k=1} and \texttt{'which'='SA'} which restrict the underlying Lanczos routine to find the first eigenstate starting from the bottom of the spectrum, i.e.~the ground state.	
-\lstinputlisting[firstline=37, lastline=39, firstnumber=37]{\GPcode}
+\lstinputlisting[firstline=39, lastline=41, firstnumber=39]{\GPcode}
 Having set up the Hsmiltonian, the next step in the simulation is to compute the ground state of the GPE using imaginary time evolution, c.f.~Eq.~\eqref{eq:GPE_imag}. To this end, we first define the function \texttt{GPE\_imag\_time} which evaluates the RHS. It is required that the first argument for this function is (imaginary) time \texttt{tau}, followed by the state \texttt{phi}. All other arguments, such as the single-particle Hamiltonian and the interaction strength are listed last. Note that we evaluate the time-dependent Hamiltonian at \texttt{time=0}, since we are interested in finding the GPE GS for the initial trap coniguration $\kappa_i$. Similar to before, we store these optional arguments in a list which we call \texttt{GPE\_params}. 
-\lstinputlisting[firstline=41, lastline=49, firstnumber=41]{\GPcode}
+\lstinputlisting[firstline=43, lastline=51, firstnumber=43]{\GPcode}
 Any initial value problem requires us to pick an initial state. In the case of imaginary evolution, this state can often be arbitrary, but needs to be in the same symmetry-sector as the true GPE ground state. Here, we choose the ground state of the single-particle Hamiltonian for an initial state, and normalise it to one particle per site. We also define the imaginary time vector \texttt{tau}. This array has to contain sufficiently long times so that we make sure we end up in the long imaginary time limit $\tau\to\infty$, as required by Eq.~\eqref{eq:GPE_imag}. Since imaginary time evolution is not unitary, QuSpin will be normalising the vector every $\tau$-step. Thus, one also needs to make sure these steps are small enough to avoid convergence problems with the ODE solver.
-\lstinputlisting[firstline=50, lastline=53,, firstnumber=50]{\GPcode}
+\lstinputlisting[firstline=52, lastline=55, firstnumber=52]{\GPcode}
 Performing imaginary time evolution is done using the \texttt{evolve()} method of the \texttt{measurements} tool. This function accepts an initial state \texttt{phi0}, initial time \texttt{tau[0]}, and a time vector \texttt{tau} and solves any user-defined ODE, here \texttt{GPE\_imag\_time}. The parameters of the ODE are passed using the keyword argument \texttt{f\_params=GPE\_params}. To ensure the normalisation of the state at each $\tau$-step we use the flag \texttt{imag\_time=True}. Real-valued output can be specified by \texttt{real=True}. Last, we request \texttt{evolve()} to create a generator object using the keyword argument \texttt{iterate=True}. Many of the keyword arguments of \texttt{evolve()} are the same as in the \texttt{H.evolve()} method of the \texttt{hamiltonian} class: for instance, one can choose a specific SciPy solver and pass its arguments, or the solver's absolute and relative tolerance. We refer the interested reader to the documentation, cf.~App.~\ref{app:doc}.
-\lstinputlisting[firstline=54, lastline=56, firstnumber=54]{\GPcode}
+\lstinputlisting[firstline=56, lastline=58, firstnumber=56]{\GPcode}
 Looping over the generator \texttt{phi\_tau} we have access to the solution, which we display in a form of sequential snapshots:
-\lstinputlisting[firstline=58, lastline=75, firstnumber=75]{\GPcode}
+\lstinputlisting[firstline=60, lastline=77, firstnumber=60]{\GPcode}
 Last, we use our GPE ground state, to time-evolve it in \emph{real} time according to the trap widening protocol \texttt{ramp}, hard-coded into the single-particle Hamiltonian. We proceed analogously -- first we define the real-time GPE and the time vector. In defining the GPE function, we split the ODE into a time-independent static part and a time-dependent dynamic part. The single-particle Hamiltonian for the former is accessed using the \texttt{hamiltonian} attribute \texttt{Hsp.static} which returns a SciPy sparse array. We can then manually add the non-linear cubic mean-field interaction term. In order to access the time-dependent part of the Hamiltonian, and evaluate it, we loop over the attribute \texttt{Hsp.dynamic}, which is a dictionary, whose keys \texttt{fun()} are time-dependent function objects already evaluated at the passed parameter values  (here \texttt{fun(t)=ramp(t,ramp\_args)}). These functions \texttt{fun()} accept only one argument: the time value. The value corresponding to the key of the \texttt{H\_sp.dynamic} dictionary is the matrix for the operator the time-dependent functions couple to, as given in the \texttt{dynamic} list used to define the Hamiltonian, here denoted by \texttt{Hd}. In the very end, we multiply the final output vector by the Schr\"odinger $-i$, which ensures the unitarity of real-time evolution.
-\lstinputlisting[firstline=77, lastline=90, firstnumber=77]{\GPcode}
+\lstinputlisting[firstline=79, lastline=92, firstnumber=79]{\GPcode}
 To perform the real-time evolution explicitly we once again use the \texttt{evolve()} function. This time, however, since the solution of the GPE is anticipated to be complex-valued, and because we do not do imaginary time, we do not need to pass the flags \texttt{real} and \texttt{imag\_time}. Instead, we decided to show the flags for the relative and absolute tolerance of the solver. 
-\lstinputlisting[firstline=91, lastline=92, firstnumber=91]{\GPcode}
+\lstinputlisting[firstline=93, lastline=94, firstnumber=93]{\GPcode}
 Finally, we can enjoy the ``movie" displaying real-time evolution
-\lstinputlisting[firstline=94, lastline=112, firstnumber=94]{\GPcode}
+\lstinputlisting[firstline=96, lastline=114, firstnumber=96]{\GPcode}
 
 The complete code including the lines that produce Fig.~\ref{fig:GPE_fig} is available under:\\
 
-\href{https://github.com/weinbe58/QuSpin/#quspin}{https://github.com/weinbe58/QuSpin/\#quspin}\\
+\href{http://weinbe58.github.io/QuSpin/examples/example8.html\#example8-label}{http://weinbe58.github.io/QuSpin/examples/example8.html\#example8-label}\\
 
 
 
@@ -790,13 +788,13 @@ Then, we define the model parameters. Note that we choose all physical couplings
 \lstinputlisting[firstline=9, lastline=14, firstnumber=9]{\Spincode}
 Before we move on to define the two bases, let us explain how to use the \texttt{spin\_basis\_general} class two manually define custom symmetries in $2d$. Needless to say, one can follow the same procedure to construct higher-dimensional boson an fermion bases, see Sec.~\ref{app:doc}. QuSpin can handle any unitary symmetry operation $Q$ of multiplicity $m_Q$ ($Q^{m_Q}=1$). We label its eigenvalues $\exp(-2\pi i q/m_Q)$ by an integer $q=\{0,1,\dots,m_Q-1\}$, which is used to set the symmetry block. For instance, if $Q=P$ is parity (reflection), then $q=0,1$ will correspond to the positive and negative parity blocks. If $Q=T$ is translation, then $q$ will label all momentum blocks. In the present case, the symmetries are translations and parity along the $x$ and $y$ lattice directions, and spin inversion. To this end, we first label all sites with integers, and store them in the variable \texttt{s}. One can think of the $2d$ system as a snake-like folded (or square-reshaped) \texttt{s}. The action of any local symmetry can be programmed on this set of sites. For instance, this helps us define the action of the $x$ and $y$ translation operators \texttt{T\_x} and \texttt{T\_y}, by shifting all sites in the corresponding direction. Parity (reflection) operations \texttt{P\_x} and \texttt{P\_y} are also intuitive to define. Last, the spin inversion symmetry is uniquely defined through the mapping \texttt{s}$\;\mapsto\;$\texttt{1-s} for every site \texttt{s} it acts on. In this way, the user can define different lattice geometries, and/or sublattice symmetries and QuSpin will do the hard job to reduce the Hilbert space to the corresponding symmetry sector.
 \lstinputlisting[firstline=16, lastline=24, firstnumber=16]{\Spincode}
-Let us define the spin bases. For the $1d$ case, we make use of the \texttt{spin\_basis\_1d} constructor. We note in passing that one can also study higher-spin systems by using the optional argument \texttt{S}, which accepts a string (integer or half-integer) to specify the spin vector size, see documentation~\ref{app:doc}. Requesting symmetry blocks works as usual, by using the corresponding optional arguments. For the $2d$ spin system, we use the \texttt{spin\_basis\_general} class. This constructor allows the user to build basis objects with many user-defined symmetries, based on their action on the lattice sites. Unlike the $1d$-basis constructors, that have symmetry blocks with pre-defined variables which take integer values \texttt{kblock=0}, the general basis constructors accept user-defined block variable names which take a tuple for every symmetry requested: the first entry is the symmetry transformation itself, and the second one -- the integer which labels the required symmetry block, e.g.~\texttt{kxblock=(T\_x,0)}.
+Let us define the spin bases. For the $1d$ case, we make use of the \texttt{spin\_basis\_1d} constructor. We note in passing that one can also study higher-spin systems by using the optional argument \texttt{S}, which accepts a string (integer or half-integer) to specify the spin vector size, see \href{http://weinbe58.github.io/QuSpin/index.html}{documentation}~\ref{app:doc}. Requesting symmetry blocks works as usual, by using the corresponding optional arguments. For the $2d$ spin system, we use the \texttt{spin\_basis\_general} class. This constructor allows the user to build basis objects with many user-defined symmetries, based on their action on the lattice sites. Unlike the $1d$-basis constructors, that have symmetry blocks with pre-defined variables which take integer values \texttt{kblock=0}, the general basis constructors accept user-defined block variable names which take a tuple for every symmetry requested: the first entry is the symmetry transformation itself, and the second one -- the integer which labels the required symmetry block, e.g.~\texttt{kxblock=(T\_x,0)}.
 \lstinputlisting[firstline=26, lastline=32, firstnumber=26]{\Spincode} 
 To set up the site-coupling lists for the two operators in the Hamiltonian we proceed in the usual manner. Using them, we can call the \texttt{hamiltonian} constructor to define the operators $-\sum_j S^z_{j}S^z_{j+1}$ and $-\sum_j S^x_j$. Here we keep the operators separate, in order to do the periodic step-drive evolution, which is why we do not need to define separate static and dynamic lists. We repeat this for both the spin-$1/2$ and the spin-$1$ systems.
 \lstinputlisting[firstline=34, lastline=47, firstnumber=34]{\Spincode}
-In order to do time evolution, we need to define the initial state of our system. In this case, we start from the ground state of the Hamiltonian $-\sum_j S^z_{j}S^z_{j+1}$. We remind the reader that, since we work in a specific symmetry sector, this state may no longer be a product state. To this end, we employ the \texttt{eigsh()} method for sparse hermitian matrices of the \texttt{hamiltonian} class, where we explicitly specify that we are interested in getting a single (\texttt{k=1}) smallest algebraic (i.e.~ground state) eigenenergy, and the corresponding eigenstate (a.k.a.~the ground state), c.f.~Example 1 in Ref.~\cite{weinberg_17_quspin} for more details \cyan{[PUT LINK TO GITHUB]}. 
+In order to do time evolution, we need to define the initial state of our system. In this case, we start from the ground state of the Hamiltonian $-\sum_j S^z_{j}S^z_{j+1}$. We remind the reader that, since we work in a specific symmetry sector, this state may no longer be a product state. To this end, we employ the \texttt{eigsh()} method for sparse hermitian matrices of the \texttt{hamiltonian} class, where we explicitly specify that we are interested in getting a single (\texttt{k=1}) smallest algebraic (i.e.~ground state) eigenenergy, and the corresponding eigenstate (a.k.a.~the ground state), c.f.~\href{Example 0}{http://weinbe58.github.io/QuSpin/examples/example0.html\#example0-label} in Ref.~\cite{weinberg_17_quspin} for more details. 
 \lstinputlisting[firstline=49, lastline=55, firstnumber=49]{\Spincode}
-We are now set to do study the dynamics following the periodic step-drive. Before we go into the details, we note that QuSpin contains a build-in \texttt{Floquet} class under the \texttt{tools} module which can be useful for studying this and other periodically-driven systems, see Example 3 in Ref.~\cite{weinberg_17_quspin} \cyan{[PUT LINK TO GITHUB]}. Here, instead, we focus on manually evolving the state. First, we define the number of periods we would like to stroboscopically evolve our system for. Stroboscopic evolution is one where all quantities are evaluated at integer multiple of the driving period. To set up a time vector, which explicitly hits all those points, we use the \texttt{Floquet\_t\_vec} class, which accepts as arguments the frequency \texttt{Omega}, the number of periods \texttt{nT}, and the number of points per period \texttt{len\_T}. The \texttt{Floquet\_t\_vec} class creates an object which has many useful attributes, including the stroboscopic times and their indices, the period, the starting point, etc. We invite the interested reader to check out the documentation for more information~\ref{app:doc}.
+We are now set to do study the dynamics following the periodic step-drive. Before we go into the details, we note that QuSpin contains a build-in \texttt{Floquet} class under the \texttt{tools} module which can be useful for studying this and other periodically-driven systems, see \href{Example 2}{http://weinbe58.github.io/QuSpin/examples/example2.html\#example2-label} from Ref.~\cite{weinberg_17_quspin}. Here, instead, we focus on manually evolving the state. First, we define the number of periods we would like to stroboscopically evolve our system for. Stroboscopic evolution is one where all quantities are evaluated at integer multiple of the driving period. To set up a time vector, which explicitly hits all those points, we use the \texttt{Floquet\_t\_vec} class, which accepts as arguments the frequency \texttt{Omega}, the number of periods \texttt{nT}, and the number of points per period \texttt{len\_T}. The \texttt{Floquet\_t\_vec} class creates an object which has many useful attributes, including the stroboscopic times and their indices, the period, the starting point, etc. We invite the interested reader to check out the documentation for more information~\ref{app:doc}.
 \lstinputlisting[firstline=57, lastline=60, firstnumber=57]{\Spincode}
 Since the Hamiltonian is piece-wise constant, we can simulate the time evolution by exponentiating the separate terms. Note that, since we choose the driving phase (Floquet gauge) to yield a time-symmetric Hamiltonian, i.e.~$H(-t)=H(t)$, this results in evolving the system with the Hamiltonians $H_{zz}+AH_x$, $H_{zz}-AH_x$, $H_{zz}+AH_x$ for the durations $T/4,T/2,T/4$, respectively (think of the phase of the drive as that of a rectilinear cosine drive $\mathrm{sgn}\cos\Omega t$). To compute the matrix exponential of a static operator, we make use of the \texttt{exp\_op} class, where $\exp(z B) = $\texttt{exp\_op(B,a=z)} for some complex number $z$ and some operator $B$.
 \lstinputlisting[firstline=61, lastline=65, firstnumber=61]{\Spincode}
@@ -804,12 +802,14 @@ In order to evolve the state itself, we demonstrate how to construct a user-defi
 \lstinputlisting[firstline=66, lastline=75, firstnumber=66]{\Spincode}
 Finally, we are ready to compute the time-dependent quantities of interest. In order to calculate the expectation $\langle\psi(t)|H_{zz}|\psi(t)\rangle$ QuSpin has a routine called \texttt{obs\_vs\_time()}. It accepts the time-dependent state \texttt{psi\_12\_t} (or its generator), the time vector \texttt{t.vals} to evaluate the observable at, and a dictionary, which contains all observables of interest (here \texttt{Hzz\_12}). The output of \texttt{obs\_vs\_time()} is a dictionary which contains the results: every observable is being parsed by a unique key (string) (here \texttt{"E"}), under which its expectation value will appear, evaluated at the requested times. Further, if one specifies the optional argument \texttt{return\_state=True}, the time-evolved state is also returned under the key \texttt{"psi\_t"}. 
 \lstinputlisting[firstline=77, lastline=80, firstnumber=77]{\Spincode}
-In fact, \texttt{obs\_vs\_time()} can also compute the entanglement entropy at every point of time (see documentation or Sec.~\ref{subsec:BF_mixtures}). Instead, we decided to show how one can do this using the new functionality of the \texttt{basis} class. Each basis constructor comes with a function method \texttt{ent\_entropy()} which evaluates the entanglement entropy of a given state, and may return the reduced density matrix upon request. To compute the entanglement, the user needs to pass the state (here \texttt{Obs\_12\_t["psi\_t"]}), and a subsystem to define the partition for computing the entanglement. The method \texttt{ent\_entropy()} can handle vectorised calculations, and will compute the entanglement of the state for each point of time. The output is stored in a dictionary, and the entanglement entropy can be accessed with the key \texttt{"Sent\_A"}. Finally, to obtain the entanglement entropy density, we also normalise the results by the size of the subsystem of interest.
+In fact, \texttt{obs\_vs\_time()} can also compute the entanglement entropy at every point of time (see \href{http://weinbe58.github.io/QuSpin/index.html}{documentation} or Sec.~\ref{subsec:BF_mixtures}). Instead, we decided to show how one can do this using the new functionality of the \texttt{basis} class. Each basis constructor comes with a function method \texttt{ent\_entropy()} which evaluates the entanglement entropy of a given state, and may return the reduced density matrix upon request. To compute the entanglement, the user needs to pass the state (here \texttt{Obs\_12\_t["psi\_t"]}), and a subsystem to define the partition for computing the entanglement. The method \texttt{ent\_entropy()} can handle vectorised calculations, and will compute the entanglement of the state for each point of time. The output is stored in a dictionary, and the entanglement entropy can be accessed with the key \texttt{"Sent\_A"}. Finally, to obtain the entanglement entropy density, we also normalise the results by the size of the subsystem of interest.
 \lstinputlisting[firstline=81, lastline=83, firstnumber=81]{\Spincode}
 In order get an intuition about the amount of entanglement generated in the system by the drive, we use as a reference entanglement the corresponding Page values, \cyan{which are a measure of...}
 \lstinputlisting[firstline=84, lastline=86, firstnumber=84]{\Spincode}
 
-The complete code including the lines that produce Fig.~\ref{fig:example9} is available in here.
+The complete code including the lines that produce Fig.~\ref{fig:example9} is available in under:\\
+
+\href{http://weinbe58.github.io/QuSpin/examples/example9.html\#example9-label}{http://weinbe58.github.io/QuSpin/examples/example9.html\#example9-label}\\
 
 
 
@@ -878,7 +878,7 @@ are stored under the key \texttt{"Sent\_time"}. The corresponding value itself i
  
 The complete code including the lines that produce Fig.~\ref{fig:BFM} is available under:\\
 
-\href{https://github.com/weinbe58/QuSpin/#quspin}{https://github.com/weinbe58/QuSpin/\#quspin}\\
+\href{http://weinbe58.github.io/QuSpin/examples/example10.html\#example10-label}{http://weinbe58.github.io/QuSpin/examples/example10.html\#example10-label}\\
 
 
 
@@ -897,7 +897,7 @@ We would also much appreciate it, if users can properly report every single inst
  
 
 \section*{Acknowledgements}
-We would like to thank S.~Capponi, M.~Kolodrubetz, S.~Kourtis and L.~Pollet for various stimulating discussions. Special thanks go to A.~G.~R.~Day for urging us to put a proper documentation for the package, and to W.~W.~Ho for reporting some bugs in the code. The authors are pleased to acknowledge that the computational work reported on in this paper was performed on the Shared Computing Cluster which is administered by \href{http://www.bu.edu/tech/support/research/}{Boston University's Research Computing Services}. The authors also acknowledge the Research Computing Services group for providing consulting support which has contributed to the results reported within this paper. We would also like to thank \href{https://github.com/}{Github} for providing the online resources to help develop and maintain this project, and the \href{http://www.sphinx-doc.org/en/stable/#}{Sphinx} project which makes it possible to maintain an easy-to-read and up-to-date documentation\cyan{[PUT link]}. 
+We would like to thank S.~Capponi, M.~Kolodrubetz, S.~Kourtis and L.~Pollet for various stimulating discussions. Special thanks go to A.~G.~R.~Day for urging us to put a proper documentation for the package, and to W.~W.~Ho for reporting some bugs in the code. The authors are pleased to acknowledge that the computational work reported on in this paper was performed on the Shared Computing Cluster which is administered by \href{http://www.bu.edu/tech/support/research/}{Boston University's Research Computing Services}. The authors also acknowledge the Research Computing Services group for providing consulting support which has contributed to the results reported within this paper. We would also like to thank \href{https://github.com/}{Github} for providing the online resources to help develop and maintain this project, and the \href{http://www.sphinx-doc.org/en/stable/#}{Sphinx} project which makes it possible to maintain an easy-to-read and up-to-date \href{http://weinbe58.github.io/QuSpin/index.html}{documentation}. 
 
 % TODO: include funding information
 \paragraph{Funding information}
@@ -909,7 +909,7 @@ This work was supported by ???
 	
 Detailed installation instructions can be found under:\\
 	
-\href{https://github.com/weinbe58/QuSpin/#quspin}{https://github.com/weinbe58/QuSpin/\#quspin}\\
+\href{http://weinbe58.github.io/QuSpin/Installation.html}{http://weinbe58.github.io/QuSpin/Installation.html}\\
 	
 	
 	
@@ -918,20 +918,20 @@ Detailed installation instructions can be found under:\\
 
 For beginners, instructions how to execute a Python code are provided under:\\
 
-\href{https://github.com/weinbe58/QuSpin/#quspin}{https://github.com/weinbe58/QuSpin/\#quspin}\\
+\href{http://weinbe58.github.io/QuSpin/Installation.html\#basic-use-of-command-line-to-run-python}{http://weinbe58.github.io/QuSpin/Installation.html\#basic-use-of-command-line-to-run-python}\\
 	
 \section{Package Documentation}
 \label{app:doc}
 In QuSpin quantum many-body operators are represented as matrices. The computation of these matrices are done through custom code written in Cython. Cython is an optimizing static compiler which takes code written in a syntax similar to Python, and compiles it into a highly efficient C/C\texttt{++} shared library. These libraries are then easily interfaced with Python, but can run orders of magnitude faster than pure Python code~\cite{Cython}. The matrices are stored in a sparse matrix format using the sparse matrix library of SciPy~\cite{SciPy_package}. This allows QuSpin to easily interface with mature Python packages, such as NumPy, SciPy, any many others. These packages provide reliable state-of-the-art tools for scientific computation as well as support from the Python community to regularly improve and update them~\cite{NumPy,Python_computing_1,Python_computing_2,SciPy_package}. Moreover, we have included specific functionality in QuSpin which uses NumPy and SciPy to do many desired calculations common to ED studies, while making sure the user only has to call a few NumPy or SciPy functions directly. The complete up-to-date documentation for the package is available online under:\\
 	
-\href{https://github.com/weinbe58/QuSpin/#quspin}{https://github.com/weinbe58/QuSpin/\#quspin}\\
+\href{http://weinbe58.github.io/QuSpin/index.html}{http://weinbe58.github.io/QuSpin/index.html}\\
 	
 \section{Complete Example Codes}
 \label{app:scripts}
 	
-The example scripts for all QuSpin examples can be downloaded under:\\
+The python scripts for all QuSpin examples can be downloaded under:\\
 
-\href{https://github.com/weinbe58/QuSpin/#quspin}{https://github.com/weinbe58/QuSpin/\#quspin}\\
+\href{http://weinbe58.github.io/QuSpin/Examples.html}{http://weinbe58.github.io/QuSpin/Examples.html}\\
 	
 \end{appendix}
 

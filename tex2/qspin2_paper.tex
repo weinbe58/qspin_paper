@@ -249,7 +249,7 @@ New in QuSpin 2.0, we have added the following features and toolboxes:
 	\item[(vi)] \texttt{quantum\_LinearOperator} class to efficiently apply an operator to a state without constructing the operator.
 \end{itemize}
 
-\noindent Before we carry on, we refer the interested reader to \href{http://weinbe58.github.io/QuSpin/Examples.html}{examples (0)-(3)} from the original QuSpin paper~\cite{weinberg_17_quspin}. The examples below focus predominantly on the newly introduced features, and are thus to be considered complementary. We emphasize that, since they serve the purpose of explaining how to use QuSpin, for the sake of brevity we shall not discuss the interesting physics related to the interpretation of the results.\\
+\noindent Before we carry on, we refer the interested reader to \href{http://weinbe58.github.io/QuSpin/Examples.html}{Examples 0-3} from the original QuSpin paper~\cite{weinberg_17_quspin}. The examples below focus predominantly on the newly introduced features, and are thus to be considered complementary. We emphasize that, since they serve the purpose of explaining how to use QuSpin, for the sake of brevity we shall not discuss the interesting physics related to the interpretation of the results.\\
 
 \emph{Installing QuSpin is quick and efficient; just follow the steps outlined in App.~\ref{app:install}.}
 
@@ -348,7 +348,7 @@ Constructing and diagonalising the fermion Hamiltonian is the same as for the sp
 
 The complete code including the lines that produce Fig.~\ref{fig:JW} is available under:\\
 
-\href{http://weinbe58.github.io/QuSpin/examples/example5.html\#example5-label}{http://weinbe58.github.io/QuSpin/examples/example5.html\#example5-label}\\
+\href{http://weinbe58.github.io/QuSpin/examples/example4.html}{http://weinbe58.github.io/QuSpin/examples/example4.html}\\
 
 
 \subsection{Free Particle Systems: the Fermionic SSH Chain}
@@ -458,7 +458,7 @@ Finally, we weigh all singe-state correlators by the Fermi-Dirac distribution to
 
 The complete code including the lines that produce Fig.~\ref{fig:SSH} is available under:\\
 
-\href{http://weinbe58.github.io/QuSpin/examples/example5.html\#example5-label}{http://weinbe58.github.io/QuSpin/examples/example5.html\#example5-label}\\
+\href{http://weinbe58.github.io/QuSpin/examples/example5.html}{http://weinbe58.github.io/QuSpin/examples/example5.html}\\
 
 
 
@@ -540,7 +540,7 @@ Last, we calculate the average and its error bars using \emph{bootstrap re-sampl
 
 The complete code including the lines that produce Fig.~\ref{fig:MBL} is available under:\\
 
-\href{http://weinbe58.github.io/QuSpin/examples/example6.html\#example6-label}{http://weinbe58.github.io/QuSpin/examples/example6.html\#example6-label}\\
+\href{http://weinbe58.github.io/QuSpin/examples/example6.html}{http://weinbe58.github.io/QuSpin/examples/example6.html}\\
 
 \subsection{The Bose-Hubbard Model on Translationally Invariant Ladder}
 \label{subsec:Bose_Ladder}
@@ -611,7 +611,7 @@ We can also compute the entanglement entropy between the two legs of the adder. 
 
 The complete code including the lines that produce Fig.~\ref{fig:BHM} is available under:\\
 
-\href{http://weinbe58.github.io/QuSpin/examples/example7.html\#example7-label}{http://weinbe58.github.io/QuSpin/examples/example7.html\#example7-label}\\
+\href{http://weinbe58.github.io/QuSpin/examples/example7.html}{http://weinbe58.github.io/QuSpin/examples/example7.html}\\
 
 \subsection{The Gross-Pitaevskii Equation and Nonlinear Time Evolution}
 \label{subsec:GP_dynamics}
@@ -719,7 +719,7 @@ Finally, we can enjoy the ``movie" displaying real-time evolution
 
 The complete code including the lines that produce Fig.~\ref{fig:GPE_fig} is available under:\\
 
-\href{http://weinbe58.github.io/QuSpin/examples/example8.html\#example8-label}{http://weinbe58.github.io/QuSpin/examples/example8.html\#example8-label}\\
+\href{http://weinbe58.github.io/QuSpin/examples/example8.html}{http://weinbe58.github.io/QuSpin/examples/example8.html}\\
 
 
 
@@ -792,9 +792,9 @@ Let us define the spin bases. For the $1d$ case, we make use of the \texttt{spin
 \lstinputlisting[firstline=26, lastline=32, firstnumber=26]{\Spincode} 
 To set up the site-coupling lists for the two operators in the Hamiltonian we proceed in the usual manner. Using them, we can call the \texttt{hamiltonian} constructor to define the operators $-\sum_j S^z_{j}S^z_{j+1}$ and $-\sum_j S^x_j$. Here we keep the operators separate, in order to do the periodic step-drive evolution, which is why we do not need to define separate static and dynamic lists. We repeat this for both the spin-$1/2$ and the spin-$1$ systems.
 \lstinputlisting[firstline=34, lastline=47, firstnumber=34]{\Spincode}
-In order to do time evolution, we need to define the initial state of our system. In this case, we start from the ground state of the Hamiltonian $-\sum_j S^z_{j}S^z_{j+1}$. We remind the reader that, since we work in a specific symmetry sector, this state may no longer be a product state. To this end, we employ the \texttt{eigsh()} method for sparse hermitian matrices of the \texttt{hamiltonian} class, where we explicitly specify that we are interested in getting a single (\texttt{k=1}) smallest algebraic (i.e.~ground state) eigenenergy, and the corresponding eigenstate (a.k.a.~the ground state), c.f.~\href{http://weinbe58.github.io/QuSpin/examples/example0.html\#example0-label}{Example 0} in Ref.~\cite{weinberg_17_quspin} for more details. 
+In order to do time evolution, we need to define the initial state of our system. In this case, we start from the ground state of the Hamiltonian $-\sum_j S^z_{j}S^z_{j+1}$. We remind the reader that, since we work in a specific symmetry sector, this state may no longer be a product state. To this end, we employ the \texttt{eigsh()} method for sparse hermitian matrices of the \texttt{hamiltonian} class, where we explicitly specify that we are interested in getting a single (\texttt{k=1}) smallest algebraic (i.e.~ground state) eigenenergy, and the corresponding eigenstate (a.k.a.~the ground state), c.f.~\href{http://weinbe58.github.io/QuSpin/examples/example0.html}{Example 0} in Ref.~\cite{weinberg_17_quspin} for more details. 
 \lstinputlisting[firstline=49, lastline=55, firstnumber=49]{\Spincode}
-We are now set to do study the dynamics following the periodic step-drive. Before we go into the details, we note that QuSpin contains a build-in \texttt{Floquet} class under the \texttt{tools} module which can be useful for studying this and other periodically-driven systems, see \href{http://weinbe58.github.io/QuSpin/examples/example2.html\#example2-label}{Example 2} from Ref.~\cite{weinberg_17_quspin}. Here, instead, we focus on manually evolving the state. First, we define the number of periods we would like to stroboscopically evolve our system for. Stroboscopic evolution is one where all quantities are evaluated at integer multiple of the driving period. To set up a time vector, which explicitly hits all those points, we use the \texttt{Floquet\_t\_vec} class, which accepts as arguments the frequency \texttt{Omega}, the number of periods \texttt{nT}, and the number of points per period \texttt{len\_T}. The \texttt{Floquet\_t\_vec} class creates an object which has many useful attributes, including the stroboscopic times and their indices, the period, the starting point, etc. We invite the interested reader to check out the documentation for more information~\ref{app:doc}.
+We are now set to do study the dynamics following the periodic step-drive. Before we go into the details, we note that QuSpin contains a build-in \texttt{Floquet} class under the \texttt{tools} module which can be useful for studying this and other periodically-driven systems, see \href{http://weinbe58.github.io/QuSpin/examples/example2.html}{Example 2} from Ref.~\cite{weinberg_17_quspin}. Here, instead, we focus on manually evolving the state. First, we define the number of periods we would like to stroboscopically evolve our system for. Stroboscopic evolution is one where all quantities are evaluated at integer multiple of the driving period. To set up a time vector, which explicitly hits all those points, we use the \texttt{Floquet\_t\_vec} class, which accepts as arguments the frequency \texttt{Omega}, the number of periods \texttt{nT}, and the number of points per period \texttt{len\_T}. The \texttt{Floquet\_t\_vec} class creates an object which has many useful attributes, including the stroboscopic times and their indices, the period, the starting point, etc. We invite the interested reader to check out the documentation for more information~\ref{app:doc}.
 \lstinputlisting[firstline=57, lastline=60, firstnumber=57]{\Spincode}
 Since the Hamiltonian is piece-wise constant, we can simulate the time evolution by exponentiating the separate terms. Note that, since we choose the driving phase (Floquet gauge) to yield a time-symmetric Hamiltonian, i.e.~$H(-t)=H(t)$, this results in evolving the system with the Hamiltonians $H_{zz}+AH_x$, $H_{zz}-AH_x$, $H_{zz}+AH_x$ for the durations $T/4,T/2,T/4$, respectively (think of the phase of the drive as that of a rectilinear cosine drive $\mathrm{sgn}\cos\Omega t$). To compute the matrix exponential of a static operator, we make use of the \texttt{exp\_op} class, where $\exp(z B) = $\texttt{exp\_op(B,a=z)} for some complex number $z$ and some operator $B$.
 \lstinputlisting[firstline=61, lastline=65, firstnumber=61]{\Spincode}
@@ -809,7 +809,7 @@ In order get an intuition about the amount of entanglement generated in the syst
 
 The complete code including the lines that produce Fig.~\ref{fig:example9} is available in under:\\
 
-\href{http://weinbe58.github.io/QuSpin/examples/example9.html\#example9-label}{http://weinbe58.github.io/QuSpin/examples/example9.html\#example9-label}\\
+\href{http://weinbe58.github.io/QuSpin/examples/example9.html}{http://weinbe58.github.io/QuSpin/examples/example9.html}\\
 
 
 
@@ -878,7 +878,7 @@ are stored under the key \texttt{"Sent\_time"}. The corresponding value itself i
  
 The complete code including the lines that produce Fig.~\ref{fig:BFM} is available under:\\
 
-\href{http://weinbe58.github.io/QuSpin/examples/example10.html\#example10-label}{http://weinbe58.github.io/QuSpin/examples/example10.html\#example10-label}\\
+\href{http://weinbe58.github.io/QuSpin/examples/example10.html}{http://weinbe58.github.io/QuSpin/examples/example10.html}\\
 
 
 
@@ -918,7 +918,7 @@ Detailed installation instructions can be found under:\\
 
 For beginners, instructions how to execute a Python code are provided under:\\
 
-\href{http://weinbe58.github.io/QuSpin/Installation.html\#basic-use-of-command-line-to-run-python}{http://weinbe58.github.io/QuSpin/Installation.html\#basic-use-of-command-line-to-run-python}\\
+\href{http://weinbe58.github.io/QuSpin/Installation.html}{http://weinbe58.github.io/QuSpin/Installation.html}\\
 	
 \section{Package Documentation}
 \label{app:doc}

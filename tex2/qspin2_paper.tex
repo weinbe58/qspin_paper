@@ -503,42 +503,38 @@ While we already encountered most of these libraries and functions, in this exam
 
 After importing all the required libraries and functions we set up the parameters for the simulation including the number of realizations \texttt{n\_real}, and the physical couplings \texttt{J}, \text{U}, the number of up and down fermions, etc.
 \lstinputlisting[firstline=10, lastline=24, firstnumber=10]{\MBLcode}
-Next we set up the basis, introducing here the \texttt{tensor\_basis} constructor class. In its full-fledged generality, \texttt{tensor\_basis} takes $n$ basis objects which it then uses to construct the matrix elements in the tensor product space: 
-\begin{equation}
-\mathcal{H} = \mathcal{H}_1\otimes\mathcal{H}_2\otimes\cdots\otimes\mathcal{H}_n.
-\end{equation}
-Here we consider the case of two Hilbert spaces, $\mathcal{H} = \mathcal{H}_1\otimes\mathcal{H}_2$, one for fermions with spin up and one for spin-down fermions\footnote{to construct a \texttt{tensor\_basis} object in general: \texttt{t\_basis = tensor\_basis(basis\_1,basis\_2,...,basis\_n)}}. One disadvantage of using the tensor basis is that it does not allow for the use of symmetries, beyond particle-conservation (magnetisation in the case of spin systems). \cyan{we'll have to change this later when we have the ladder classes}. 
-\lstinputlisting[firstline=26, lastline=30,firstnumber=26]{\MBLcode}
+Next we set up the basis, introducing here the \texttt{spinful\_fermion\_basis\_1d} constructor class. It works the usual way, except the particle number sector \texttt{N\_f} is now a tuple containing the number of up and down fermions. 
+\lstinputlisting[firstline=26, lastline=28,firstnumber=26]{\MBLcode}
 The next step in the procedure is to set up the site-coupling and operator lists:
-\lstinputlisting[firstline=32, lastline=47,firstnumber=32]{\MBLcode}
+\lstinputlisting[firstline=30, lastline=45,firstnumber=30]{\MBLcode}
 Notice here that the \texttt{"|"} character is used to separate the operators which belong to the up (left side of tensor product) and down (right side of tensor product) Hilbert spaces in \texttt{basis}. If no string in present the operator is assumed to be the identity \texttt{'I'}. The site-coupling list, on the other hand, does not require separating the two sides of the tensor product, as it is assumed that the operator string lines up with the correct site index when the \texttt{'|'} character is removed. 
 
 In the last couple of lines defining model (see below), we create a python \texttt{dictionary} object in which we add static operator lists as \texttt{values}, indexed by a particular string known as the corresponding \texttt{key}. This dictionary, which we refer to as \texttt{operator\_dict}, is then passed into the \texttt{quantum\_operator} class which, for each \texttt{key} in \texttt{operator\_dict}, constructs the operator listed in the site-coupling list for that \texttt{key}. When one wants to evaluate this operator for a particular set of parameters, one uses a second dictionary (see \texttt{params\_dict} below \cyan{give line number}) with the same keys as \texttt{operator\_dict}: the value corresponding to each key in the \texttt{params\_dict} multiples the operator stored at that same key in \texttt{operator\_dict}. This allows one to parametrize many-body operators in more complicated and general ways. In the present example, we define a key for the Fermi-Hubbard Hamiltonian, and then, as we need to change the disorder strength in between realisations, we also define keys for the local density operator for both up and down spins on each site. By doing this, we can then construct any disordered Hamiltonian by specify the disorder at each site, and changing its value from one realisation to another.
-\lstinputlisting[firstline=48, lastline=54,firstnumber=48]{\MBLcode}
+\lstinputlisting[firstline=46, lastline=52,firstnumber=46]{\MBLcode}
  
 
 The \texttt{quantum\_operator} class constructs operators in almost an identical manner as a \texttt{hamiltonian()} class with the exception that there is no dynamic list. Next, we construct our initial state with the fermions dispersed over the lattice on every other site. To get the index of the \texttt{basis} state which this initial state corresponds to, one can use the \texttt{index} function of the \texttt{tensor\_basis} class. This function takes a string or integer representing the product state for each of the Hilbert spaces and then searches to find the full product state, returning the corresponding index. We can then create an empty array \texttt{psi\_0} of dimension the total Hilbert space size, and insert unity at the index corresponding to the initial state. This allows us to easily define the many-body product state used in the rest of the simulation.
-\lstinputlisting[firstline=56, lastline=69,firstnumber=56]{\MBLcode}
+\lstinputlisting[firstline=54, lastline=67,firstnumber=54]{\MBLcode}
 
 Now that the operators are all set up, we can proceed with the simulation of the dynamics. First, we define a function which, given a disorder realization of the local potential, calculates the time evolution of $\mathcal{I}(t)$. We shall guide the reader through this function step by step. The syntax for this begins as follows:
-\lstinputlisting[firstline=71, lastline=74,firstnumber=71]{\MBLcode}
+\lstinputlisting[firstline=69, lastline=72,firstnumber=69]{\MBLcode}
 The first step is to construct the Hamiltonian from the \texttt{disorder} list which is as simple as
-\lstinputlisting[firstline=75, lastline=81,firstnumber=75]{\MBLcode}
+\lstinputlisting[firstline=73, lastline=79,firstnumber=73]{\MBLcode}
 using the \texttt{tohamiltonian()} method of \texttt{H\_dict} class, which accepts as argument the dictionary \texttt{params\_dict}, which shares the same keys as \texttt{operator\_dict}, but whose values are determined by the \texttt{disorder} list which changes from one realisation to another. 
 
 Once the Hamiltonian has been constructed we want to time-evolve the initial state with it. To this end, we use the fact that, for time-independent Hamiltonians, the time-evolution operator coincides with the matrix exponential $\exp(-itH)$. In QuSpin, a convenient way to define matrix exponentials is offered by the \texttt{exp\_op} class. Given an operator $A$ , it calculates $\exp(atA)$ for any complex-valued number $a$. The time grid for $t$ is specified using the optional arguments \texttt{start}, \texttt{stop} and \texttt{num}. If the latter are omitted, default is $t=1$. The \texttt{exp\_op} objects are either a list of arrays, the elements of which correspond to the operator $\exp(atA)$ at the times defined or, if \texttt{iterate=True} a generator for this list is returned. Here, we use \texttt{exp\_op} to create a generator list containing the time-evolved states as follows
-\lstinputlisting[firstline=82, lastline=84,firstnumber=82]{\MBLcode}
+\lstinputlisting[firstline=80, lastline=82,firstnumber=80]{\MBLcode}
 
-To calculate the expectation value of the imbalance operator in time, we use the \texttt{obs\_vs\_time} function. Since the usage of this function was extensively discussed in Example2 and Example3 of Ref.~\cite{weinberg_17_quspin}, here we only mention that it accepts a (collection of) state(s) [or a generator] \texttt{psi\_t}, a time vector \texttt{t}, and a dictionary \texttt{dict(I=I)}, whose values are the observables to calculate the expectation value of. The function returns a dictionary, the keys of which correspond to the keys every observable was defined under.
-\lstinputlisting[firstline=85, lastline=87,firstnumber=85]{\MBLcode}
+To calculate the expectation value of the imbalance operator in time, we use the \texttt{obs\_vs\_time} function. Since the usage of this function was extensively discussed in \href{http://weinbe58.github.io/QuSpin/examples/example2.html}{Example 2} and \href{http://weinbe58.github.io/QuSpin/examples/example3.html}{Example 3} of Ref.~\cite{weinberg_17_quspin}, here we only mention that it accepts a (collection of) state(s) [or a generator] \texttt{psi\_t}, a time vector \texttt{t}, and a dictionary \texttt{dict(I=I)}, whose values are the observables to calculate the expectation value of. The function returns a dictionary, the keys of which correspond to the keys every observable was defined under.
+\lstinputlisting[firstline=83, lastline=85,firstnumber=83]{\MBLcode}
 
 The function ends by printing the time of executing and returning the value for $I$ as a function of time for this realization
-\lstinputlisting[firstline=88, lastline=91,firstnumber=88]{\MBLcode}
+\lstinputlisting[firstline=86, lastline=89,firstnumber=86]{\MBLcode}
 
-Now we are all set to run the disorder realizations for the different disorder strengths which in principle can be spilt up over multiple simulations, e.g.~using \texttt{joblib} [c.f.~Example2 from Ref.~\cite{weinberg_17_quspin}] but for completeness we do all of the calculations in one script. 
-\lstinputlisting[firstline=93, lastline=95,firstnumber=93]{\MBLcode}
+Now we are all set to run the disorder realizations for the different disorder strengths which in principle can be spilt up over multiple simulations, e.g.~using \texttt{joblib} [c.f.~\href{http://weinbe58.github.io/QuSpin/examples/example1.html}{Example 1} from Ref.~\cite{weinberg_17_quspin}] but for completeness we do all of the calculations in one script. 
+\lstinputlisting[firstline=91, lastline=93,firstnumber=91]{\MBLcode}
 Last, we calculate the average and its error bars using \emph{bootstrap re-sampling}.
-\lstinputlisting[firstline=96, lastline=102,firstnumber=96]{\MBLcode}
+\lstinputlisting[firstline=94, lastline=100,firstnumber=94]{\MBLcode}
 
 The complete code including the lines that produce Fig.~\ref{fig:MBL} is available under:\\
 

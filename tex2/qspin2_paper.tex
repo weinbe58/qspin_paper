@@ -238,11 +238,11 @@ It is, thus, arguably useful to have a toolbox available at one's disposal which
 
 New in QuSpin 2.0, we have added the following features and toolboxes:
 \begin{itemize}
-	\item[(i)] support for fermion, boson and higher-spin Hamiltonians with \texttt{basis.ent\_entropy} routine to calculate entanglement.
-	\item[(ii)] basis constructor classes for user-defined symmetries.
+	\item[(i)] support for fermion, boson and higher-spin Hamiltonians with \texttt{basis.ent\_entropy} and \texttt{basis.partial\_trace} routine to calculate entanglement entropy, reduced density matrices, and entanglement spectrum
+	\item[(ii)] \texttt{general} basis constructor classes for user-defined symmetries.
 	\item[(iii)] blocks class to automatically handle splitting the evolution over various symmetry sectors of the Hilbert space.
-	\item[(iv)] \texttt{quantum\_operator} class to define parameter-dependent Hamiltonians.
-	\item[(v)] user-customisable \texttt{evolve()} routine to handle user-specified linear and non-linear equations of motion.
+	\item[(iv)] user-customisable \texttt{evolve()} routine to handle user-specified linear and non-linear equations of motion.
+	\item[(v)] \texttt{quantum\_operator} class to define parameter-dependent Hamiltonians.
 	\item[(vi)] \texttt{quantum\_LinearOperator} class which applies the operator "on the fly" which saves vast amounts of memory at the cost of computational time. 
 \end{itemize}
 
@@ -576,7 +576,7 @@ First, we set up the model parameters defining the length of the ladder \texttt{
 Let us proceed to construct the Hamiltonian and the observables for the problem. For bosonic systems, we have \texttt{'+'},\texttt{'-'} \texttt{'n'}, and \texttt{'I'} as available Fock space operators to use. In order to set up the local Hubbard interaction, we first split it up in two terms: $U/2\sum_i n_i(n_i-1) = -U/2\sum_i n_i + U/2\sum_i n_i^2$. Thus, we need two coupling lists:
 \lstinputlisting[firstline=22, lastline=25, firstnumber=22]{\BHLcode}
 
-\lstinputlisting[label=fig:BHL_geometry,caption=Translationally Invariant Ladder Graph and its Symemtries,firstline=116,lastline=139,numbers=none]{\BHLcode}
+\lstinputlisting[label=fig:BHL_geometry,caption=Translationally Invariant Ladder Graph and its Symemtries,firstline=116,numbers=none]{\BHLcode}
 
 We also define the hopping site-coupling list. In general, QuSpin can set up the Hamiltonian on any graph (thus, including higher-dimensions). By labelling the lattice sites conveniently, we can define the ladder geometry, as shown in Fig.~\ref{fig:BHL_geometry}. For the current ladder geometry of interest, there are three types of hopping: one along each of the two legs with tunnelling matrix elements \texttt{J\_par\_1} and \texttt{J\_par\_1}, respectively, and the transverse hopping along the rungs of the ladder with strength \texttt{J\_perp}. The even sites correspond to the bottom leg while the odds sites are the top leg of the ladder. Therefore, the hopping on the bottom/top leg is defined by \texttt{[J\_par\_...,i,(i+2)\%N]}, while the rung hopping (from the top leg to the bottom leg) is defined by \texttt{[J\_perp,i,(i+1)\%N]}.
 \lstinputlisting[firstline=26, lastline=30, firstnumber=26]{\BHLcode}
@@ -814,7 +814,7 @@ The last example in our tutorial shows how to
 \begin{itemize}
 	\item construct Hamiltonians for Bose-Fermi mixtures using the \texttt{tensor\_basis} class,
 	\item periodically drive one subsystem (here the fermions),
-	\item use new \texttt{tenso\_basis.index()} functionality to construct simple product states in the tensor basis,
+	\item use new \texttt{tensor\_basis.index()} functionality to construct simple product states in the tensor basis,
 	\item use \texttt{obs\_vs\_time} functionality to compute the evolution of the entanglement entropy of the bosons with the fermions.
 \end{itemize}
 
@@ -881,7 +881,7 @@ As we demonstrated using various examples, QuSpin is currently capable of simula
 
 Being an open project, we invite the interested users to fork the \href{https://github.com/weinbe58/QuSpin}{Github QuSpin repository}, and actively contribute to the development of the project. We would be more than happy to consider well-documented functions and classes, which build on QuSpin, and include them in further official releases so they can be used by the wider audience. We will also consider patches which allow to combine QuSpin with other open-source packages for studying quantum physics. Just email us, or contact us on Github.
 
-We would also much appreciate it, if users can properly report every single instance of a bug or malfuction in the \href{https://github.com/weinbe58/QuSpin/issues}{issues section} of the repository, as this is an inevitable part of maturing the code.
+We would also much appreciate it, if users can properly report every single instance of a bug or malfunction in the \href{https://github.com/weinbe58/QuSpin/issues}{issues section} of the repository, as this is an inevitable part of maturing the code.
 
 Some other new features not mentioned in this article include (See the Documentation~\ref{app:doc} for more details):
 
@@ -890,7 +890,7 @@ Some other new features not mentioned in this article include (See the Documenta
 	\item An efficient OpenMP parallel implementation of csr\_matrix-vector multiplication again useful the dynamics of large systems (in \texttt{tools.misc} submodule).
 \end{itemize}
 
-Some of the additional features we would like to consider in future versions include: a basis class dedicated to single particle lattice physics allowing for more efficient and intuitive way of implementing single particle Hamiltonians, functionality for doing Linblad and other kinds of dynamics with density matrices, finite temperature Lanzcos methods, class for calculating correlation functions, and overall improving the efficient of all of the functionality more generally. 
+Some of the additional features we would like to consider in future versions include: a basis class dedicated to single particle lattice physics allowing for more efficient and intuitive way of implementing single particle Hamiltonians, functionality for doing Linblad and other kinds of dynamics with density matrices, finite temperature Lanzcos methods, class for calculating correlation functions, and overall improving the efficiency of all of the functionality more generally. 
  
 
 \section*{Acknowledgements}

@@ -129,13 +129,13 @@ plt.show()
 # translations along leg-direction (i -> i+2):
 #
  = 9 = 1 = 3 = 5 = 7 =
- |   |   |   |   | 
+   |   |   |   |   | 
  - 8 - 0 - 2 - 4 - 6 -
 #
 # if J_par_1=J_par_2, one can use regular chain parity (i -> N - i) as combination 
 # of the two ladder parity operators:
 #
  - 8 - 6 - 4 - 2 - 0 - 
- |   |   |   |   | 
+   |   |   |   |   | 
  - 9 - 7 - 5 - 3 - 1 -
 """

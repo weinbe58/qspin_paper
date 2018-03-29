@@ -580,7 +580,7 @@ First, we set up the model parameters defining the length of the ladder \texttt{
 Let us proceed to construct the Hamiltonian and the observables for the problem. For bosonic systems, we have \texttt{'+'},\texttt{'-'} \texttt{'n'}, and \texttt{'I'} as available Fock space operators to use. In order to set up the local Hubbard interaction, we first split it up in two terms: $U/2\sum_i n_i(n_i-1) = -U/2\sum_i n_i + U/2\sum_i n_i^2$. Thus, we need two coupling lists:
 \lstinputlisting[firstline=22, lastline=25, firstnumber=22]{\BHLcode}
 
-\lstinputlisting[label=fig:BHL_geometry,caption=Translationally Invariant Ladder Graph and its Symemtries,firstline=116,numbers=none]{\BHLcode}
+\lstinputlisting[label=fig:BHL_geometry,caption=Translationally Invariant Ladder Graph and its Symemtries,firstline=117,lastline=140,numbers=none]{\BHLcode}
 
 We also define the hopping site-coupling list. In general, QuSpin can set up the Hamiltonian on any graph (thus, including higher-dimensions). By labelling the lattice sites conveniently, we can define the ladder geometry, as shown in Fig.~\ref{fig:BHL_geometry}. For the current ladder geometry of interest, there are three types of hopping: one along each of the two legs with tunnelling matrix elements \texttt{J\_par\_1} and \texttt{J\_par\_1}, respectively, and the transverse hopping along the rungs of the ladder with strength \texttt{J\_perp}. The even sites correspond to the bottom leg while the odds sites are the top leg of the ladder. Therefore, the hopping on the bottom/top leg is defined by \texttt{[J\_par\_...,i,(i+2)\%N]}, while the rung hopping (from the top leg to the bottom leg) is defined by \texttt{[J\_perp,i,(i+1)\%N]}.
 \lstinputlisting[firstline=26, lastline=30, firstnumber=26]{\BHLcode}

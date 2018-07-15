@@ -57,6 +57,7 @@ tau=np.linspace(0.0,35.0,71)
 psi_tau = evolve(phi0,tau[0],tau,GPE_imag_time,f_params=GPE_params,
 							imag_time=True,real=True,iterate=True)
 #
+fontsize=24
 # display state evolution
 for i,psi0 in enumerate(psi_tau):
 	# compute energy
@@ -66,13 +67,18 @@ for i,psi0 in enumerate(psi_tau):
 										label='$|\\phi_j(0)|^2$')
 	plt.plot(sites, abs(psi0)**2, color='b',marker='o',
 								label='$|\\phi_j(\\tau)|^2$' )
-	plt.xlabel('$\\mathrm{lattice\\ sites}$',fontsize=18)
+	plt.xlabel('$\\mathrm{lattice\\ sites}$',fontsize=fontsize)
 	plt.title('$J\\tau=%0.2f,\\ E_\\mathrm{GS}(\\tau)=%0.4fJ$'%(tau[i],E_GS)
-																,fontsize=18)
+																,fontsize=fontsize)
 	plt.ylim([-0.01,max(abs(phi0)**2)+0.01])
-	plt.legend(fontsize=18)
-	plt.draw() # draw frame
-	plt.pause(0.005) # pause frame
+	plt.legend(fontsize=fontsize)
+	plt.xticks(fontsize=fontsize)
+	plt.yticks(fontsize=fontsize)
+	plt.tight_layout()
+	if i in [1,10,60]:
+		plt.savefig("GPE_imag_time_{0:d}.pdf".format(i))
+	#plt.draw() # draw frame
+	#plt.pause(0.005) # pause frame
 	plt.clf() # clear figure
 plt.close()
 #
@@ -105,10 +111,15 @@ for i,psi in enumerate(psi_t):
 	plt.plot(sites, abs(psi)**2, color='b',marker='o',label='$|\\psi_j(t)|^2$')
 	plt.plot(sites, kappa_trap,'--',color='g',label='$\\mathrm{trap}$')
 	plt.ylim([-0.01,max(abs(psi0)**2)+0.01])
-	plt.xlabel('$\\mathrm{lattice\\ sites}$',fontsize=18)
-	plt.title('$Jt=%0.2f,\\ E(t)-E_\\mathrm{GS}=%0.4fJ$'%(t[i],E-E_GS),fontsize=18)
-	plt.legend(loc='upper right',fontsize=18)
-	plt.draw() # draw frame
-	plt.pause(0.00005) # pause frame
+	plt.xlabel('$\\mathrm{lattice\\ sites}$',fontsize=fontsize)
+	plt.title('$Jt=%0.2f,\\ E(t)-E_\\mathrm{GS}=%0.4fJ$'%(t[i],E-E_GS),fontsize=fontsize)
+	plt.legend(loc='upper right',fontsize=fontsize)
+	plt.xticks(fontsize=fontsize)
+	plt.yticks(fontsize=fontsize)
+	plt.tight_layout()
+	if i in [20,70,100]:
+		plt.savefig("GPE_real_time_{0:d}.pdf".format(i))
+	#plt.draw() # draw frame
+	#plt.pause(0.00005) # pause frame
 	plt.clf() # clear figure
 plt.close()

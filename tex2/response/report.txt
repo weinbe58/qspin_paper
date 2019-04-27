@@ -1,0 +1,108 @@
+Report 1:
+
+
+
+Suggested changes:
+1. The only point of improvement I see is to better comment on the parallel capabilities of the package which is not very clear from the text (there is only one remark on p22, and a few remarks on p 40 with reference to the Documentation C). It would be interesting to have a quick overview somewhere, to what extend the package can be used in parallel computations. (If certain parts do not support parallelism yet, that could be mentioned as possible feature in a future release).
+
+
+
+We added an explicit page, and a corresponding exmaple, to the online documentation which explains how to use the parallel capabilities. Additionally, starting from version 0.3.2, QuSpin has full OpenMP support. Because the paper is anyway long, we only mention the parallel capabilities in the Outlook section, and refer the interested readers to the online documentation for an example how to use them. 
+
+
+
+2. a few typos and minor points:
+- p.8 title of Sec 2.2: write out SSH -> Su-Schrieffer-Heeger
+- Figure 4 caption rhs: (b) local -> (b) Local
+- p.24 after the first code block: adder -> ladder
+- Fig.5: figure labels are borderline small
+- p27, after code line 41: Hsmiltonian -> Hamiltonian
+- p41, first paragraph: Linblad -> Lindblad
+
+
+We corrected these typos. 
+
+
+
+
+
+Report 2:
+
+
+
+
+Requested changes
+The following changes are required:
+
+1- In Fig. 2(a), it is necessary to state (in the figure or the text) that the energies are in the unit of J.
+
+We added the clarification to the caption.
+ 
+2- In Page 9, the first paragraph, the original SSH papers [Phys. Rev. Lett. 42 1698-701 1979, Phys. Rev. B 22 2099-111 1980, Phys. Rev. B 28 1138(E) 1983], highlighting the history of the model and the relevance to polyacetylene, must be cited. It is suggested to also reference a modern take on the model to highlight the concept of emergent topological edge states.
+
+We added the references.
+
+3- It is not clear which numerical routines exp_op class uses to estimate the matrix exponentials. If this class also employs Python's expm function, as used in other places in the paper, the authors need to state this more clearly. If exp_op class exploit other numerical methods, the authors need to mention accordingly and add appropriate references.
+
+We added a footnote in Sec 2.2. to clarify this point.
+
+4- In Page 2, the second paragraph, the authors correctly discuss that ED methods are still relevant to study certain dynamical problems. Another common and important use for ED calculations, in competition with highly-precise tensor network methods, is to derive the full or low-lying spectrum of frustrated Hamiltonians even on small system sizes. One needs to keep in mind that while employing tensor network approaches, although capable of studying very large system sizes, one requires to run a separate simulation to find the ground state and each individual excited state separately. I believe this other practical use of ED should be added to this paragraph.
+
+We added this example to the discussion.
+
+5- In Pages 20 and 21, the discussed coefficients relate to Code Snippet 1, and not to Fig. 1 as stated in the text.
+
+We corrected this typo.
+
+6- In Page 24, the sixth paragraph, the addition of at least one (original or review) reference covering Gross-Pitaevskii wave equations is necessary. Also, I like to suggest to put another reference covering the use of Gross-Pitaevskii equations, specifically, in nonlinear optics.
+
+
+We added the requested references.
+
+
+
+The following minor changes are suggested:
+
+
+
+1- In Abstract, the authors appropriately specify the dimensions and/or lattice geometries of models in examples (iv) and (vi). The same can be also done for the models in other examples (e.g. using "Ising chain" instead of "Ising model"); especially, since mentioning the dimensionalities/geometries will reflect the degree of their complexity.
+
+We included these clarifications.
+
+2- In Abstract, the SSH abbreviation is used for the first time here without stating the full version. Nevertheless, I suggest avoiding the use of the short form of the model name in the abstract.
+
+We agree to this comment and corrected the sentence.
+
+4- In Page 3, the first paragraph, it is more appropriate to separate New Features into two groups as "major changes" and "other added features" (or any similar titles), as discussed in my Report, to highlight the importance of significant new changes marked as (i) and (ii).
+
+We decided to leave the text as it is, mainly because we keep adding new features to the package. To keep track of them, we now have a separate page on the documentation website, where we divide the newly introduced changes according to Improved Functionality and New Classes, Methods, and Functions. 
+
+5- The following is only a suggested change for the QuSpin core codes and not essentially relates the manuscript: as mentioned, the installation of the package is well-explained and rather straightforward by following the available guides and through the Python package manager Anaconda. However, the authors fail to address a seemingly common problem that I have faced during installation of QuSpin on several machines, i.e. the 'Permission denied' error while performing 'conda install -c weinbe58 quspin' (which perform several transactions at once). This would happen for any user with not enough permission in /address_to_anaconda directory and often cannot be fixed by changing umask settings (in addition, it is not recommended and useful to run anaconda with sudo). The solution is, of course, to simply run 'sudo chown user:user anaconda-dir/ -R' on all or relevant Anaconda directories.
+
+In the online documentation, under Installation, we have put a paragraph on "Installing without sudo Privileges". The simplest way of doing it using anaconda is to create a new environment, where no 'sudo'-commands are required. If this fails, the user can install miniconda (a light but sufficient version of anaconda) in their home directory where they typically do have rights to install software programs, and then use miniconda. 
+
+6- There are no mentions of the available and important feature of Lanczos subspace diagonalization until the example in Sec. 2.5. It is suggested for this feature to be briefly discussed in the introduction.
+
+While Lanczos is a substantial part of any ED method, we do not feel that we contribute in any way to these algorithms/methods. Since the paper is anyway long enough, we prefer to abstain from this discussion.
+
+7- The abbreviation GS, standing for the ground state, is first used in Page 27 without stating the full version. Nevertheless, I suggest avoiding the use of GS at any place.
+
+We incorporated this suggestion.
+
+8- Since the provided guideline for how to run Python codes is so brief (basically a one-liner as 'python test.py'), Appendix B seems very unnecessary. This one line can be then added to Appendix A. 
+
+We agree to this point. Yet, we believe that there is no harm in leaving these instructions for the benefit of new-comers to python.
+
+9- Often when the authors discuss the spin-1/2 transverse-field Ising model on a chain (one-dimensional) or in two dimensions, they do not clearly state which models they really mean, e.g. see the last paragraph of Page 30. I encourage the authors to pay more attention to specifying the dimensionality of the Ising model.
+
+We think that the discussion of the last paragraph of Page 30 should be OK. If the referee has any concrete suggestions about this, we would be happy to consider them. 
+
+10- In Sec. 2.6, it is never explicitly mentioned that the Ising model of the interest is on a square lattice. It would be useful to add this information to the beginning of the section.
+
+We added this information to the text.
+
+11- The abbreviation DM, standing for the density matrix, is first used in Page 40 without stating the full version. Nevertheless, I suggest avoiding the use of DM at any place.
+
+We removed this abbreviation. 
+
+

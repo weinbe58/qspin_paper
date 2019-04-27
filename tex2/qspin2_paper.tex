@@ -438,7 +438,9 @@ Next, we transform these two operators to momentum space using the method \textt
 \lstinputlisting[firstline=50, lastline=52]{\SSHcode} 
 Let us proceed with the time-evolution. We first define the time vector \texttt{t} and the state \texttt{n\_psi0}.
 \lstinputlisting[firstline=53, lastline=57]{\SSHcode}
-We can perform the time evolution in two ways: (i) we calculate the time-evolution operator \texttt{U} using the \texttt{exp\_op} class, and apply it to the momentum states \texttt{psi0} and \texttt{n\_psi0}. The \texttt{exp\_op} class calculates the matrix exponential $\exp(aH)$ of an operator $H$ multiplied by a complex number $a$. One can also conveniently compute a series of matrix exponentials $\exp(aHt)$ for every time $t$ by specifying the stating point \texttt{start}, endpoint \texttt{stop} and the number of elements \texttt{num} which define the time array $t$ via \texttt{t=np.linspace(start,stop,num)}. Last, by parsing the flag \texttt{iterate=True} we create a python generator -- a pre-defined object evaluated only at the time it is called, i.e.~not pre-computed, which can save both time and memory. 
+We can perform the time evolution in two ways: (i) we calculate the time-evolution operator \texttt{U} using the \texttt{exp\_op} class
+\footnote{The \texttt{exp\_op} class uses the scipy functions \texttt{scipy.linalg.expm()} (when the user requests to compute the matrix exponential explicitly) and \texttt{scipy.sparse.linalg.expm\_multiply()}. Note also the existence of the QuSpin function \texttt{tools.evolution.expm\_multiply\_parallel()} which provides an OpenMP implementation of \texttt{scipy.sparse.linalg.expm\_multiply()}, but is not part of the \texttt{exp\_op} class (when only the application of the matrix exponential on a state is required).}, 
+and apply it to the momentum states \texttt{psi0} and \texttt{n\_psi0}. The \texttt{exp\_op} class calculates the matrix exponential $\exp(aH)$ of an operator $H$ multiplied by a complex number $a$. One can also conveniently compute a series of matrix exponentials $\exp(aHt)$ for every time $t$ by specifying the stating point \texttt{start}, endpoint \texttt{stop} and the number of elements \texttt{num} which define the time array $t$ via \texttt{t=np.linspace(start,stop,num)}. Last, by parsing the flag \texttt{iterate=True} we create a python generator -- a pre-defined object evaluated only at the time it is called, i.e.~not pre-computed, which can save both time and memory. 
 \lstinputlisting[firstline=58, lastline=62]{\SSHcode}
 Another way of doing the time evolution, (ii), is to use the \texttt{evolve()} method of the \texttt{hamiltonian} class. The idea here is that every Hamiltonian defines a generator of time translations. This method solves the Schr\"odinger equation using SciPy's ODE integration routines, see App.~\ref{app:doc} for more details. The required arguments, in order of appearance, are the initial state, the initial time, and the time vector. The \texttt{evolve()} method also supports the option to create the output as a generator using the flag \texttt{iterate=True}. Both ways (i) and (ii) time-evolve all momentum states \texttt{psi} at once, i.e.~simultaneously.
 \lstinputlisting[firstline=63, lastline=65]{\SSHcode}
@@ -873,16 +875,27 @@ The complete code including the lines that produce Fig.~\ref{fig:BFM} is availab
 \label{sec:outro}
 As we demonstrated using various examples, QuSpin is currently capable of simulating a huge class of dynamical quantum systems. Nonetheless, we do not consider it a complete project, as we imagine adding further different functionalities, motivated by the needs of the users. Interested users can put the project on their Github watch list, which will notify them of any new releases.
 
-Being an open project, we invite the interested users to fork the \href{https://github.com/weinbe58/QuSpin}{Github QuSpin repository}, and actively contribute to the development of the project. We would be more than happy to consider well-documented functions and classes, which build on QuSpin, and include them in further official releases so they can be used by the wider audience. We will also consider patches which allow to combine QuSpin with other open-source packages for studying quantum physics. Just email us, or contact us on Github.
+Being an open project, we invite the community to fork the \href{https://github.com/weinbe58/QuSpin}{Github QuSpin repository}, and actively contribute to the development of the project! We would be more than happy to consider well-documented functions and classes, which build on QuSpin, and include them in further official releases so they can be used by the wider community. We will also consider patches which allow to combine QuSpin with other open-source packages for studying quantum physics. If you have ideas, just email us, or contact us on Github.
 
 We would also much appreciate it, if users can properly report every single instance of a bug or malfunction in the \href{https://github.com/weinbe58/QuSpin/issues}{issues section} of the project repository, as this is an inevitable part of maturing the code.
 
-Some other new features not mentioned in this article include (See the Documentation~\ref{app:doc} for more details):
+
+\textbf{\textit{Parallel Capabilities.---}} Starting from version 0.3.2, QuSpin has full support for parallel computation:
+\begin{itemize}
+	\item OpenMP support allows to speed up calculations by parallelizing low-level loops using multiple threads. Many QuSpin functions take advantage of this within the \texttt{hamiltonian} and \texttt{basis} constructor classes, including (but not limited to) \texttt{hamiltonian.evolve()}, \texttt{hamiltonian.dot()}, \texttt{basis.Op()}, \texttt{tools.evolve.expm\_multiply\_parallel()}, etc, as well as constructing \texttt{basis} and \texttt{hamiltonian} objects themselves. It is important to mention that, in order to make user of OpenMP support, the use needs to install the \texttt{omp} version of QuSpin, which is different from the standard version. Please check \href{http://weinbe58.github.io/QuSpin/parallelization.html}{this page} from more information on how to install and use OpenMP in QuSpin.
+	
+	\item support of Intel's MKL linrary is inherited automatically, since QuSpin wraps some of the Numpy functionality. While this feature is not intrinsic to QuSpin per se (though it is available in QuSpin via Numpy), it can help speeding up diagonalization calculations, such as \texttt{hamiltonian.eigh()} and \texttt{hamiltonian.eigsh()}, etc.. Note that currently the default version of Numpy installed with anaconda has MKL support. built-in 
+\end{itemize}
+If you are interested in speeding up your QuSpin computation and you have multiple cores available at your disposal (e.g., on a modern desktop/laptop computer, or better yet on a computing cluster), check out \href{http://weinbe58.github.io/QuSpin/examples/example12.html#example12-label}{Example 12} online. 
+
+\begin{comment}
+Some other new features not mentioned in this article include (See the Documentation App.~\ref{app:doc} for more details):
 
 \begin{itemize}
 	\item \href{http://www.openmp.org/}{OpenMP} implimentation of SciPy's \texttt{expm\_multiply} function useful for simulating very large systems on supercomputing clusters which have large shared memory nodes (see \texttt{tools.evolution} submodule).
 	\item An efficient OpenMP parallel implementation of \texttt{csr\_matrix}-vector multiplication, again useful for studying the dynamics of large systems (see \texttt{tools.misc} submodule).
 \end{itemize}
+\end{comment}
 
 Additional features we would like to consider in future versions include: a basis class dedicated to single particle lattice physics allowing for more efficient and intuitive way of implementing single particle Hamiltonians, functionality for doing Lindblad and other kinds of dynamics with density matrices, finite-temperature Lanzcos methods, class for calculating correlation functions, and overall improving the efficiency of current functionality. 
  
@@ -892,7 +905,7 @@ We would like to thank S.~Capponi, M.~Kolodrubetz, S.~Kourtis and L.~Pollet for 
 
 % TODO: include funding information
 \paragraph{Funding information}
-\cyan{PW was supported by...}
+%\cyan{PW was supported by...}
 MB acknowledges support from the Emergent Phenomena in Quantum Systems initiative of the Gordon and Betty Moore Foundation, ERC synergy grant UQUAM, and the U.S. Department of Energy, Office of Science, Office of Advanced Scientific Computing Research, Quantum Algorithm Teams Program. This research was supported in part by the National Science Foundation under Grant No. NSF PHY-1748958.
 \begin{appendix}
 	

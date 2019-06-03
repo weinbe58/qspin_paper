@@ -7,7 +7,7 @@ Suggested changes:
 
 
 
-We added an explicit page, and a corresponding exmaple, to the online documentation which explains how to use the parallel capabilities. Additionally, starting from version 0.3.2, QuSpin has full OpenMP support. Because the paper is anyway long, we only mention the parallel capabilities in the Outlook section, and refer the interested readers to the online documentation for an example how to use them. 
+We added an explicit page, and a corresponding example, to the online documentation which explains how to use the parallel capabilities. Additionally, starting from version 0.3.2, QuSpin has full OpenMP support. Because the paper is anyway long, we only mention the parallel capabilities in the Outlook section, and refer the interested readers to the online documentation for an example how to use them. 
 
 
 
@@ -83,7 +83,7 @@ In the online documentation, under Installation, we have put a paragraph on "Ins
 
 6- There are no mentions of the available and important feature of Lanczos subspace diagonalization until the example in Sec. 2.5. It is suggested for this feature to be briefly discussed in the introduction.
 
-While Lanczos is a substantial part of any ED method, we do not feel that we contribute in any way to these algorithms/methods. Since the paper is anyway long enough, we prefer to abstain from this discussion.
+While Lanczos is a substantial part of any ED method, we do not feel that we contribute in any way to these algorithms/methods. As we acknowledge throughout the text, we make use of Scipy routines for these Krylov methods and cite the relevant libraries. Scipy provides a decent discussion of these methods in their documentation. Since the paper is anyway long enough, we prefer to abstain from this discussion.
 
 7- The abbreviation GS, standing for the ground state, is first used in Page 27 without stating the full version. Nevertheless, I suggest avoiding the use of GS at any place.
 
@@ -95,7 +95,7 @@ We agree to this point. Yet, we believe that there is no harm in leaving these i
 
 9- Often when the authors discuss the spin-1/2 transverse-field Ising model on a chain (one-dimensional) or in two dimensions, they do not clearly state which models they really mean, e.g. see the last paragraph of Page 30. I encourage the authors to pay more attention to specifying the dimensionality of the Ising model.
 
-We think that the discussion of the last paragraph of Page 30 should be OK. If the referee has any concrete suggestions about this, we would be happy to consider them. 
+We clarified the last paragraph of Page 30 and fixed the wording to make it less confusing.
 
 10- In Sec. 2.6, it is never explicitly mentioned that the Ising model of the interest is on a square lattice. It would be useful to add this information to the beginning of the section.
 
